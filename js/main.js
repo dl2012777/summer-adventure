@@ -218,8 +218,13 @@ const App = {
       </div>
 
       <div class="home-footer">
-        <div class="parent-link" onclick="App.goToDashboard()">
-          📊 学习进度
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+          <div class="parent-link" onclick="App.goToDashboard()">
+            📊 学习进度
+          </div>
+          <div class="parent-link" style="border-color:rgba(124,92,191,0.3);" onclick="App.goToGame('en',1)">
+            🎤 直接跟读
+          </div>
         </div>
       </div>
     `;

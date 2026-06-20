@@ -405,80 +405,71 @@ _startRecording(stageIndex, qIndex) {
     if (recordBtn) { recordBtn.textContent = '⏳ 录音中...'; recordBtn.disabled = true; }
     if (playBtn) playBtn.disabled = true;
 
-    // 立即请求麦克风权限（无论拒绝还是允许，都继续）
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(s) { s.getTracks().forEach(function(t) { t.stop(); }); }).catch(function() {});
-
-    // 获取当前句子
     const stage = this.STAGES[3];
     const questions = this.state.stageQuestions['speaking'];
     const qIdx = this.state.questionIndex;
     const q = questions[qIdx];
     var refText = q ? (q.textToSpeak || '') : '';
+    var _this = this;
 
-    // 自动播放原声
-    if (refText) Speak.speak(refText);
+    // 立即请求麦克风
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(function(stream) {
+        // 播放原声
+        if (refText) Speak.speak(refText);
 
-    // 延迟开始录音
-    setTimeout(async () => {
-      const result = await Speak.evaluateWithTencent(refText);
-      this.state.isWaiting = false;
-      if (recordBtn) { recordBtn.textContent = '🎤 开始录音'; recordBtn.disabled = false; }
-      if (playBtn) playBtn.disabled = false;
+        // 1.5秒后开始录音
+        setTimeout(function() {
+          if (statusEl) statusEl.textContent = '🎤 录音中... 请大声朗读';
+          var chunks = [];
+          var mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
+          var recorder = new MediaRecorder(stream, { mimeType: mimeType });
+          recorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
 
-      if (!result.success || result.error) {
-        if (statusEl) statusEl.textContent = '⚠️ ' + (result.error || '评测失败') + '，再试一次';
-        return;
-      }
+          recorder.onstop = function() {
+            stream.getTracks().forEach(function(t) { t.stop(); });
+            var blob = new Blob(chunks, { type: 'audio/webm' });
+            var reader = new FileReader();
+            reader.onloadend = function() {
+              var base64 = reader.result.split(',')[1];
+              fetch('http://127.0.0.1:8126/api/evaluate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ audioBase64: base64, refText: refText })
+              })
+              .then(function(r) { return r.json(); })
+              .then(function(result) {
+                _this._handleTencentResult(result, statusEl, recordBtn, playBtn, q, refText, questions);
+              })
+              .catch(function(err) {
+                _this.state.isWaiting = false;
+                if (statusEl) statusEl.textContent = '⚠️ 评测服务连接失败';
+                if (recordBtn) { recordBtn.textContent = '🎤 开始录音'; recordBtn.disabled = false; }
+                if (playBtn) playBtn.disabled = false;
+              });
+            };
+            reader.readAsDataURL(blob);
+          };
 
-      var scoreVal = result.score || Math.round(result.accuracy * 0.6 + result.fluency * 0.4);
-      var fb = result.accuracy >= 90 ? '完美！发音非常标准！' : result.accuracy >= 70 ? '很棒！继续加油！' : '再听一遍原声，跟读试试';
+          recorder.onerror = function() {
+            stream.getTracks().forEach(function(t) { t.stop(); });
+            _this.state.isWaiting = false;
+            if (statusEl) statusEl.textContent = '⚠️ 录音失败，请重试';
+            if (recordBtn) { recordBtn.textContent = '🎤 开始录音'; recordBtn.disabled = false; }
+            if (playBtn) playBtn.disabled = false;
+          };
 
-      this.state.score += scoreVal;
-      this.state.streak++;
-      this.state.allAnswers.push({ question: q, isCorrect: true, score: scoreVal, timeSpent: 0, speechText: refText, speechScore: { accuracy: result.accuracy } });
-
-      const resultEl = document.getElementById('speaking-result');
-      const actionsEl = document.getElementById('speaking-actions');
-      if (statusEl) statusEl.textContent = '';
-
-      if (resultEl) {
-        resultEl.style.display = 'block';
-        var starCount = scoreVal >= 90 ? 3 : scoreVal >= 70 ? 2 : scoreVal >= 50 ? 1 : 0;
-        var starStr = '⭐'.repeat(starCount);
-        resultEl.style.background = starCount >= 3 ? 'rgba(39,174,96,0.1)' : starCount >= 1 ? 'rgba(241,196,15,0.1)' : 'rgba(0,0,0,0.03)';
-        resultEl.style.border = starCount >= 3 ? '1px solid rgba(39,174,96,0.2)' : '1px solid rgba(0,0,0,0.1)';
-        var html = '<div style="font-size:28px;margin-bottom:4px;">' + starStr + '</div>' +
-          '<div style="font-size:20px;font-weight:700;">' + scoreVal + '分</div>' +
-          '<div style="font-size:14px;color:var(--text-secondary);margin-top:6px;">' + fb + '</div>' +
-          '<div style="display:flex;gap:12px;justify-content:center;font-size:12px;color:var(--text-tertiary);margin-top:6px;"><span>准确率: ' + Math.round(result.accuracy) + '%</span><span>流利度: ' + Math.round(result.fluency) + '%</span></div>';
-        if (result.words && result.words.length > 0) {
-          html += '<div style="font-size:12px;color:var(--text-secondary);margin-top:6px;">';
-          for (var wi = 0; wi < result.words.length; wi++) {
-            var w = result.words[wi];
-            html += '<span style="display:inline-block;margin:2px 4px;padding:2px 6px;border-radius:4px;background:' + (w.isCorrect ? 'rgba(39,174,96,0.15)' : 'rgba(231,76,60,0.15)') + ';">' + w.word + ' ' + w.score + '</span>';
-          }
-          html += '</div>';
-        }
-        resultEl.innerHTML = html;
-      }
-
-      if (actionsEl) {
-        actionsEl.style.display = 'flex';
-        if (scoreVal < 90) {
-          actionsEl.innerHTML = '<button class="btn btn-small btn-outline" onclick="GameEngine._retrySpeaking()">🔄 再读一次</button>' +
-              '<button class="btn btn-small ' + (this.state.subject === 'en' ? 'btn-primary' : 'btn-math') + '" onclick="GameEngine._nextSpeaking()">下一句 →</button>';
-        } else {
-          actionsEl.innerHTML = '<button class="btn btn-small ' + (this.state.subject === 'en' ? 'btn-primary' : 'btn-math') + '" onclick="GameEngine._nextSpeaking()">✅ 继纭 →</button>';
-        }
-      }
-
-      var nextQ = questions[this.state.questionIndex + 1];
-      setTimeout(function() {
-        if (nextQ && nextQ.textToSpeak) Speak.speak(nextQ.textToSpeak);
-      }, 2000);
-    }, 1500);
-  },
-  _retrySpeaking() {
+          recorder.start();
+          setTimeout(function() { if (recorder.state === 'recording') recorder.stop(); }, 5000);
+        }, 1500);
+      })
+      .catch(function() {
+        _this.state.isWaiting = false;
+        if (statusEl) statusEl.textContent = '⚠️ 麦克风权限被拒绝';
+        if (recordBtn) { recordBtn.textContent = '🎤 开始录音'; recordBtn.disabled = false; }
+        if (playBtn) playBtn.disabled = false;
+      });
+  },  _retrySpeaking() {
     const statusEl = document.getElementById('speaking-status');
     const resultEl = document.getElementById('speaking-result');
     const actionsEl = document.getElementById('speaking-actions');
