@@ -403,80 +403,78 @@ _startRecording(stageIndex, qIndex) {
 
     if (statusEl) statusEl.textContent = '🎤 录音中... 请对着麦克风朗读';
     if (recordBtn) { recordBtn.textContent = '⏳ 录音中...'; recordBtn.disabled = true; }
+    if (playBtn) playBtn.disabled = true;
 
-    // 自动播放原声先
-    const stage = this.STAGES[3]; // speaking stage
+    // 获取当前句子
+    const stage = this.STAGES[3];
     const questions = this.state.stageQuestions['speaking'];
     const qIdx = this.state.questionIndex;
     const q = questions[qIdx];
-    if (q && q.textToSpeak) {
-      Speak.speak(q.textToSpeak);
-    }
+    var refText = q ? (q.textToSpeak || '') : '';
 
-    // 延迟一下开始录音，让孩子先听
-    setTimeout(() => {
-      Speak.listen((text, error) => {
-        this.state.isWaiting = false;
-        if (recordBtn) { recordBtn.textContent = '🎤 开始录音'; recordBtn.disabled = false; }
-        if (playBtn) playBtn.disabled = false;
+    // 自动播放原声
+    if (refText) Speak.speak(refText);
 
-        if (error) {
-          if (statusEl) {
-            if (error === 'no-speech') statusEl.textContent = '⚠️ 没有听到声音，点击麦克风再试一次';
-            else if (error === 'audio-capture') statusEl.textContent = '⚠️ 找不到麦克风，请检查权限设置';
-            else if (error === 'not-allowed') statusEl.textContent = '⚠️ 麦克风权限被拒绝，请在浏览器设置中允许';
-            else statusEl.textContent = '⚠️ 录音出错了(' + error + ')，再试一次';
+    // 延迟开始录音
+    setTimeout(async () => {
+      const result = await Speak.evaluateWithTencent(refText);
+      this.state.isWaiting = false;
+      if (recordBtn) { recordBtn.textContent = '🎤 开始录音'; recordBtn.disabled = false; }
+      if (playBtn) playBtn.disabled = false;
+
+      if (!result.success || result.error) {
+        if (statusEl) statusEl.textContent = '⚠️ ' + (result.error || '评测失败') + '，再试一次';
+        return;
+      }
+
+      var scoreVal = result.score || Math.round(result.accuracy * 0.6 + result.fluency * 0.4);
+      var fb = result.accuracy >= 90 ? '完美！发音非常标准！' : result.accuracy >= 70 ? '很棒！继续加油！' : '再听一遍原声，跟读试试';
+
+      this.state.score += scoreVal;
+      this.state.streak++;
+      this.state.allAnswers.push({ question: q, isCorrect: true, score: scoreVal, timeSpent: 0, speechText: refText, speechScore: { accuracy: result.accuracy } });
+
+      const resultEl = document.getElementById('speaking-result');
+      const actionsEl = document.getElementById('speaking-actions');
+      if (statusEl) statusEl.textContent = '';
+
+      if (resultEl) {
+        resultEl.style.display = 'block';
+        var starCount = scoreVal >= 90 ? 3 : scoreVal >= 70 ? 2 : scoreVal >= 50 ? 1 : 0;
+        var starStr = '⭐'.repeat(starCount);
+        resultEl.style.background = starCount >= 3 ? 'rgba(39,174,96,0.1)' : starCount >= 1 ? 'rgba(241,196,15,0.1)' : 'rgba(0,0,0,0.03)';
+        resultEl.style.border = starCount >= 3 ? '1px solid rgba(39,174,96,0.2)' : '1px solid rgba(0,0,0,0.1)';
+        var html = '<div style="font-size:28px;margin-bottom:4px;">' + starStr + '</div>' +
+          '<div style="font-size:20px;font-weight:700;">' + scoreVal + '分</div>' +
+          '<div style="font-size:14px;color:var(--text-secondary);margin-top:6px;">' + fb + '</div>' +
+          '<div style="display:flex;gap:12px;justify-content:center;font-size:12px;color:var(--text-tertiary);margin-top:6px;"><span>准确率: ' + Math.round(result.accuracy) + '%</span><span>流利度: ' + Math.round(result.fluency) + '%</span></div>';
+        if (result.words && result.words.length > 0) {
+          html += '<div style="font-size:12px;color:var(--text-secondary);margin-top:6px;">';
+          for (var wi = 0; wi < result.words.length; wi++) {
+            var w = result.words[wi];
+            html += '<span style="display:inline-block;margin:2px 4px;padding:2px 6px;border-radius:4px;background:' + (w.isCorrect ? 'rgba(39,174,96,0.15)' : 'rgba(231,76,60,0.15)') + ';">' + w.word + ' ' + w.score + '</span>';
           }
-          return;
+          html += '</div>';
         }
+        resultEl.innerHTML = html;
+      }
 
-        // 评分
-        const expected = q ? (q.textToSpeak || '') : '';
-        const result = Speak.score(text, expected);
-        const scoreVal = result.score || 60;
-
-        // 保存结果
-        this.state.score += scoreVal;
-        this.state.streak++;
-        this.state.allAnswers.push({
-          question: q, isCorrect: true, score: scoreVal, timeSpent: 0,
-          speechText: text, speechScore: result
-        });
-
-        // 显示评分结果
-        const resultEl = document.getElementById('speaking-result');
-        const actionsEl = document.getElementById('speaking-actions');
-        if (statusEl) statusEl.textContent = '';
-
-        if (resultEl) {
-          resultEl.style.display = 'block';
-          const stars = '⭐'.repeat(result.stars || 1);
-          resultEl.style.background = result.stars >= 3 ? 'rgba(39,174,96,0.1)' : result.stars >= 1 ? 'rgba(241,196,15,0.1)' : 'rgba(255,255,255,0.05)';
-          resultEl.style.border = '1px solid ' + (result.stars >= 3 ? 'rgba(39,174,96,0.2)' : 'rgba(255,255,255,0.1)');
-          resultEl.innerHTML = `
-            <div style="font-size:28px;margin-bottom:4px;">${stars}</div>
-            <div style="font-size:20px;font-weight:700;">${scoreVal}分</div>
-            <div style="font-size:14px;color:var(--text-secondary);margin-top:6px;">${result.feedback || ''}</div>
-            ${text ? '<div style="font-size:13px;color:var(--text-tertiary);margin-top:8px;padding:8px;background:rgba(0,0,0,0.2);border-radius:8px;">识别: ' + text + '</div>' : ''}
-          `;
+      if (actionsEl) {
+        actionsEl.style.display = 'flex';
+        if (scoreVal < 90) {
+          actionsEl.innerHTML = '<button class="btn btn-small btn-outline" onclick="GameEngine._retrySpeaking()">🔄 再读一次</button>' +
+              '<button class="btn btn-small ' + (this.state.subject === 'en' ? 'btn-primary' : 'btn-math') + '" onclick="GameEngine._nextSpeaking()">下一句 →</button>';
+        } else {
+          actionsEl.innerHTML = '<button class="btn btn-small ' + (this.state.subject === 'en' ? 'btn-primary' : 'btn-math') + '" onclick="GameEngine._nextSpeaking()">✅ 继纭 →</button>';
         }
+      }
 
-        if (actionsEl) {
-          actionsEl.style.display = 'flex';
-          actionsEl.innerHTML = result.stars < 3
-            ? '<button class="btn btn-small btn-outline" onclick="GameEngine._retrySpeaking()">🔄 再读一次</button>' +
-              '<button class="btn btn-small ' + (this.state.subject === 'en' ? 'btn-primary' : 'btn-math') + '" onclick="GameEngine._nextSpeaking()">下一句 →</button>'
-            : '<button class="btn btn-small ' + (this.state.subject === 'en' ? 'btn-primary' : 'btn-math') + '" onclick="GameEngine._nextSpeaking()">✅ 继续 →</button>';
-        }
-
-        // 自动播放下一题原声
-        setTimeout(() => {
-          if (q && q.textToSpeak) Speak.speak(q.textToSpeak);
-        }, 2000);
-      });
+      var nextQ = questions[this.state.questionIndex + 1];
+      setTimeout(function() {
+        if (nextQ && nextQ.textToSpeak) Speak.speak(nextQ.textToSpeak);
+      }, 2000);
     }, 1500);
   },
-
   _retrySpeaking() {
     const statusEl = document.getElementById('speaking-status');
     const resultEl = document.getElementById('speaking-result');
