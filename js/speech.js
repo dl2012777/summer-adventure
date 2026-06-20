@@ -154,4 +154,48 @@ const Speak = {
 
     return { score, stars, feedback, accuracy: wordAccuracy, errors };
   }
+}
+
+  // --- 腾讯口语评测（需要后端 server.js 运行在 8126 端口） ---
+  evaluateWithTencent: async function(refText) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
+      const recorder = new MediaRecorder(stream, { mimeType });
+      const chunks = [];
+      recorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
+
+      return new Promise(function(resolve) {
+        recorder.onstop = async function() {
+          stream.getTracks().forEach(function(t) { t.stop(); });
+          const blob = new Blob(chunks, { type: 'audio/webm' });
+          const reader = new FileReader();
+          reader.onloadend = async function() {
+            const base64 = reader.result.split(',')[1];
+            try {
+              const resp = await fetch('http://127.0.0.1:8126/api/evaluate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ audioBase64: base64, refText: refText })
+              });
+              const data = await resp.json();
+              resolve(data.success ? data : { success: false, error: data.error || '评测服务异常', accuracy: 0 });
+            } catch(e) {
+              resolve({ success: false, error: '无法连接评测服务器 (127.0.0.1:8126)', accuracy: 0 });
+            }
+          };
+          reader.readAsDataURL(blob);
+        };
+        recorder.onerror = function() {
+          stream.getTracks().forEach(function(t) { t.stop(); });
+          resolve({ success: false, error: '录音失败', accuracy: 0 });
+        };
+        recorder.start();
+        setTimeout(function() { if (recorder.state === 'recording') recorder.stop(); }, 5000);
+      });
+    } catch(e) {
+      return { success: false, error: '麦克风权限被拒绝', accuracy: 0 };
+    }
+  }
+
 };
