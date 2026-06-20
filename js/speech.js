@@ -157,49 +157,51 @@ const Speak = {
 }
 
   // --- 腾讯口语评测（需要后端 server.js 运行在 8126 端口） ---
-  evaluateWithTencent: async function(refText) {
+  evaluateWithTencent: function ev(refText) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      return { success: false, error: '微风不支持录音', accuracy: 0 };
+    }
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
-      const recorder = new MediaRecorder(stream, { mimeType });
-      const chunks = [];
-      recorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+        var mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
+        var recorder = new MediaRecorder(stream, { mimeType: mimeType });
+        var chunks = [];
+        recorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
 
-      return new Promise(function(resolve) {
-        recorder.onstop = async function() {
+        recorder.onstop = function() {
           stream.getTracks().forEach(function(t) { t.stop(); });
-          if (_timedOut) return;
-          const blob = new Blob(chunks, { type: 'audio/webm' });
-          const reader = new FileReader();
-          reader.onloadend = async function() {
-            const base64 = reader.result.split(',')[1];
-            try {
-              const resp = await fetch('http://127.0.0.1:8126/api/evaluate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ audioBase64: base64, refText: refText })
-              });
-              const data = await resp.json();
-              resolve(data.success ? data : { success: false, error: data.error || '评测服务异常', accuracy: 0 });
-            } catch(e) {
-              resolve({ success: false, error: '无法连接评测服务器 (127.0.0.1:8126)', accuracy: 0 });
-            }
+          var blob = new Blob(chunks, { type: 'audio/webm' });
+          var reader = new FileReader();
+          reader.onloadend = function() {
+            var base64 = reader.result.split(',')[1];
+            fetch('http://127.0.0.1:8126/api/evaluate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ audioBase64: base64, refText: refText })
+            }).then(function(r) { return r.json(); }).then(function(data) {
+              try { if (window.__speechResolve) window.__speechResolve(data.success ? data : { success: false, error: data.error || '评测服务异常', accuracy: 0 }); } catch(e) {}
+            }).catch(function() {
+              try { if (window.__speechResolve) window.__speechResolve({ success: false, error: '无法连接评测服务器', accuracy: 0 }); } catch(e) {}
+            });
           };
           reader.readAsDataURL(blob);
         };
+
         recorder.onerror = function() {
           stream.getTracks().forEach(function(t) { t.stop(); });
-          resolve({ success: false, error: '录音失败', accuracy: 0 });
+          try { if (window.__speechResolve) window.__speechResolve({ success: false, error: '录音失败', accuracy: 0 }); } catch(e) {}
         };
+
         recorder.start();
-                // 6秒自动停止录音，8秒超时兜底
-        var _timedOut = false;
         setTimeout(function() { if (recorder.state === 'recording') recorder.stop(); }, 6000);
-        setTimeout(function() { _timedOut = true; resolve({ success: false, error: '录音超时，请重试', accuracy: 0 }); }, 8000);;
+      }).catch(function() {
+        try { if (window.__speechResolve) window.__speechResolve({ success: false, error: '麦克风权限被拒绝', accuracy: 0 }); } catch(e) {}
       });
     } catch(e) {
-      return { success: false, error: '麦克风权限被拒绝', accuracy: 0 };
+      return { success: false, error: '录音初始化失败', accuracy: 0 };
     }
-  }
-
-};
+    return new Promise(function(resolve) {
+      window.__speechResolve = resolve;
+      setTimeout(function() { if (window.__speechResolve) { window.__speechResolve({ success: false, error: '录音超时', accuracy: 0 }); window.__speechResolve = null; } }, 10000);
+    });
+  };

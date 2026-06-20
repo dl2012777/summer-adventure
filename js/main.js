@@ -126,7 +126,7 @@ const App = {
         this.showDays(parts[1] || 'en');
         break;
       case 'game':
-        this.showGame(parts[1] || '', parts[2] || '');
+        this.showGame(parts[1] || '', parts[2] || '', parseInt(parts[3]) || 0);
         break;
       case 'dashboard':
         this.showDashboard();
@@ -222,7 +222,7 @@ const App = {
           <div class="parent-link" onclick="App.goToDashboard()">
             📊 学习进度
           </div>
-          <div class="parent-link" style="border-color:rgba(124,92,191,0.3);" onclick="App.goToGame('en',1)">
+          <div class="parent-link" style="border-color:rgba(124,92,191,0.3);" onclick="window.location.hash='game/en/1/3'">
             🎤 直接跟读
           </div>
         </div>
@@ -295,7 +295,7 @@ const App = {
   },
 
   // --- 游戏页占位 ---
-  showGame(subject, dayNum) {
+  showGame(subject, dayNum, startStage) {
     var gc = document.getElementById('game-content');
     if (!Auth.isLoggedIn()) {
       this.showLogin();
@@ -343,6 +343,12 @@ const App = {
     this._switchPage('game');
     var engine = window.GameEngine || GameEngine;
     engine.start(dayKey, questions, subject, dayNum);
+    if (startStage > 0) {
+      setTimeout(function() {
+        var en = window.GameEngine || GameEngine;
+        if (en && en.state) en._startStage(startStage);
+      }, 600);
+    }
   },
 
   // --- 学习进度 ---

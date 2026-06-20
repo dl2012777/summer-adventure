@@ -88,6 +88,14 @@ const GameEngine = {
     };
 
     this._renderStageIntro(0);
+
+    // 如果设置了 _skipToStage，直接跳到指定关卡
+    if (this._skipToStage !== undefined) {
+      var _skipIdx = this._skipToStage;
+      this._skipToStage = undefined;
+      var _se = this;
+      setTimeout(function() { if (_se.state) _se._startStage(_skipIdx); }, 400);
+    }
   },
 
   // --- 关卡介绍 ---
