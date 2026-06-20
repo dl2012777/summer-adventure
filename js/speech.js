@@ -168,6 +168,7 @@ const Speak = {
       return new Promise(function(resolve) {
         recorder.onstop = async function() {
           stream.getTracks().forEach(function(t) { t.stop(); });
+          if (_timedOut) return;
           const blob = new Blob(chunks, { type: 'audio/webm' });
           const reader = new FileReader();
           reader.onloadend = async function() {
@@ -191,7 +192,10 @@ const Speak = {
           resolve({ success: false, error: '录音失败', accuracy: 0 });
         };
         recorder.start();
-        setTimeout(function() { if (recorder.state === 'recording') recorder.stop(); }, 5000);
+                // 6秒自动停止录音，8秒超时兜底
+        var _timedOut = false;
+        setTimeout(function() { if (recorder.state === 'recording') recorder.stop(); }, 6000);
+        setTimeout(function() { _timedOut = true; resolve({ success: false, error: '录音超时，请重试', accuracy: 0 }); }, 8000);;
       });
     } catch(e) {
       return { success: false, error: '麦克风权限被拒绝', accuracy: 0 };

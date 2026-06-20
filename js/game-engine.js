@@ -405,6 +405,9 @@ _startRecording(stageIndex, qIndex) {
     if (recordBtn) { recordBtn.textContent = '⏳ 录音中...'; recordBtn.disabled = true; }
     if (playBtn) playBtn.disabled = true;
 
+    // 立即请求麦克风权限（无论拒绝还是允许，都继续）
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(s) { s.getTracks().forEach(function(t) { t.stop(); }); }).catch(function() {});
+
     // 获取当前句子
     const stage = this.STAGES[3];
     const questions = this.state.stageQuestions['speaking'];
