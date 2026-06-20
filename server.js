@@ -1,93 +1,90 @@
 const express = require('express');
 const cors = require('cors');
-const tencentcloud = require('tencentcloud-sdk-nodejs-soe');
+const crypto = require('crypto');
+const WebSocket = require('ws');
+const fs = require('fs');
+const { execSync } = require('child_process');
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// Tencent Cloud credentials
-// 从环境变量读取，部署时设置
-const secretId = process.env.TC_SECRET_ID || '';
-const secretKey = process.env.TC_SECRET_KEY || '';
+const APP_ID = '1410036406';
+const SECRET_ID = process.env.TC_SECRET_ID || '';
+const SECRET_KEY = process.env.TC_SECRET_KEY || '';
+const FFMPEG = '/opt/homebrew/bin/ffmpeg';
 
-if (!secretId || !secretKey) {
-  console.error('请设置 TC_SECRET_ID 和 TC_SECRET_KEY 环境变量');
-  process.exit(1);
-}
-
-const SoeClient = tencentcloud.soe.v20180724.Client;
-const client = new SoeClient({
-  credential: { secretId, secretKey },
-  region: 'ap-guangzhou',
-  profile: { httpProfile: { endpoint: 'soe.tencentcloudapi.com' } }
-});
-
-// 口语评测 API
+// 新版口语评测 API — WebSocket 协议
 app.post('/api/evaluate', async (req, res) => {
+  const { audioBase64, refText } = req.body;
+  if (!audioBase64 || !refText) return res.status(400).json({ error: 'Missing data' });
+
+  // 1. 将浏览器录制的 WebM 转为 16kHz WAV
+  const webmFile = '/tmp/soe_' + Date.now() + '.webm';
+  const wavFile  = '/tmp/soe_' + Date.now() + '.wav';
   try {
-    const { audioBase64, refText, sessionId } = req.body;
-    if (!audioBase64 || !refText) {
-      return res.status(400).json({ error: 'Missing audioBase64 or refText' });
-    }
+    fs.writeFileSync(webmFile, Buffer.from(audioBase64, 'base64'));
+    execSync(`${FFMPEG} -y -i ${webmFile} -ar 16000 -ac 1 -sample_fmt s16 ${wavFile}`, { timeout: 10000 });
+    const wavBuf = fs.readFileSync(wavFile);
+    try { fs.unlinkSync(webmFile); fs.unlinkSync(wavFile); } catch(e) {}
 
-    const sid = sessionId || 'summer_adventure_' + Date.now();
+    // 2. 生成 WSS 签名
+    const now = Math.floor(Date.now() / 1000);
+    const params = {
+      secretid: SECRET_ID, timestamp: now, expired: now + 86400,
+      nonce: Math.floor(Math.random() * 1e9), server_engine_type: '16k_en',
+      voice_id: crypto.randomUUID(), eval_mode: 1, score_coeff: 1.0,
+      ref_text: refText, voice_format: 1, text_mode: 0,
+      sentence_info_enabled: 1, rec_mode: 1,
+    };
+    const sortedKeys = Object.keys(params).sort();
+    // 签名用原始（unencoded）参数
+    const qRaw = sortedKeys.map(k => k + '=' + params[k]).join('&');
+    const sig = crypto.createHmac('sha1', SECRET_KEY)
+      .update(`soe.cloud.tencent.com/soe/api/${APP_ID}?${qRaw}`).digest('base64');
+    // URL 用 encodeURIComponent 编码每个参数值
+    const qEnc = sortedKeys.map(k => k + '=' + encodeURIComponent(params[k])).join('&');
+    const url = `wss://soe.cloud.tencent.com/soe/api/${APP_ID}?${qEnc}&signature=${encodeURIComponent(sig)}`;
 
-    // Step 1: Init session
-    await client.InitOralProcess({
-      SessionId: sid,
-      RefText: refText,
-      VoiceType: 0,       // 0=英文
-      VoiceEncodeType: 1, // 1=WAV
-      EvalMode: 1,        // 1=句子模式
-      ScoreCoeff: 1.0,
-      IsAsync: 0,
-      ServerType: 1
+    // 3. WebSocket 连接 → 发音频 → 收结果
+    const result = await new Promise((resolve) => {
+      const ws = new WebSocket(url);
+      let done = false;
+      const timer = setTimeout(() => { try { ws.close(); } catch(e) {} if (!done) resolve({ success: false, error: '评测超时' }); }, 20000);
+
+      ws.on('open', () => { ws.send(wavBuf, { binary: true }); ws.send(JSON.stringify({ type: 'end' })); });
+      ws.on('message', (data) => {
+        try {
+          const msg = JSON.parse(data.toString());
+          if (msg.final === 1 && msg.result) {
+            done = true; clearTimeout(timer);
+            const r = typeof msg.result === 'string' ? JSON.parse(msg.result) : msg.result;
+            resolve({
+              success: true,
+              score: Math.round(r.SuggestedScore || r.suggestedScore || 0),
+              accuracy: Math.round(r.PronAccuracy || r.pronAccuracy || 0),
+              fluency: r.PronFluency >= 0 ? Math.round(r.PronFluency * 100) : 0,
+              words: (r.Words || r.words || []).map(w => ({
+                word: w.Word || w.word || '',
+                score: Math.round(w.PronAccuracy || w.pronAccuracy || 0),
+                isCorrect: (w.PronAccuracy || w.pronAccuracy || 0) >= 60
+              }))
+            });
+            try { ws.close(); } catch(e) {}
+          }
+        } catch(e) {}
+      });
+      ws.on('error', (e) => { clearTimeout(timer); if (!done) resolve({ success: false, error: '连接失败: ' + e.message }); });
     });
 
-    // Step 2: Transmit audio
-    const result = await client.TransmitOralProcess({
-      SessionId: sid,
-      VoiceType: 0,
-      VoiceEncodeType: 1,
-      UserVoiceData: audioBase64,
-      RefText: refText,
-      EvalMode: 1,
-      ScoreCoeff: 1.0,
-      IsEnd: 1,
-      VoiceDuration: Math.ceil(audioBase64.length * 0.75 / 1024)
-    });
-
-    // Parse result
-    const pronounceScore = result.PronAccuracy || 0;
-    const fluencyScore = result.Fluency || 0;
-    const completeness = result.Completeness || 0;
-    const totalScore = Math.round((pronounceScore + fluencyScore + completeness) / 3);
-
-    res.json({
-      success: true,
-      score: totalScore,
-      accuracy: Math.round(pronounceScore),
-      fluency: Math.round(fluencyScore),
-      completeness: Math.round(completeness),
-      suggest: result.SuggestedScore || totalScore,
-      words: (result.Words || []).map(w => ({
-        word: w.Word,
-        score: w.PronScore,
-        isCorrect: w.PronScore >= 60
-      }))
-    });
-
-  } catch (e) {
-    console.error('SOE Error:', e.message);
-    res.status(500).json({ error: e.message, code: e.code });
+    res.json(result);
+  } catch(e) {
+    try { fs.unlinkSync(webmFile); } catch(e2) {}
+    try { fs.unlinkSync(wavFile); } catch(e2) {}
+    res.status(500).json({ error: e.message || '服务器错误' });
   }
 });
 
-// 健康检查
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 
-const PORT = 8126;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log('Server running on http://127.0.0.1:' + PORT);
-});
+app.listen(8126, '0.0.0.0', () => console.log('SOE server running on http://127.0.0.1:8126'));
