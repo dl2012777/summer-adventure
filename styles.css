@@ -155,8 +155,8 @@ h3 { font-size: 18px; font-weight: 600; }
 .input {
   width: 100%;
   padding: 14px 18px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: #FFF9E6;
+  border: 1px solid #F0E6C0;
   border-radius: var(--radius);
   color: var(--text);
   font-size: 16px;
@@ -495,8 +495,8 @@ h3 { font-size: 18px; font-weight: 600; }
   gap: 12px;
   width: 100%;
   padding: 14px 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: #FFF9E6;
+  border: 1px solid #F0E6C0;
   border-radius: var(--radius);
   color: var(--text);
   font-size: 15px;
@@ -505,9 +505,9 @@ h3 { font-size: 18px; font-weight: 600; }
   transition: all .15s;
   text-align: left;
 }
-.game-option:active { transform: scale(.98); background: var(--bg-card-hover); }
+.game-option:active { transform: scale(.98); background: #F5EDD0; }
 .game-option:disabled { opacity: .5; cursor: not-allowed; transform: none; }
-.game-option:hover { background: var(--bg-card-hover); }
+.game-option:hover { background: #F5EDD0; }
 
 .opt-label {
   width: 28px;

@@ -547,23 +547,30 @@ _startRecording(stageIndex, qIndex) {
             正确答案：<span style="color:#27AE60;font-weight:600;">${labels[q.answer]}. ${q.options[q.answer]}</span>
             <br>你的答案：<span style="color:#E74C3C;">${labels[selectedIndex]}. ${q.options[selectedIndex]}</span>
           </div>` : ''}
-          <div style="font-size:16px;color:var(--text-tertiary);margin-top:8px;line-height:1.6;">
+          <div style="font-size:16px;color:var(--text-secondary);margin-top:8px;line-height:1.6;">
             💡 ${q.explanation || ''}
           </div>
         </div>
 
-        <div id="feedback-countdown" style="margin-top:20px;font-size:14px;color:var(--text-secondary);">
-          ${waitTime}秒后继续...
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;align-items:center;">
+          <button class="btn btn-small ${this.state.subject === 'en' ? 'btn-primary' : 'btn-math'}" onclick="GameEngine._skipFeedback()" style="min-width:120px;">
+            下一题 →
+          </button>
+          <div id="feedback-countdown" style="font-size:13px;color:var(--text-secondary);">
+            ${waitTime}秒后自动跳转...
+          </div>
         </div>
       </div>
     `;
 
     // 倒计时
     let remaining = waitTime;
+    this._feedbackOnDone = onDone;
+    this._feedbackContainer = container;
     const countdownEl = document.getElementById('feedback-countdown');
-    const interval = setInterval(() => {
+    this._feedbackInterval = setInterval(() => {
       remaining--;
-      if (countdownEl) countdownEl.textContent = `${remaining}秒后继续...`;
+      if (countdownEl) countdownEl.textContent = `${remaining}秒后自动跳转...`;
       if (remaining <= 0) {
         clearInterval(interval);
         const overlay = container.querySelector('.feedback-overlay');
@@ -594,7 +601,7 @@ _startRecording(stageIndex, qIndex) {
 
     let remaining = 3;
     const countdownEl = document.getElementById('feedback-countdown');
-    const interval = setInterval(() => {
+    this._feedbackInterval = setInterval(() => {
       remaining--;
       if (countdownEl) countdownEl.textContent = `${remaining}秒后继续...`;
       if (remaining <= 0) {
@@ -815,7 +822,7 @@ _startRecording(stageIndex, qIndex) {
         ${!isCorrect ? `<div style="font-size:17px;color:var(--text-secondary);margin-bottom:8px;">
           正确答案：<span style="color:#27AE60;font-weight:600;">${labels[q.answer]}. ${q.options[q.answer]}</span>
         </div>` : ''}
-        <div style="font-size:16px;color:var(--text-tertiary);max-width:350px;line-height:1.6;">
+        <div style="font-size:16px;color:var(--text-secondary);max-width:350px;line-height:1.6;">
           💡 ${q.explanation || ''}
         </div>
         <button class="btn ${state.subject === 'en' ? 'btn-primary' : 'btn-math'}" onclick="GameEngine._continueReview(${isCorrect})" style="margin-top:20px;padding:12px 24px;font-size:16px;">
@@ -872,7 +879,23 @@ _startRecording(stageIndex, qIndex) {
   },
 
   // --- 完成并保存 ---
-  _finishAndSave() {
+  
+  // --- 跳过反馈等待 ---
+  _skipFeedback() {
+    if (this._feedbackInterval) {
+      clearInterval(this._feedbackInterval);
+      this._feedbackInterval = null;
+    }
+    const overlay = document.querySelector('.feedback-overlay');
+    if (overlay) overlay.remove();
+    this.state.isWaiting = false;
+    if (this._feedbackOnDone) {
+      this._feedbackOnDone();
+      this._feedbackOnDone = null;
+    }
+  },
+
+_finishAndSave() {
     this._clearTimer();
     const state = this.state;
 
