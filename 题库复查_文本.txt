@@ -1,0 +1,762 @@
+
+============================================================
+英语 en-day1 (28题)
+============================================================
+
+[1] [vocabulary] [easy] "mine" 的中文是？
+   ✓ A. 我的
+     B. 你的
+     C. 他的
+     D. 她的
+   解析: mine = 我的，名词性物主代词。
+
+[2] [vocabulary] [easy] "yours" 的中文是？
+   ✓ A. 你的
+     B. 我的
+     C. 他的
+     D. 她的
+   解析: yours = 你的/你们的。
+
+[3] [vocabulary] [easy] "tidy" 的中文是？
+   ✓ A. 整洁的
+     B. 凌乱的
+     C. 安静的
+     D. 大声的
+   解析: tidy = 整洁的，收拾整齐。
+
+[4] [vocabulary] [easy] "messy" 的中文是？
+   ✓ A. 凌乱的
+     B. 整洁的
+     C. 干净的
+     D. 明亮的
+   解析: messy = 凌乱的，不整洁。
+
+[5] [vocabulary] [medium] "他的" 用英语怎么说（名词性）？
+   ✓ A. his
+     B. him
+     C. he
+     D. her
+   解析: his = 他的（名词性物主代词，his既是形容词性也是名词性）。
+
+[6] [vocabulary] [medium] "她的" 用英语怎么说（名词性）？
+   ✓ A. hers
+     B. her
+     C. she
+     D. herself
+   解析: hers = 她的，如 This book is hers.
+
+[7] [vocabulary] [medium] "收拾好" 用英语怎么说？
+   ✓ A. put away
+     B. take away
+     C. throw away
+     D. run away
+   解析: put away = 收拾好，放回原处。
+
+[8] [vocabulary] [medium] "谁的" 用英语怎么说？
+   ✓ A. whose
+     B. who
+     C. whom
+     D. who's
+   解析: whose = 谁的，用于提问物品归属。
+
+[9] [vocabulary] [hard] 补全单词: "我们的" 名词性 = o _ _ s
+   ✓ A. ours
+     B. our
+     C. ourselves
+     D. ourself
+   解析: ours = 我们的，如 This classroom is ours.
+
+[10] [vocabulary] [hard] "他们的" 名词性物主代词是？
+   ✓ A. theirs
+     B. their
+     C. them
+     D. themselves
+   解析: theirs = 他们的/她们的/它们的。
+
+[11] [grammar] [easy] This book is _____. (它是我的)
+   ✓ A. mine
+     B. my
+     C. me
+     D. I
+   解析: 后面没有名词，用名词性物主代词 mine。
+
+[12] [grammar] [easy] Is this _____ pen? (你的)
+   ✓ A. your
+     B. yours
+     C. you
+     D. yourselves
+   解析: 后面有名词 pen，用形容词性物主代词 your。
+
+[13] [grammar] [easy] These are _____ shoes. (她的)
+   ✓ A. her
+     B. hers
+     C. she
+     D. herself
+   解析: 后面有名词 shoes，用形容词性物主代词 her。
+
+[14] [grammar] [medium] — Whose bag is this? — It's _____. (我的)
+   ✓ A. mine
+     B. my
+     C. me
+     D. myself
+   解析: 回答"这是谁的包"时，用名词性物主代词 mine，等于 my bag。
+
+[15] [grammar] [medium] — Is this _____ bike? — No, it's _____. (你的)(他的)
+   ✓ A. your, his
+     B. yours, his
+     C. your, him
+     D. yours, him
+   解析: 第一个空后有bike填your，第二个空后无名词填his。
+
+[16] [grammar] [medium] Put _____ your toys, please.
+   ✓ A. away
+     B. on
+     C. off
+     D. up
+   解析: put away = 收拾好。
+
+[17] [grammar] [hard] 哪一处有错误？"This is mine book. That is yours."
+     A. This
+   ✓ B. mine
+     C. That
+     D. yours
+   解析: mine 是名词性，不能修饰名词。应改为 my。
+
+[18] [grammar] [hard] 哪一处有错误？"The cat is her. The dog is mine."
+     A. The cat
+   ✓ B. her
+     C. The dog
+     D. mine
+   解析: her 是形容词性，不能单独使用。应改为 hers。
+
+[19] [speaking] [easy] 请跟读：This is my book.
+   解析: 注意 this 的 /ð/ 和 book 的 /ʊ/。
+   跟读: This is my book.
+
+[20] [speaking] [easy] 请跟读：Is this your pen?
+   解析: 注意一般疑问句的升调。
+   跟读: Is this your pen?
+
+[21] [speaking] [medium] 请跟读：Whose bag is this?
+   解析: 注意 whose 的 /huːz/ 发音。
+   跟读: Whose bag is this?
+
+[22] [speaking] [medium] 请跟读：It's mine. Put it away.
+   解析: 注意连读 "put it"。
+   跟读: It's mine. Put it away.
+
+[23] [speaking] [hard] 请跟读：This is ours, not theirs.
+   解析: 注意 ours 和 theirs 的 /z/ 结尾。
+   跟读: This is ours, not theirs.
+
+[24] [speaking] [hard] 请跟读：Please tidy up your room!
+   解析: 祈使句的语调要肯定有力。
+   跟读: Please tidy up your room!
+
+[25] [boss] [hard] 选择正确的句子：
+   ✓ A. This is my pen. That is yours.
+     B. This is mine pen. That is your.
+     C. This is my. That is your.
+     D. This is mine. That is your.
+   解析: 第一空后有名词pen用my，第二空后无名词用yours。
+
+[26] [boss] [hard] — _____ book is this? — It's _____ .
+   ✓ A. Whose, hers
+     B. Who, her
+     C. Whose, her
+     D. Who, hers
+   解析: 提问归属用 Whose，回答用名词性物主代词 hers。
+
+[27] [boss] [hard] 选出与 "They are our books." 意思相同的句子：
+   ✓ A. These books are ours.
+     B. These books are our.
+     C. These are we books.
+     D. These books are them.
+   解析: our books = ours，物主代词转换。
+
+[28] [boss] [hard] 请选出错误的一项并改正："Her room is tidy, but mine room is messy."
+     A. Her → She
+   ✓ B. mine → my
+     C. tidy → tidily
+     D. messy → mess
+   解析: mine 后面不能跟名词 room，应改为 my room。
+
+
+============================================================
+英语 en-day2 (7题)
+============================================================
+
+[1] [vocabulary] [easy] "eleventh"的中文是？
+   ✓ A. 第十一
+     B. 第十二
+     C. 第十三
+     D. 第十四
+   解析: eleventh=第十一
+
+[2] [vocabulary] [easy] "twelfth"的中文是？
+   ✓ A. 第十二
+     B. 第十一
+     C. 第十三
+     D. 第二十
+   解析: twelfth=第十二
+
+[3] [vocabulary] [medium] "invite"的中文是？
+   ✓ A. 邀请
+     B. 发明
+     C. 访问
+     D. 投资
+   解析: invite=邀请
+
+[4] [grammar] [easy] My birthday is _____ July 15th.
+   ✓ A. on
+     B. in
+     C. at
+     D. by
+   解析: 具体日期用on
+
+[5] [grammar] [medium] Please _____ me to your party.
+   ✓ A. invite
+     B. invitation
+     C. inviting
+     D. invited
+   解析: 祈使句用动词原形
+
+[6] [speaking] [easy] 请跟读：Please come to my party.
+   解析: 祈使句语调
+   跟读: Please come to my party.
+
+[7] [boss] [hard] 选出正确句子：
+   ✓ A. My birthday is on June 1st.
+     B. My birthday is in June 1st.
+   解析: 具体日期用on
+
+
+============================================================
+英语 en-day3 (7题)
+============================================================
+
+[1] [vocabulary] [easy] "by bus"的中文是？
+   ✓ A. 乘公共汽车
+     B. 骑自行车
+     C. 步行
+     D. 乘地铁
+   解析: by bus=乘公共汽车
+
+[2] [vocabulary] [easy] "on foot"的中文是？
+   ✓ A. 步行
+     B. 骑自行车
+     C. 乘汽车
+     D. 跑步
+   解析: on foot=步行
+
+[3] [vocabulary] [medium] "far from"的中文是？
+   ✓ A. 远离
+     B. 靠近
+     C. 在旁边
+     D. 在对面
+   解析: far from=远离
+
+[4] [grammar] [easy] How _____ you come to school?
+   ✓ A. do
+     B. does
+     C. are
+     D. is
+   解析: you用助动词do
+
+[5] [grammar] [easy] I come _____ bus.
+   ✓ A. by
+     B. on
+     C. in
+     D. with
+   解析: by+交通工具
+
+[6] [grammar] [medium] She comes _____ foot.
+   ✓ A. on
+     B. by
+     C. in
+     D. with
+   解析: on foot固定搭配
+
+[7] [boss] [hard] 选出正确问法：
+   ✓ A. How do you come to school?
+     B. How are you come to school?
+     C. How does you come to school?
+   解析: 问交通方式用How do
+
+
+============================================================
+英语 en-day4 (28题)
+============================================================
+
+[1] [vocabulary] [easy] "teacher"的中文是？
+   ✓ A. 老师
+     B. 医生
+     C. 护士
+     D. 司机
+   解析: teacher=老师
+
+[2] [vocabulary] [easy] "doctor"的中文是？
+   ✓ A. 医生
+     B. 老师
+     C. 厨师
+     D. 警察
+   解析: doctor=医生
+
+[3] [vocabulary] [easy] "nurse"的中文是？
+   ✓ A. 护士
+     B. 医生
+     C. 老师
+     D. 飞行员
+   解析: nurse=护士
+
+[4] [vocabulary] [easy] "pilot"的中文是？
+   ✓ A. 飞行员
+     B. 厨师
+     C. 司机
+     D. 消防员
+   解析: pilot=飞行员
+
+[5] [vocabulary] [medium] "cook"的中文是？
+   ✓ A. 厨师
+     B. 医生
+     C. 书
+     D. 音乐
+   解析: cook可以做名词"厨师"
+
+[6] [vocabulary] [medium] "driver"的中文是？
+   ✓ A. 司机
+     B. 医生
+     C. 老师
+     D. 警察
+   解析: driver=司机
+
+[7] [vocabulary] [medium] "firefighter"的中文是？
+   ✓ A. 消防员
+     B. 飞行员
+     C. 医生
+     D. 司机
+   解析: firefighter=消防员
+
+[8] [vocabulary] [medium] "worker"的中文是？
+   ✓ A. 工人
+     B. 医生
+     C. 老师
+     D. 学生
+   解析: worker=工人
+
+[9] [vocabulary] [hard] "future"的中文是？
+   ✓ A. 未来
+     B. 过去
+     C. 现在
+     D. 昨天
+   解析: future=未来
+
+[10] [vocabulary] [hard] "want"的意思是？
+   ✓ A. 想要
+     B. 行走
+     C. 等待
+     D. 观看
+   解析: want=想要
+
+[11] [grammar] [easy] What do you want _____ be?
+   ✓ A. to
+     B. for
+     C. in
+     D. at
+   解析: want to + 动词原形
+
+[12] [grammar] [easy] I want to be _____ teacher.
+   ✓ A. a
+     B. an
+     C. the
+     D. no article
+   解析: teacher辅音开头用a
+
+[13] [grammar] [easy] She wants to be _____ nurse.
+     A. a
+   ✓ B. an
+     C. the
+     D. no article
+   解析: nurse元音发音开头用an
+
+[14] [grammar] [medium] He _____ to be a pilot.
+   ✓ A. wants
+     B. want
+     C. wanting
+     D. wanted
+   解析: 第三人称单数he，want加s
+
+[15] [grammar] [medium] What _____ she want to be?
+   ✓ A. does
+     B. do
+     C. is
+     D. are
+   解析: she用助动词does
+
+[16] [grammar] [medium] They want _____ be doctors.
+   ✓ A. to
+     B. for
+     C. in
+     D. at
+   解析: want to + 动词原形
+
+[17] [grammar] [hard] 哪一处有错误？"He want to be a doctor."
+     A. He
+   ✓ B. want
+     C. to be
+     D. a doctor
+   解析: He是第三人称单数，want应改为wants
+
+[18] [grammar] [hard] 哪一处有错误？"She wants be an teacher."
+     A. She wants
+     B. be
+   ✓ C. an
+     D. teacher
+   解析: teacher是辅音开头用a
+
+[19] [speaking] [easy] 请跟读：I want to be a teacher.
+   解析: 注意want to的连读
+   跟读: I want to be a teacher.
+
+[20] [speaking] [easy] 请跟读：She is a nurse.
+   解析: 注意nurse的发音
+   跟读: She is a nurse.
+
+[21] [speaking] [medium] 请跟读：What do you want to be?
+   解析: 问句语调要上扬
+   跟读: What do you want to be?
+
+[22] [speaking] [medium] 请跟读：He wants to be a pilot.
+   解析: 注意wants的/s/发音
+   跟读: He wants to be a pilot.
+
+[23] [speaking] [hard] 请跟读：My father is a firefighter.
+   解析: firefighter音节较多
+   跟读: My father is a firefighter.
+
+[24] [speaking] [hard] 请跟读：I want to be a doctor in the future.
+   解析: future的/f/发音要轻
+   跟读: I want to be a doctor in the future.
+
+[25] [boss] [hard] Tom问："_____ do you want to be?"
+   ✓ A. What
+     B. Who
+     C. Where
+     D. When
+   解析: 询问职业用What
+
+[26] [boss] [hard] 选择正确句子：
+   ✓ A. She wants to be a nurse.
+     B. She want to be an nurse.
+     C. She wants be a nurse.
+     D. She want be an nurse.
+   解析: wants表第三人称，nurse辅音开头用a
+
+[27] [boss] [hard] "My mother is a doctor." 妈妈是？
+   ✓ A. 医生
+     B. 护士
+     C. 老师
+     D. 厨师
+   解析: a doctor=医生
+
+[28] [boss] [hard] 含义相同的句子："I want to be a teacher."
+   ✓ A. My dream job is a teacher.
+     B. I am a teacher.
+     C. I like my teacher.
+     D. I have a teacher.
+   解析: 梦想职业是老师
+
+
+============================================================
+英语 en-day5 (28题)
+============================================================
+
+[1] [vocabulary] [easy] "mine"的中文是？
+   ✓ A. 我的
+     B. 你的
+     C. 他的
+     D. 她的
+   解析: mine=我的（名词性物主代词）
+
+[2] [vocabulary] [easy] "yours"的中文是？
+   ✓ A. 你的
+     B. 我的
+     C. 他的
+     D. 她的
+   解析: yours=你的
+
+[3] [vocabulary] [easy] "eleventh"的中文是？
+   ✓ A. 第十一
+     B. 第十二
+     C. 第十
+     D. 第一
+   解析: eleventh=第十一
+
+[4] [vocabulary] [easy] "twelfth"的中文是？
+   ✓ A. 第十二
+     B. 第十一
+     C. 第二十
+     D. 第二
+   解析: twelfth=第十二
+
+[5] [vocabulary] [medium] "tidy"的中文是？
+   ✓ A. 整洁的
+     B. 凌乱的
+     C. 安静的
+     D. 大声的
+   解析: tidy=整洁的
+
+[6] [vocabulary] [medium] "invite"的中文是？
+   ✓ A. 邀请
+     B. 发明
+     C. 访问
+     D. 投资
+   解析: invite=邀请
+
+[7] [vocabulary] [medium] "by bus"的中文是？
+   ✓ A. 乘公共汽车
+     B. 骑自行车
+     C. 步行
+     D. 乘地铁
+   解析: by bus=乘公共汽车
+
+[8] [vocabulary] [medium] "on foot"的中文是？
+   ✓ A. 步行
+     B. 骑自行车
+     C. 乘汽车
+     D. 跑步
+   解析: on foot=步行
+
+[9] [vocabulary] [hard] "whose"的中文是？
+   ✓ A. 谁的
+     B. 谁的（后跟名词）
+     C. 什么
+     D. 哪个
+   解析: whose=谁的
+
+[10] [vocabulary] [hard] "far from"的中文是？
+   ✓ A. 远离
+     B. 靠近
+     C. 在旁边
+     D. 在对面
+   解析: far from=远离
+
+[11] [grammar] [easy] This book is _____. (它是我的)
+   ✓ A. mine
+     B. my
+     C. me
+     D. I
+   解析: 后面无名词，用名词性mine
+
+[12] [grammar] [easy] My birthday is _____ July 15th.
+   ✓ A. on
+     B. in
+     C. at
+     D. by
+   解析: 具体日期用on
+
+[13] [grammar] [easy] How _____ you come to school?
+   ✓ A. do
+     B. does
+     C. are
+     D. is
+   解析: you用do
+
+[14] [grammar] [medium] Is this _____ pen? (你的)
+   ✓ A. your
+     B. yours
+     C. you
+     D. yourselves
+   解析: 后有名词pen，用your
+
+[15] [grammar] [medium] Please _____ me to your party.
+   ✓ A. invite
+     B. invitation
+     C. inviting
+     D. invited
+   解析: 祈使句用动词原形
+
+[16] [grammar] [medium] I come _____ bus.
+   ✓ A. by
+     B. on
+     C. in
+     D. with
+   解析: by+交通工具
+
+[17] [grammar] [hard] 哪处有错误？"This is mine book."
+     A. This
+     B. is
+   ✓ C. mine
+     D. book
+   解析: mine不能修饰名词，改my
+
+[18] [grammar] [hard] 哪处有错误？"My birthday is in May 1st."
+     A. My birthday
+     B. is
+   ✓ C. in
+     D. May 1st
+   解析: 具体日期用on
+
+[19] [speaking] [easy] 请跟读：This is my book.
+   解析: 注意this的/ð/发音
+   跟读: This is my book.
+
+[20] [speaking] [easy] 请跟读：Please come to my party.
+   解析: 祈使句语调
+   跟读: Please come to my party.
+
+[21] [speaking] [medium] 请跟读：When is your birthday?
+   解析: 问句语调上扬
+   跟读: When is your birthday?
+
+[22] [speaking] [medium] 请跟读：How do you come to school?
+   解析: 问交通方式
+   跟读: How do you come to school?
+
+[23] [speaking] [hard] 请跟读：These books are mine, not yours.
+   解析: 注意mine和yours对比
+   跟读: These books are mine, not yours.
+
+[24] [speaking] [hard] 请跟读：Please tidy up your room!
+   解析: 祈使句语气
+   跟读: Please tidy up your room!
+
+[25] [boss] [hard] 选择正确句子：
+   ✓ A. This is my pen. That is yours.
+     B. This is mine pen. That is yours.
+     C. This is my pen. That is your.
+     D. This is mine. That is your.
+   解析: 有名词用my，无名词用yours
+
+[26] [boss] [hard] 选择正确问法：去学校的交通方式
+   ✓ A. How do you come to school?
+     B. What do you come to school?
+     C. Where do you come to school?
+   解析: 问交通方式用How
+
+[27] [boss] [hard] "When's your birthday?" — "It's _____ May 1st."
+   ✓ A. on
+     B. in
+     C. at
+     D. by
+   解析: 具体日期用on
+
+[28] [boss] [hard] 与"These are our books."意思相同的句子
+   ✓ A. These books are ours.
+     B. These books are our.
+     C. These are we books.
+   解析: our books = ours
+
+
+============================================================
+数学 math-day1 (5题)
+============================================================
+
+[1] [vocabulary] [easy] 0.48÷4=？
+   ✓ A. 0.12
+     B. 0.012
+     C. 1.2
+     D. 12
+   解析: 0.48÷4=0.12
+
+[2] [vocabulary] [easy] 1.26÷0.3=？
+   ✓ A. 4.2
+     B. 42
+     C. 0.42
+     D. 420
+   解析: 1.26÷0.3=4.2
+
+[3] [vocabulary] [medium] 除数是小数时应先转化成什么？
+   ✓ A. 整数
+     B. 分数
+     C. 百分数
+     D. 自然数
+   解析: 除数转化成整数
+
+[4] [grammar] [medium] 0.25÷0.5=？
+   ✓ A. 0.5
+     B. 5
+     C. 0.05
+     D. 50
+   解析: 0.25÷0.5=0.5
+
+[5] [boss] [hard] 买3支笔花了7.5元，每支笔多少钱？
+   ✓ A. 2.5元
+     B. 2元
+     C. 3元
+     D. 25元
+   解析: 7.5÷3=2.5
+
+
+============================================================
+数学 math-day2 (5题)
+============================================================
+
+[1] [vocabulary] [easy] 3.14保留一位小数为？
+   ✓ A. 3.1
+     B. 3.14
+     C. 3.2
+     D. 3.0
+   解析: 3.14≈3.1
+
+[2] [vocabulary] [medium] 2.667保留两位小数为？
+   ✓ A. 2.67
+     B. 2.66
+     C. 2.7
+     D. 2.6
+   解析: 2.667≈2.67
+
+[3] [vocabulary] [medium] 1÷3用循环小数表示为？
+   ✓ A. 0.333…
+     B. 0.3
+     C. 3
+     D. 0.33
+   解析: 1÷3=0.333…
+
+[4] [grammar] [easy] 四舍五入到十分位看哪一位？
+   ✓ A. 百分位
+     B. 千分位
+     C. 个位
+     D. 十分位
+   解析: 看百分位
+
+[5] [boss] [hard] 一个数÷0.25相当于×？
+   ✓ A. 4
+     B. 0.25
+     C. 2.5
+     D. 25
+   解析: ÷0.25=×4
+
+
+============================================================
+数学 math-day3 (4题)
+============================================================
+
+[1] [vocabulary] [medium] 哪个是循环小数？
+   ✓ A. 0.333…
+     B. 0.5
+     C. 0.25
+     D. 1.5
+   解析: 0.333…循环
+
+[2] [vocabulary] [easy] 7.2÷0.8=？
+   ✓ A. 9
+     B. 0.9
+     C. 90
+     D. 0.09
+   解析: 7.2÷0.8=9
+
+[3] [vocabulary] [hard] 0.56÷0.7=？
+   ✓ A. 0.8
+     B. 8
+     C. 0.08
+     D. 80
+   解析: 0.56÷0.7=0.8
+
+[4] [boss] [hard] 8.4kg饼干平分6盒，每盒？
+   ✓ A. 1.4kg
+     B. 1.5kg
+     C. 1.3kg
+     D. 1.6kg
+   解析: 8.4÷6=1.4
+

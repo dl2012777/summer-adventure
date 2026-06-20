@@ -1,0 +1,958 @@
+// ============================================================
+//  Game Engine — 游戏引擎
+//  4关流程：词汇→语法→听说→Boss + 错题重做
+// ============================================================
+
+const GameEngine = {
+  // --- 状态 ---
+  state: null,
+  onComplete: null,
+
+  // --- 关卡定义 ---
+  STAGES: [
+    { key:'vocab',    name:'词汇闯关', icon:'📝', desc:'选择题 · 词汇量大考验' },
+    { key:'grammar',  name:'语法迷宫', icon:'🧠', desc:'选择题 · 语法规则要记牢' },
+    { key:'listening',name:'听力挑战', icon:'🎧', desc:'听句子 · 选择正确答案' },
+    { key:'speaking', name:'跟读挑战', icon:'🎤', desc:'跟读句子 · 发音评分' },
+    { key:'boss',     name:'Boss关', icon:'⚡', desc:'限时挑战 · 分数翻倍' }
+  ],
+
+  // --- 难度时间配置 ---
+  TIME_LIMITS: {
+    easy: 15, medium: 20, hard: 25,
+    listening: 30, speaking: 0, boss: 30  // 听力30s, 跟读不限, 阅读45s
+  },
+
+  FEEDBACK_WAIT_CORRECT: 3,   // 答对等3秒
+  FEEDBACK_WAIT_WRONG: 8,     // 答错等8秒
+
+  // --- 开始游戏 ---
+  start(dayKey, questions, subject, dayNum, onCompleteCb) {
+    this.onComplete = onCompleteCb;
+    // Init sounds
+    try { Sounds.init(); Speak.init(); } catch(e) {}
+
+    // 按关卡分组
+    // 自动从 STAGES 生成分组对象，避免手动修改不同步
+    const grouped = {};
+    this.STAGES.forEach(function(s) { grouped[s.key] = []; });
+    questions.forEach(q => {
+      const type = q.type || 'vocabulary';
+      if (type === 'vocabulary' || type === 'vocab') grouped.vocab.push(q);
+      else if (type === 'grammar') grouped.grammar.push(q);
+      else if (type === 'listening') grouped.listening.push(q);
+      else if (type === 'speaking') grouped.speaking.push(q);
+      else if (type === 'boss' || type === 'reading') grouped.boss.push(q);
+    });
+
+    // 打乱每组内顺序（同时打乱选项位置）
+    this._shuffleAllOptions(grouped);
+    Object.keys(grouped).forEach(k => this._shuffle(grouped[k]));
+
+    // 每个关卡选指定数量的题
+    // 每天题数: 词汇12+语法10+听力3+跟读3+阅读3 = 31题
+    const counts = { vocab:12, grammar:10, listening:3, speaking:3, boss:3 };
+    Object.keys(counts).forEach(k => {
+      grouped[k] = grouped[k].slice(0, Math.min(counts[k], grouped[k].length));
+    });
+    
+    // 兼容旧题库：听力/阅读不够就从其他类型借题
+    // 兼容旧题库：听力/阅读不够就从其他类型借题（只借有选项的题）
+    function _borrowFrom(src, dest, need) {
+      for (var i = src.length - 1; i >= 0 && dest.length < need; i--) {
+        if (src[i].options && src[i].options.length > 0) {
+          dest.push(src.splice(i, 1)[0]);
+        }
+      }
+    }
+    _borrowFrom(grouped.vocab, grouped.listening, 3);
+    _borrowFrom(grouped.grammar, grouped.boss, 3);
+    // 如果还不够，再从语法借给听力
+    _borrowFrom(grouped.grammar, grouped.listening, 3);
+
+    this.state = {
+      dayKey, subject, dayNum,
+      stageQuestions: grouped,
+      stageIndex: 0,
+      questionIndex: 0,
+      score: 0,
+      streak: 0,
+      maxStreak: 0,
+      stageResults: [],
+      allAnswers: [],       // 所有答案记录
+      wrongIds: new Set(),  // 错题ID集合
+      isReviewMode: false,
+      timerInterval: null,
+      currentTimer: null,
+      isWaiting: false      // 冷却等待中
+    };
+
+    this._renderStageIntro(0);
+  },
+
+  // --- 关卡介绍 ---
+  _renderStageIntro(stageIndex) {
+    this._clearTimer();
+    const stage = this.STAGES[stageIndex];
+    const qCount = this.state.stageQuestions[stage.key].length;
+    const container = document.getElementById('game-content');
+
+    // 听说关特殊提示
+    let timeDesc = '';
+    if (stage.key === 'listening') {
+      timeDesc = '听音选答 · 每题播一遍';
+    } else if (stage.key === 'speaking') {
+      timeDesc = '不限时 · 跟读评分';
+    } else if (stage.key === 'boss') {
+      timeDesc = `限时 ${this.TIME_LIMITS.boss}s/题 · 分数翻倍`;
+    } else {
+      timeDesc = '限时 15-25秒/题';
+    }
+
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:20px;animation:fadeIn .4s ease;">
+        <div style="font-size:64px;margin-bottom:12px;">${stage.icon}</div>
+        <h2 style="font-size:24px;font-weight:800;margin-bottom:6px;">第${stageIndex+1}关 · ${stage.name}</h2>
+        <p style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;">${stage.desc}</p>
+        <p style="font-size:13px;color:var(--text-tertiary);margin-bottom:24px;">${qCount}道题 · ${timeDesc}</p>
+        <button class="btn ${this.state.subject === 'en' ? 'btn-primary' : 'btn-math'}" onclick="GameEngine._startStage(${stageIndex})">
+          🚀 准备开始
+        </button>
+      </div>
+    `;
+  },
+
+  // --- 开始一个关卡 ---
+  _startStage(stageIndex) {
+    this.state.stageIndex = stageIndex;
+    this.state.questionIndex = 0;
+    this.state.streak = 0;
+    this._showQuestion(stageIndex, 0);
+  },
+
+  // --- 显示题目 ---
+  _showQuestion(stageIndex, qIndex) {
+    const stage = this.STAGES[stageIndex];
+    const questions = this.state.stageQuestions[stage.key];
+    if (qIndex >= questions.length) {
+      this._completeStage(stageIndex);
+      return;
+    }
+
+    const q = questions[qIndex];
+    this.state.questionIndex = qIndex;
+    this.state.isWaiting = false;
+
+    // 设置时间限制
+    let timeLimit;
+    if (stage.key === 'speaking') {
+      timeLimit = 0; // 不限时
+    } else if (stage.key === 'boss') {
+      timeLimit = this.TIME_LIMITS.boss;
+    } else if (stage.key === 'listening') {
+      timeLimit = this.TIME_LIMITS.listening;
+    } else {
+      timeLimit = this.TIME_LIMITS[q.difficulty] || this.TIME_LIMITS.medium;
+    }
+
+    const container = document.getElementById('game-content');
+
+    let optionsHtml = '';
+    const labels = ['A','B','C','D'];
+
+    if (stage.key === 'listening') {
+      // 听力挑战——先播原声，再做选择题
+      var listenText = q.textToSpeak || q.question || '';
+      optionsHtml = `
+        <div style="text-align:center;padding:10px 0;animation:fadeIn .3s ease;">
+          <div style="font-size:18px;line-height:1.6;color:var(--text);margin:16px 0;padding:20px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:12px;font-weight:500;">
+            ${q.question}
+          </div>
+          <div style="text-align:center;margin-bottom:12px;">
+            <button class="btn btn-small btn-primary" onclick="GameEngine._playListenAudio()">
+              🔊 播放声音
+            </button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            ${q.options.map(function(opt, i) {
+              return '<button class="game-option" onclick="GameEngine._handleAnswer(' + stageIndex + ',' + qIndex + ',' + i + ')">' +
+                '<span class="opt-label">' + labels[i] + '</span>' +
+                '<span class="opt-text">' + opt + '</span>' +
+                '</button>';
+            }.bind(this)).join('')}
+          </div>
+        </div>
+      `;
+      // Store listening text for playback
+      this._listenText = listenText;
+      // 自动播放一次
+      var _this = this;
+      setTimeout(function() { _this._playListenAudio(); }, 500);
+    } else if (stage.key === 'speaking') {
+      // 听说挑战——听原声 + 跟读 + 评分
+      var speakText = q.textToSpeak || q.question || '';
+      this._speakText = speakText;
+      optionsHtml = `
+        <div id="speaking-area" style="text-align:center;padding:10px 0;animation:fadeIn .3s ease;">
+          <div style="font-size:18px;line-height:1.6;color:var(--text);margin:16px 0;padding:20px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:12px;font-weight:500;">
+            &ldquo;${q.textToSpeak || q.question}&rdquo;
+          </div>
+          <div id="speaking-controls" style="display:flex;gap:12px;justify-content:center;margin:16px 0;flex-wrap:wrap;">
+            <button class="btn btn-small btn-primary" id="speak-play-btn" onclick="GameEngine._playSpeakAudio()">
+              🔊 听原声
+            </button>
+            <button class="btn btn-small btn-outline" id="speak-record-btn" onclick="GameEngine._startRecording()">
+              🎤 开始录音
+            </button>
+          </div>
+          <div id="speaking-status" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin:12px 0;min-height:28px;">
+            👆 先听原声，再点击麦克风跟读
+          </div>
+          <div id="speaking-result" style="display:none;margin:16px auto;max-width:300px;padding:16px;border-radius:12px;"></div>
+          <div id="speaking-actions" style="display:none;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap;"></div>
+          <p style="font-size:11px;color:var(--text-tertiary);margin-top:16px;">
+            ${Speak.isSupported() ? '\u{1F399}\u{FE0F} 浏览器语音识别已就绪' : '\u26A0\u{FE0F} 当前浏览器不支持语音识别'}
+          </p>
+        </div>
+      `;
+    } else {
+      // 普通选择题（含阅读理解显示文章）
+      var pText = (q.passage || '').replace(/'/g, "\\'");
+      var showPassage = pText ? '<div style="margin-bottom:16px;padding:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:12px;font-size:15px;line-height:1.8;text-align:left;">' + pText + '</div>' : '';
+      optionsHtml = showPassage + `
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
+          ${q.options.map(function(opt, i) {
+            return '<button class="game-option" data-index="' + i + '"' +
+              ' onclick="GameEngine._handleAnswer(' + stageIndex + ',' + qIndex + ',' + i + ')"' +
+              (this.state.isWaiting ? ' disabled' : '') + '>' +
+              '<span class="opt-label">' + labels[i] + '</span>' +
+              '<span class="opt-text">' + opt + '</span>' +
+              '</button>';
+          }.bind(this)).join('')}
+        </div>
+      `;
+    }
+
+    // 进度指示
+    // 计算当天累计进度（跨所有关卡）
+    const prevTotals = { vocab:0, grammmar:0, grammar:0, speaking:0 };
+    const stageOrder = this.STAGES.map(function(s) { return s.key; });
+    let stageOffset = 0;
+    for (let si = 0; si < stageIndex; si++) {
+      const sk = stageOrder[si];
+      if (this.state.stageQuestions[sk]) stageOffset += this.state.stageQuestions[sk].length;
+    }
+    let totalAll = 0;
+    stageOrder.forEach(sk => {
+      if (this.state.stageQuestions[sk]) totalAll += this.state.stageQuestions[sk].length;
+    });
+    const globalQ = stageOffset + qIndex + 1;
+    const progress = `${globalQ}/${totalAll} 题（本关 ${qIndex+1}/${questions.length}）`;
+
+    container.innerHTML = `
+      <div style="animation:fadeIn .3s ease;">
+        <div id="game-topbar" style="display:flex;align-items:center;gap:8px;padding:8px 0 4px;">
+          <span class="game-stage-badge" style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:10px;
+            background:${this.state.subject === 'en' ? 'rgba(124,92,191,0.2)' : 'rgba(230,126,34,0.2)'};
+            color:${this.state.subject === 'en' ? '#A78BDB' : '#F0B27A'};
+          ">${stage.icon} ${stage.name}</span>
+          <span style="flex:1;"></span>
+          ${stage.key !== 'speaking' && stage.key !== 'listening' ? `<span id="game-timer-text" style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;min-width:32px;text-align:right;">
+            ${timeLimit > 0 ? timeLimit + 's' : '--'}</span>` : ''}
+        </div>
+
+        ${stage.key !== 'speaking' && stage.key !== 'listening' ? `
+        <div class="timer-wrap" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <div class="timer-bar-track" style="flex:1;height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;">
+            <div id="game-timer-bar" style="height:100%;background:${this.state.subject === 'en' ? '#A78BDB' : '#F0B27A'};border-radius:4px;width:100%;transition:width 1s linear;"></div>
+          </div>
+          <span id="game-score-display" style="font-size:13px;font-weight:600;white-space:nowrap;">⭐ ${this.state.streak > 0 ? 'x'+this.state.streak+' · ' : ''}${this.state.score}</span>
+        </div>` : ''}
+
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+          <span class="progress-text" style="font-size:13px;color:var(--text-secondary);">第 ${progress} 题</span>
+          ${stage.key === 'boss' ? '<span style="font-size:11px;padding:2px 8px;border-radius:8px;background:rgba(231,76,60,0.15);color:#E74C3C;">分数×2</span>' : ''}
+        </div>
+
+        <div class="question-text" style="font-size:17px;font-weight:500;line-height:1.7;padding:4px 0;">
+          ${q.question}
+        </div>
+
+        ${optionsHtml}
+      </div>
+    `;
+
+    // 启动计时器
+    if (stage.key !== 'speaking' && timeLimit > 0) {
+      this._startTimer(timeLimit);
+    }
+  },
+
+  // --- 计时器 ---
+  _startTimer(seconds) {
+    this._clearTimer();
+    let remaining = seconds;
+    const bar = document.getElementById('game-timer-bar');
+    const text = document.getElementById('game-timer-text');
+    if (!bar || !text) return;
+
+    bar.style.width = '100%';
+    text.textContent = remaining + 's';
+    bar.style.background = this.state.subject === 'en' ? '#A78BDB' : '#F0B27A';
+
+    this.state.currentTimer = setInterval(() => {
+      remaining--;
+      if (remaining < 0) remaining = 0;
+      const pct = (remaining / seconds) * 100;
+      if (bar) {
+        bar.style.width = pct + '%';
+        if (remaining <= 3) bar.style.background = '#E74C3C';
+      }
+      if (text) text.textContent = remaining + 's';
+      if (remaining <= 0) {
+        this._clearTimer();
+      }
+    }, 1000);
+  },
+
+  _clearTimer() {
+    if (this.state && this.state.currentTimer) {
+      clearInterval(this.state.currentTimer);
+      this.state.currentTimer = null;
+    }
+  },
+
+  // --- 处理选择题答案 ---
+  _handleAnswer(stageIndex, qIndex, selectedIndex) {
+    if (this.state.isWaiting) return;
+    this.state.isWaiting = true;
+    this._clearTimer();
+
+    const stage = this.STAGES[stageIndex];
+    const questions = this.state.stageQuestions[stage.key];
+    const q = questions[qIndex];
+    const isCorrect = selectedIndex === q.answer;
+    const timeRemaining = this._getTimeRemaining();
+
+    // 计算得分
+    let score = 0;
+    const difficultyMult = { easy:1.0, medium:1.5, hard:2.0 }[q.difficulty] || 1.0;
+    const timeLimit = this.TIME_LIMITS[q.difficulty] || 20;
+    const speedRatio = timeLimit > 0 ? (timeRemaining / timeLimit) : 1.0;
+    const speedMult = Math.min(1.3, 1.0 + speedRatio * 0.3);
+
+    if (isCorrect) {
+      score = Math.round(100 * difficultyMult * speedMult);
+    }
+
+    // 连击
+    if (isCorrect) {
+      this.state.streak++;
+      if (this.state.streak > this.state.maxStreak) this.state.maxStreak = this.state.streak;
+      const streakMult = 1.0 + (this.state.streak - 1) * 0.05;
+      score = Math.round(score * Math.min(streakMult, 1.5));
+      this.state.score += score;
+    } else {
+      this.state.streak = 0;
+      this.state.wrongIds.add(q.id);
+    }
+
+    // 记录答案
+    this.state.allAnswers.push({
+      question: q,
+      selectedIndex,
+      isCorrect,
+      score,
+      timeSpent: timeLimit - timeRemaining
+    });
+
+    // 渲染反馈
+    this._renderFeedback(stageIndex, qIndex, q, selectedIndex, isCorrect, score, () => {
+      const nextQ = qIndex + 1;
+      if (nextQ >= questions.length) {
+        this._completeStage(stageIndex);
+      } else {
+        this._showQuestion(stageIndex, nextQ);
+      }
+    });
+  },
+
+  // --- 处理听说完成 ---
+  
+  // --- 播放听力音频 ---
+  _playListenAudio() {
+    if (this._listenText) {
+      Speak.speak(this._listenText);
+    }
+  },
+
+  // --- 播放跟读原声 ---
+  _playSpeakAudio() {
+    if (this._speakText) {
+      Speak.speak(this._speakText);
+    }
+  },
+
+_startRecording(stageIndex, qIndex) {
+    if (this.state.isWaiting) return;
+    this.state.isWaiting = true;
+
+    const statusEl = document.getElementById('speaking-status');
+    const recordBtn = document.getElementById('speak-record-btn');
+    const playBtn = document.getElementById('speak-play-btn');
+
+    if (statusEl) statusEl.textContent = '🎤 录音中... 请对着麦克风朗读';
+    if (recordBtn) { recordBtn.textContent = '⏳ 录音中...'; recordBtn.disabled = true; }
+
+    // 自动播放原声先
+    const stage = this.STAGES[3]; // speaking stage
+    const questions = this.state.stageQuestions['speaking'];
+    const qIdx = this.state.questionIndex;
+    const q = questions[qIdx];
+    if (q && q.textToSpeak) {
+      Speak.speak(q.textToSpeak);
+    }
+
+    // 延迟一下开始录音，让孩子先听
+    setTimeout(() => {
+      Speak.listen((text, error) => {
+        this.state.isWaiting = false;
+        if (recordBtn) { recordBtn.textContent = '🎤 开始录音'; recordBtn.disabled = false; }
+        if (playBtn) playBtn.disabled = false;
+
+        if (error) {
+          if (statusEl) {
+            if (error === 'no-speech') statusEl.textContent = '⚠️ 没有听到声音，点击麦克风再试一次';
+            else if (error === 'audio-capture') statusEl.textContent = '⚠️ 找不到麦克风，请检查权限设置';
+            else if (error === 'not-allowed') statusEl.textContent = '⚠️ 麦克风权限被拒绝，请在浏览器设置中允许';
+            else statusEl.textContent = '⚠️ 录音出错了(' + error + ')，再试一次';
+          }
+          return;
+        }
+
+        // 评分
+        const expected = q ? (q.textToSpeak || '') : '';
+        const result = Speak.score(text, expected);
+        const scoreVal = result.score || 60;
+
+        // 保存结果
+        this.state.score += scoreVal;
+        this.state.streak++;
+        this.state.allAnswers.push({
+          question: q, isCorrect: true, score: scoreVal, timeSpent: 0,
+          speechText: text, speechScore: result
+        });
+
+        // 显示评分结果
+        const resultEl = document.getElementById('speaking-result');
+        const actionsEl = document.getElementById('speaking-actions');
+        if (statusEl) statusEl.textContent = '';
+
+        if (resultEl) {
+          resultEl.style.display = 'block';
+          const stars = '⭐'.repeat(result.stars || 1);
+          resultEl.style.background = result.stars >= 3 ? 'rgba(39,174,96,0.1)' : result.stars >= 1 ? 'rgba(241,196,15,0.1)' : 'rgba(255,255,255,0.05)';
+          resultEl.style.border = '1px solid ' + (result.stars >= 3 ? 'rgba(39,174,96,0.2)' : 'rgba(255,255,255,0.1)');
+          resultEl.innerHTML = `
+            <div style="font-size:28px;margin-bottom:4px;">${stars}</div>
+            <div style="font-size:20px;font-weight:700;">${scoreVal}分</div>
+            <div style="font-size:14px;color:var(--text-secondary);margin-top:6px;">${result.feedback || ''}</div>
+            ${text ? '<div style="font-size:13px;color:var(--text-tertiary);margin-top:8px;padding:8px;background:rgba(0,0,0,0.2);border-radius:8px;">识别: ' + text + '</div>' : ''}
+          `;
+        }
+
+        if (actionsEl) {
+          actionsEl.style.display = 'flex';
+          actionsEl.innerHTML = result.stars < 3
+            ? '<button class="btn btn-small btn-outline" onclick="GameEngine._retrySpeaking()">🔄 再读一次</button>' +
+              '<button class="btn btn-small ' + (this.state.subject === 'en' ? 'btn-primary' : 'btn-math') + '" onclick="GameEngine._nextSpeaking()">下一句 →</button>'
+            : '<button class="btn btn-small ' + (this.state.subject === 'en' ? 'btn-primary' : 'btn-math') + '" onclick="GameEngine._nextSpeaking()">✅ 继续 →</button>';
+        }
+
+        // 自动播放下一题原声
+        setTimeout(() => {
+          if (q && q.textToSpeak) Speak.speak(q.textToSpeak);
+        }, 2000);
+      });
+    }, 1500);
+  },
+
+  _retrySpeaking() {
+    const statusEl = document.getElementById('speaking-status');
+    const resultEl = document.getElementById('speaking-result');
+    const actionsEl = document.getElementById('speaking-actions');
+    const recordBtn = document.getElementById('speak-record-btn');
+
+    if (statusEl) statusEl.textContent = '👆 再听一次原声，然后点击麦克风';
+    if (resultEl) resultEl.style.display = 'none';
+    if (actionsEl) actionsEl.style.display = 'none';
+    if (recordBtn) recordBtn.disabled = false;
+    this.state.isWaiting = false;
+  },
+
+  _nextSpeaking() {
+    const stage = this.STAGES[3];
+    const questions = this.state.stageQuestions['speaking'];
+    const nextQ = this.state.questionIndex + 1;
+
+    if (nextQ >= questions.length) {
+      this._completeStage(3);
+    } else {
+      this._showQuestion(3, nextQ);
+    }
+  },
+
+  _handleSpeakingComplete(stageIndex, qIndex) {
+    // 不再使用——由 _startRecording 替代
+    this.state.isWaiting = false;
+  },
+
+  // --- 获取剩余时间 ---
+  _getTimeRemaining() {
+    // 简化的剩余时间估算
+    const text = document.getElementById('game-timer-text');
+    if (text) {
+      const match = text.textContent.match(/(\d+)s/);
+      if (match) return parseInt(match[1]);
+    }
+    return 0;
+  },
+
+  // --- 反馈渲染 ---
+  _renderFeedback(stageIndex, qIndex, q, selectedIndex, isCorrect, score, onDone) {
+    // Play sound effect
+    try {
+      if (isCorrect) { Sounds.playCorrect(); }
+      else { Sounds.playWrong(); Sounds.playHammer(); }
+    } catch(e) {}
+    const labels = ['A','B','C','D'];
+    const waitTime = isCorrect ? this.FEEDBACK_WAIT_CORRECT : this.FEEDBACK_WAIT_WRONG;
+
+    const container = document.getElementById('game-content');
+
+    const streakHtml = this.state.streak >= 2
+      ? `<div style="margin-top:8px;font-size:18px;">🔥 连击 x${this.state.streak}</div>`
+      : '';
+
+    container.innerHTML += `
+      <div class="feedback-overlay" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;animation:fadeIn .2s ease;">
+        <div style="font-size:52px;margin-bottom:8px;">${isCorrect ? '✅' : '<span class="hammer-icon">🔨</span>'}</div>
+        <div style="font-size:22px;font-weight:700;margin-bottom:4px;color:${isCorrect ? '#27AE60' : '#E74C3C'}">
+          ${isCorrect ? `正确！+${score}分` : '哎呀，答错了'}
+        </div>
+        ${streakHtml}
+
+        <div style="margin-top:16px;padding:16px 20px;background:rgba(255,255,255,0.05);border-radius:12px;max-width:340px;">
+          ${!isCorrect ? `<div style="font-size:17px;color:var(--text-secondary);margin-bottom:8px;">
+            正确答案：<span style="color:#27AE60;font-weight:600;">${labels[q.answer]}. ${q.options[q.answer]}</span>
+            <br>你的答案：<span style="color:#E74C3C;">${labels[selectedIndex]}. ${q.options[selectedIndex]}</span>
+          </div>` : ''}
+          <div style="font-size:16px;color:var(--text-tertiary);margin-top:8px;line-height:1.6;">
+            💡 ${q.explanation || ''}
+          </div>
+        </div>
+
+        <div id="feedback-countdown" style="margin-top:20px;font-size:14px;color:var(--text-secondary);">
+          ${waitTime}秒后继续...
+        </div>
+      </div>
+    `;
+
+    // 倒计时
+    let remaining = waitTime;
+    const countdownEl = document.getElementById('feedback-countdown');
+    const interval = setInterval(() => {
+      remaining--;
+      if (countdownEl) countdownEl.textContent = `${remaining}秒后继续...`;
+      if (remaining <= 0) {
+        clearInterval(interval);
+        const overlay = container.querySelector('.feedback-overlay');
+        if (overlay) overlay.remove();
+        this.state.isWaiting = false;
+        onDone();
+      }
+    }, 1000);
+  },
+
+  // --- 听说完成反馈 ---
+  _renderSpeakingComplete(stageIndex, qIndex, onDone) {
+    const container = document.getElementById('game-content');
+    container.innerHTML += `
+      <div class="feedback-overlay" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;animation:fadeIn .2s ease;">
+        <div style="font-size:52px;margin-bottom:8px;">🎤</div>
+        <div style="font-size:22px;font-weight:700;margin-bottom:4px;color:#A78BDB;">
+          跟读完成！+100分
+        </div>
+        <div style="font-size:14px;color:var(--text-secondary);margin-top:8px;">
+          ⭐ 发音评分将在后续阶段接入
+        </div>
+        <div style="margin-top:20px;font-size:14px;color:var(--text-secondary);" id="feedback-countdown">
+          3秒后继续...
+        </div>
+      </div>
+    `;
+
+    let remaining = 3;
+    const countdownEl = document.getElementById('feedback-countdown');
+    const interval = setInterval(() => {
+      remaining--;
+      if (countdownEl) countdownEl.textContent = `${remaining}秒后继续...`;
+      if (remaining <= 0) {
+        clearInterval(interval);
+        const overlay = container.querySelector('.feedback-overlay');
+        if (overlay) overlay.remove();
+        this.state.isWaiting = false;
+        onDone();
+      }
+    }, 1000);
+  },
+
+  // --- 完成一个关卡 ---
+  _completeStage(stageIndex) {
+    const stage = this.STAGES[stageIndex];
+    const questions = this.state.stageQuestions[stage.key];
+    const stageAnswers = this.state.allAnswers.filter(a => questions.includes(a.question));
+    const correctCount = stageAnswers.filter(a => a.isCorrect).length;
+    const stageScore = stageAnswers.reduce((sum, a) => sum + (a.score || 0), 0);
+
+    // Boss关分数翻倍
+    const finalScore = stage.key === 'boss' ? stageScore * 2 : stageScore;
+    const accuracy = Math.round((correctCount / questions.length) * 100);
+
+    this.state.stageResults.push({
+      key: stage.key,
+      name: stage.name,
+      icon: stage.icon,
+      correct: correctCount,
+      total: questions.length,
+      accuracy,
+      score: finalScore
+    });
+
+    // 如果所有关卡完成
+    const nextStage = stageIndex + 1;
+    if (nextStage >= this.STAGES.length) {
+      this._completeGame();
+      return;
+    }
+
+    // 显示关卡完成
+    const container = document.getElementById('game-content');
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:20px;animation:fadeIn .4s ease;">
+        <div style="font-size:52px;margin-bottom:8px;">${accuracy >= 80 ? '🎉' : '👍'}</div>
+        <h2 style="font-size:22px;font-weight:700;margin-bottom:6px;">${stage.icon} ${stage.name} 完成！</h2>
+        <div style="display:flex;gap:16px;margin:16px 0;">
+          <div style="text-align:center;">
+            <div style="font-size:20px;font-weight:700;color:#27AE60;">${correctCount}/${questions.length}</div>
+            <div style="font-size:12px;color:var(--text-secondary);">正确</div>
+          </div>
+          <div style="width:1px;background:var(--border);"></div>
+          <div style="text-align:center;">
+            <div style="font-size:20px;font-weight:700;">${finalScore}</div>
+            <div style="font-size:12px;color:var(--text-secondary);">得分</div>
+          </div>
+          <div style="width:1px;background:var(--border);"></div>
+          <div style="text-align:center;">
+            <div style="font-size:20px;font-weight:700;color:${accuracy >= 80 ? '#27AE60' : accuracy >= 60 ? '#F39C12' : '#E74C3C'}">${accuracy}%</div>
+            <div style="font-size:12px;color:var(--text-secondary);">正确率</div>
+          </div>
+        </div>
+        <button class="btn ${this.state.subject === 'en' ? 'btn-primary' : 'btn-math'}" onclick="GameEngine._startStage(${nextStage})" style="margin-top:8px;">
+          ${this.STAGES[nextStage].icon} 进入${this.STAGES[nextStage].name} →
+        </button>
+      </div>
+    `;
+  },
+
+  // --- 游戏完成 ---
+  _completeGame() {
+    this._clearTimer();
+    const state = this.state;
+    const totalQuestions = state.allAnswers.length;
+    const correctCount = state.allAnswers.filter(a => a.isCorrect).length;
+    const accuracy = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+    const wrongCount = state.wrongIds.size;
+    const stageResults = state.stageResults;
+    const wrongQuestions = state.allAnswers.filter(a => !a.isCorrect);
+
+    // 计算星星
+    const stars = accuracy >= 90 ? Math.round(totalQuestions * 0.15)
+                 : accuracy >= 80 ? Math.round(totalQuestions * 0.1)
+                 : accuracy >= 60 ? Math.round(totalQuestions * 0.05)
+                 : 0;
+    const totalScore = state.score;
+
+    let checkinData = null;
+    try {
+      checkinData = Store.processCheckin(Auth.currentUser);
+      if (checkinData && checkinData.bonus > 0) {
+        state.score += checkinData.bonus;
+      }
+    } catch(e) {}
+
+    const container = document.getElementById('game-content');
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;padding:20px;animation:fadeIn .4s ease;">
+        <div style="font-size:64px;margin-bottom:8px;">🎉</div>
+        <h2 style="font-size:24px;font-weight:800;margin-bottom:4px;">第${state.dayNum}天 闯关完成！</h2>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:320px;margin:20px 0;">
+          <div style="text-align:center;padding:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;">
+            <div style="font-size:26px;font-weight:700;">${totalScore}</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">总得分</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;">
+            <div style="font-size:26px;font-weight:700;color:${accuracy >= 80 ? '#27AE60' : '#F39C12'}">${accuracy}%</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">正确率</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;">
+            <div style="font-size:26px;font-weight:700;">${state.maxStreak}</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">最高连击</div>
+          </div>
+        </div>
+
+        ${stars > 0 ? `<div style="font-size:18px;margin-bottom:16px;">⭐ 获得 ${stars} 颗星星！</div>` : ''}
+
+        <div style="width:100%;max-width:360px;text-align:center;margin-bottom:20px;">
+          <div style="font-size:14px;color:var(--text-secondary);">答对 <strong style="color:#27AE60;">${correctCount}</strong> 题 · 答错 <strong style="color:#E74C3C;">${wrongCount}</strong> 题 · 共 ${totalQuestions} 题</div>
+        </div>
+
+        ${stageResults.map(r => `
+          <div style="display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;margin-bottom:6px;">
+            <span>${r.icon}</span>
+            <span style="flex:1;font-size:14px;">${r.name}</span>
+            <span style="font-size:14px;color:${r.accuracy >= 80 ? '#27AE60' : '#F39C12'};font-weight:600;">${r.correct}/${r.total}</span>
+            <span style="font-size:14px;font-weight:600;">${r.score}分</span>
+          </div>
+        `).join('')}
+
+        <div style="display:flex;flex-direction:column;gap:10px;width:100%;margin-top:20px;">
+          ${wrongCount > 0 ? `
+            <button class="btn btn-outline btn-block" onclick="GameEngine._startWrongReview()" style="padding:14px;font-size:16px;">
+              🔄 重做错题，抢回积分 (${wrongCount}道)
+            </button>
+          ` : ''}
+          <button class="btn ${this.state.subject === 'en' ? 'btn-primary' : 'btn-math'} btn-block" onclick="GameEngine._finishAndSave()" style="padding:14px;font-size:16px;">
+            🏠 完成，返回首页
+          </button>
+        </div>
+      </div>
+    `;
+  },
+
+  // --- 错题重做 ---
+  _startWrongReview() {
+    this._clearTimer();
+    const state = this.state;
+
+    // 收集所有错题
+    const wrongQuestions = state.allAnswers
+      .filter(a => !a.isCorrect)
+      .map(a => a.question);
+
+    if (wrongQuestions.length === 0) {
+      this._completeGame();
+      return;
+    }
+
+    this._shuffle(wrongQuestions);
+    state.isReviewMode = true;
+    state.reviewQuestions = wrongQuestions;
+    state.reviewIndex = 0;
+    state.reviewCorrectCount = 0;
+
+    this._showReviewQuestion();
+  },
+
+  _showReviewQuestion() {
+    const state = this.state;
+    if (state.reviewIndex >= state.reviewQuestions.length) {
+      this._completeReview();
+      return;
+    }
+
+    const q = state.reviewQuestions[state.reviewIndex];
+    const labels = ['A','B','C','D'];
+    const remaining = state.reviewQuestions.length - state.reviewIndex;
+
+    const container = document.getElementById('game-content');
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;padding:20px 0;animation:fadeIn .3s ease;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;">
+          <span style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:10px;background:rgba(231,76,60,0.15);color:#E74C3C;">🔄 错题重做</span>
+          <span style="flex:1;"></span>
+          <span style="font-size:13px;color:var(--text-secondary);">剩余 ${remaining} 题</span>
+        </div>
+        <div class="question-text" style="font-size:17px;font-weight:500;line-height:1.7;">
+          ${q.question}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
+          ${q.options.map((opt, i) => `
+            <button class="game-option" onclick="GameEngine._handleReviewAnswer(${i})">
+              <span class="opt-label">${labels[i]}</span>
+              <span class="opt-text">${opt}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  },
+
+  _handleReviewAnswer(selectedIndex) {
+    const state = this.state;
+    const q = state.reviewQuestions[state.reviewIndex];
+    const isCorrect = selectedIndex === q.answer;
+    const labels = ['A','B','C','D'];
+
+    const container = document.getElementById('game-content');
+    container.innerHTML += `
+      <div class="feedback-overlay" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;animation:fadeIn .2s ease;">
+        <div style="font-size:52px;margin-bottom:8px;">${isCorrect ? '✅' : '<span class="hammer-icon">🔨</span>'}</div>
+        <div style="font-size:20px;font-weight:700;color:${isCorrect ? '#27AE60' : '#E74C3C'};margin-bottom:12px;">
+          ${isCorrect ? '✅ 这次答对了！' : '还是不对哦'}
+        </div>
+        ${!isCorrect ? `<div style="font-size:17px;color:var(--text-secondary);margin-bottom:8px;">
+          正确答案：<span style="color:#27AE60;font-weight:600;">${labels[q.answer]}. ${q.options[q.answer]}</span>
+        </div>` : ''}
+        <div style="font-size:16px;color:var(--text-tertiary);max-width:350px;line-height:1.6;">
+          💡 ${q.explanation || ''}
+        </div>
+        <button class="btn ${state.subject === 'en' ? 'btn-primary' : 'btn-math'}" onclick="GameEngine._continueReview(${isCorrect})" style="margin-top:20px;padding:12px 24px;font-size:16px;">
+          ${isCorrect ? '✅ 继续' : '下一题 →'}
+        </button>
+        <div style="margin-top:12px;">
+          <span style="font-size:13px;color:var(--text-tertiary);cursor:pointer;" onclick="GameEngine._finishAndSave()">跳过，结束重做</span>
+        </div>
+      </div>
+    `;
+  },
+
+  _continueReview(isCorrect) {
+    const state = this.state;
+    const q = state.reviewQuestions[state.reviewIndex];
+
+    // 从反馈列表中移除
+    const overlay = document.querySelector('.feedback-overlay');
+    if (overlay) overlay.remove();
+
+    if (isCorrect) {
+      // 做对了，从错题列表移除
+      state.reviewQuestions.splice(state.reviewIndex, 1);
+      state.reviewCorrectCount++;
+    } else {
+      state.reviewIndex++;
+    }
+
+    // 检查是否还有错题
+    if (state.reviewQuestions.length === 0) {
+      this._completeReview();
+    } else if (state.reviewIndex >= state.reviewQuestions.length) {
+      // 一轮结束但还有错题，重新 shuffle 再来
+      state.reviewIndex = 0;
+      this._shuffle(state.reviewQuestions);
+      this._showReviewQuestion();
+    } else {
+      this._showReviewQuestion();
+    }
+  },
+
+  _completeReview() {
+    const container = document.getElementById('game-content');
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:20px;animation:fadeIn .4s ease;">
+        <div style="font-size:64px;margin-bottom:8px;">🏆</div>
+        <h2 style="font-size:22px;font-weight:700;margin-bottom:6px;">错题全部订正！</h2>
+        <p style="font-size:14px;color:var(--text-secondary);margin-bottom:24px;">所有错题都做对了，太棒了！</p>
+        <button class="btn ${this.state.subject === 'en' ? 'btn-primary' : 'btn-math'}" onclick="GameEngine._finishAndSave()">
+          🏠 返回首页
+        </button>
+      </div>
+    `;
+  },
+
+  // --- 完成并保存 ---
+  _finishAndSave() {
+    this._clearTimer();
+    const state = this.state;
+
+    // 打卡积分
+    let checkinData = null;
+    try {
+      checkinData = Store.processCheckin(Auth.currentUser);
+      if (checkinData && checkinData.bonus > 0) {
+        state.score += checkinData.bonus;
+      }
+    } catch(e) {}
+    const totalQuestions = state.allAnswers.length + (state.reviewCorrectCount || 0);
+    const correctCount = state.allAnswers.filter(a => a.isCorrect).length + (state.reviewCorrectCount || 0);
+    const accuracy = totalQuestions > 0 ? Math.round((correctCount / Math.max(state.allAnswers.length, 1)) * 100) : 0;
+
+    // 计算星星
+    const stars = accuracy >= 90 ? Math.round(state.allAnswers.length * 0.15)
+                 : accuracy >= 80 ? Math.round(state.allAnswers.length * 0.1)
+                 : accuracy >= 60 ? Math.round(state.allAnswers.length * 0.05)
+                 : 0;
+
+    const saveData = {
+      completed: true,
+      score: state.score,
+      accuracy,
+      maxStreak: state.maxStreak,
+      dateCompleted: new Date().toISOString(),
+      subject: state.subject,
+      dayKey: state.dayKey,
+      stages: {
+        vocab: state.stageResults[0] || { correct:0, total:0, score:0 },
+        grammar: state.stageResults[1] || { correct:0, total:0, score:0 },
+        speaking: state.stageResults[2] || { correct:0, total:0, score:0 },
+        boss: state.stageResults[3] || { correct:0, total:0, score:0 }
+      },
+      wrongQuestionIds: [...state.wrongIds],
+      attempts: 1,
+      timeSpent: Math.round(state.allAnswers.reduce((s, a) => s + (a.timeSpent || 5), 0))
+    };
+
+    Store.saveProgress(state.currentUser || Auth.currentUser, state.dayKey, saveData);
+    if (stars > 0) Store.addStars(Auth.currentUser, stars);
+
+    this._showToast(`🎉 完成！获得 ${stars} 颗星星`);
+    setTimeout(() => window.location.hash = 'home', 1200);
+  },
+
+  // --- Toast ---
+  _showToast(msg) {
+    const el = document.getElementById('toast');
+    if (el) {
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2500);
+    }
+  },
+
+  // --- 工具 ---
+  // --- 打乱选项（正确答案随机到 A/B/C/D） ---
+  _shuffleAllOptions(groups) {
+    Object.keys(groups).forEach(k => {
+      groups[k].forEach(q => {
+        if (!q.options || q.options.length === 0) return;
+        const correct = q.options[q.answer];
+        // Fisher-Yates shuffle
+        for (let i = q.options.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [q.options[i], q.options[j]] = [q.options[j], q.options[i]];
+        }
+        q.answer = q.options.indexOf(correct);
+      });
+    });
+  },
+
+  _shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+};
+window.GameEngine = GameEngine;
