@@ -135,10 +135,11 @@ const Dashboard = {
       html += '<div style="font-size:14px;font-weight:600;margin-bottom:8px;">' + subj + '</div>';
       html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:12px;">';
       html += '<div>得分: <strong>' + (p.score||0) + '</strong></div><div>正确率: <strong>' + (p.accuracy||0) + '%</strong></div><div>最大连击: <strong>' + (p.maxStreak||0) + '</strong></div></div>';
-      if (stages.vocab || stages.grammar || stages.speaking || stages.boss) {
+      if (stages.vocab || stages.grammar || stages.listening || stages.speaking || stages.boss) {
         html += '<div style="margin-top:8px;font-size:12px;color:var(--text-secondary);">';
         if (stages.vocab) html += '词汇 ' + (stages.vocab.correct||0) + '/' + (stages.vocab.total||0) + ' ';
         if (stages.grammar) html += '语法 ' + (stages.grammar.correct||0) + '/' + (stages.grammar.total||0) + ' ';
+        if (stages.listening) html += '听力 ' + (stages.listening.correct||0) + '/' + (stages.listening.total||0) + ' ';
         if (stages.speaking) html += '口语 ' + (stages.speaking.correct||0) + '/' + (stages.speaking.total||0) + ' ';
         if (stages.boss) html += 'Boss ' + (stages.boss.correct||0) + '/' + (stages.boss.total||0);
         html += '</div>';

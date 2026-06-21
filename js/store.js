@@ -25,7 +25,6 @@ const Store = {
   _defaults() {
     return {
       users: {},
-      parentPin: '1234',
       starBadges: {}
     };
   },
@@ -91,17 +90,6 @@ const Store = {
     const englishDays = entries.filter(p => p.subject === 'en').length;
     const mathDays = entries.filter(p => p.subject === 'math').length;
     return { totalDays, avgAccuracy, totalScore, englishDays, mathDays };
-  },
-
-  // --- 家长 PIN ---
-  verifyParentPin(pin) {
-    return this._getData().parentPin === pin;
-  },
-
-  setParentPin(newPin) {
-    const data = this._getData();
-    data.parentPin = newPin;
-    this._saveData(data);
   },
 
   // --- 星星 ---

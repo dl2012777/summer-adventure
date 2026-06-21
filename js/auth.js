@@ -128,35 +128,6 @@ const Auth = {
     window.location.hash = "home";
   },
 
-  // --- 家长 PIN 界面 ---
-  renderParentGate() {
-    const container = document.getElementById('dashboard-content');
-    container.innerHTML = `
-      <div class="parent-gate">
-        <div class="lock-icon">🔒</div>
-        <h2>家长看板</h2>
-        <p>请输入家长密码查看学习进度</p>
-        <input class="input" id="pin-input" type="password" inputmode="numeric"
-          placeholder="输入 PIN" maxlength="6"
-          onkeydown="if(event.key==='Enter') Auth.verifyPin()">
-        <p class="pin-error" id="pin-error">密码错误，请重试</p>
-        <button class="btn btn-outline" onclick="Auth.verifyPin()">确认</button>
-      </div>
-    `;
-    document.getElementById('pin-input').focus();
-  },
-
-  verifyPin() {
-    const pin = document.getElementById('pin-input').value;
-    const errorEl = document.getElementById('pin-error');
-    if (Store.verifyParentPin(pin)) {
-      errorEl.style.display = 'none';
-      App.showDashboard();
-    } else {
-      errorEl.style.display = 'block';
-    }
-  },
-
   // --- 获取当前用户头像 ---
   getCurrentAvatar() {
     const user = Store.getUser(this.currentUser);

@@ -210,14 +210,25 @@ const GameEngine = {
               🔊 听原声
             </button>
             <button class="btn btn-small btn-outline" id="speak-record-btn" onclick="GameEngine._startRecording()">
-              🎤 开始录音
+              🎤 开始跟读
             </button>
           </div>
           <div id="speaking-status" style="font-size:14px;font-weight:500;color:var(--text-secondary);margin:12px 0;min-height:28px;">
-            👆 先听原声，再点击麦克风跟读
+            🔊 正在播放原声...
           </div>
-          <div id="speaking-result" style="display:none;margin:16px auto;max-width:300px;padding:16px;border-radius:12px;"></div>
-          <div id="speaking-actions" style="display:none;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap;"></div>
+         <div id="speaking-result" style="display:none;margin:16px auto;max-width:300px;padding:16px;border-radius:12px;"></div>
+         <div id="volume-meter" style="display:none;margin:16px auto;text-align:center;">
+           <div style="display:flex;align-items:center;gap:8px;justify-content:center;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px;max-width:200px;margin:0 auto;">
+             <span style="font-size:28px;">🎤</span>
+             <div id="wifi-bars" style="display:flex;align-items:end;gap:3px;height:20px;">
+               <div class="wifi-bar" style="width:6px;height:6px;border-radius:1px;background:rgba(255,255,255,0.1);transition:background .1s;"></div>
+               <div class="wifi-bar" style="width:6px;height:12px;border-radius:1px;background:rgba(255,255,255,0.1);transition:background .1s;"></div>
+               <div class="wifi-bar" style="width:6px;height:20px;border-radius:1px;background:rgba(255,255,255,0.1);transition:background .1s;"></div>
+             </div>
+             <span id="recording-timer" style="font-size:13px;color:var(--text-secondary);min-width:36px;">0s</span>
+           </div>
+         </div>
+         <div id="speaking-actions" style="display:none;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap;"></div>
           <p style="font-size:11px;color:var(--text-tertiary);margin-top:16px;">
             ${Speak.isSupported() ? '\u{1F399}\u{FE0F} 浏览器语音识别已就绪' : '\u26A0\u{FE0F} 当前浏览器不支持语音识别'}
           </p>
@@ -293,6 +304,16 @@ const GameEngine = {
     // 启动计时器
     if (stage.key !== 'speaking' && timeLimit > 0) {
       this._startTimer(timeLimit);
+    }
+    // 跟读关：1秒后自动播放原声
+    if (stage.key === 'speaking' && this._speakText) {
+      var _spText = this._speakText;
+      setTimeout(function() {
+        Speak.speak(_spText, function() {
+          var st = document.getElementById('speaking-status');
+          if (st) st.textContent = '👆 现在点击"开始跟读"大声朗读';
+        });
+      }, 1000);
     }
   },
 
@@ -423,19 +444,96 @@ _startRecording(stageIndex, qIndex) {
     // 立即请求麦克风
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then(function(stream) {
-        // 播放原声
-        if (refText) Speak.speak(refText);
+        // 显示音量表
+        var vm = document.getElementById('volume-meter');
+        if (vm) vm.style.display = 'block';
+        if (statusEl) statusEl.textContent = '🎤 录音中... 大声朗读！';
 
-        // 1.5秒后开始录音
+        // 创建音频分析器（音量可视化）
+        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        var source = audioCtx.createMediaStreamSource(stream);
+        var analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+        var volData = new Uint8Array(analyser.frequencyBinCount);
+        var volRAF = null;
+        // 动态录音参数 + 静音检测
+        var wordCount = refText.split(/\s+/).filter(function(w){ return w.length > 0; }).length;
+        var maxDuration = Math.max(5, Math.min(20, wordCount * 2.0));
+        var silenceCount = -1;
+        var silencePromptShown = false;
+        var silenceTimeoutHit = false;
+        var frameStart = Date.now();
+        var elapsedSec = 0;
+        var chunks = [];
+        var recorder = null;
+
+        function updateVolume() {
+          if (!recorder || recorder.state === 'inactive') { volRAF = null; return; }
+          analyser.getByteFrequencyData(volData);
+          var sum = 0;
+          for (var vi = 0; vi < volData.length; vi++) sum += volData[vi];
+          var avg = sum / volData.length;
+          var pct = Math.min(100, Math.round((avg / 128) * 100));
+          var level = pct < 15 ? 0 : pct < 40 ? 1 : pct < 70 ? 2 : 3;
+          var bars = document.querySelectorAll('.wifi-bar');
+          var colors = ['rgba(39,174,96,0.9)', 'rgba(241,196,15,0.9)', 'rgba(231,76,60,0.9)'];
+          bars.forEach(function(b, i) {
+            b.style.background = i < level ? colors[Math.min(i, 2)] : 'rgba(255,255,255,0.1)';
+          });
+          if (level === 0) {
+            if (silenceCount === -1) silenceCount = elapsedSec;
+            var silenceDur = elapsedSec - silenceCount;
+            if (silenceDur >= 2.0 && !silencePromptShown) {
+              silencePromptShown = true;
+              if (statusEl) statusEl.textContent = '🔊 请大声朗读！';
+            }
+            if (silenceDur >= 6.0) {
+              silenceTimeoutHit = true;
+              if (recorder && recorder.state === 'recording') recorder.stop();
+            }
+          } else {
+            silenceCount = -1;
+            silencePromptShown = false;
+            if (statusEl && elapsedSec > 0.5) statusEl.textContent = '🎤 继续朗读...';
+          }
+          var now = Date.now();
+          elapsedSec += (now - frameStart) / 1000;
+          frameStart = now;
+          if (elapsedSec >= maxDuration) {
+            if (recorder && recorder.state === 'recording') recorder.stop();
+          }
+          var timerEl = document.getElementById('recording-timer');
+          if (timerEl) timerEl.textContent = Math.ceil(elapsedSec) + 's';
+          volRAF = requestAnimationFrame(updateVolume);
+        }
+
+        // 立即开始录音（取消前置播放）
         setTimeout(function() {
           if (statusEl) statusEl.textContent = '🎤 录音中... 请大声朗读';
-          var chunks = [];
           var mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
-          var recorder = new MediaRecorder(stream, { mimeType: mimeType });
+          recorder = new MediaRecorder(stream, { mimeType: mimeType });
           recorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
 
           recorder.onstop = function() {
+            if (volRAF) { cancelAnimationFrame(volRAF); volRAF = null; }
+            try { audioCtx.close(); } catch(e) {}
             stream.getTracks().forEach(function(t) { t.stop(); });
+            // 静音超时特殊处理
+            if (silenceTimeoutHit) {
+              _this.state.isWaiting = false;
+              if (statusEl) statusEl.textContent = '⏭️ 未作答';
+              if (recordBtn) { recordBtn.textContent = '🎤 开始跟读'; recordBtn.disabled = false; }
+              if (playBtn) playBtn.disabled = false;
+              _this.state.allAnswers.push({ question: q, selectedIndex: -1, isCorrect: false, score: 0, timeSpent: 0 });
+              var actionsEl2 = document.getElementById('speaking-actions');
+              if (actionsEl2) {
+                actionsEl2.style.display = 'flex';
+                actionsEl2.innerHTML = '<button class="btn btn-small btn-outline" onclick="GameEngine._advanceSpeaking()">进入下一题 →</button>';
+              }
+              return;
+            }
+            // 正常评测流程
             var blob = new Blob(chunks, { type: 'audio/webm' });
             var reader = new FileReader();
             reader.onloadend = function() {
@@ -452,7 +550,7 @@ _startRecording(stageIndex, qIndex) {
               .catch(function(err) {
                 _this.state.isWaiting = false;
                 if (statusEl) statusEl.textContent = '⚠️ 评测服务连接失败';
-                if (recordBtn) { recordBtn.textContent = '🎤 开始录音'; recordBtn.disabled = false; }
+                if (recordBtn) { recordBtn.textContent = '🎤 开始跟读'; recordBtn.disabled = false; }
                 if (playBtn) playBtn.disabled = false;
               });
             };
@@ -463,18 +561,20 @@ _startRecording(stageIndex, qIndex) {
             stream.getTracks().forEach(function(t) { t.stop(); });
             _this.state.isWaiting = false;
             if (statusEl) statusEl.textContent = '⚠️ 录音失败，请重试';
-            if (recordBtn) { recordBtn.textContent = '🎤 开始录音'; recordBtn.disabled = false; }
+            if (recordBtn) { recordBtn.textContent = '🎤 开始跟读'; recordBtn.disabled = false; }
             if (playBtn) playBtn.disabled = false;
           };
 
           recorder.start();
-          setTimeout(function() { if (recorder.state === 'recording') recorder.stop(); }, 5000);
-        }, 1500);
+          frameStart = Date.now();
+          updateVolume();
+          setTimeout(function() { if (recorder.state === 'recording') recorder.stop(); }, maxDuration * 1000);
+        }, 500);
       })
       .catch(function() {
         _this.state.isWaiting = false;
         if (statusEl) statusEl.textContent = '⚠️ 麦克风权限被拒绝';
-        if (recordBtn) { recordBtn.textContent = '🎤 开始录音'; recordBtn.disabled = false; }
+        if (recordBtn) { recordBtn.textContent = '🎤 开始跟读'; recordBtn.disabled = false; }
         if (playBtn) playBtn.disabled = false;
       });
   },  _retrySpeaking() {
@@ -502,9 +602,70 @@ _startRecording(stageIndex, qIndex) {
     }
   },
 
-  _handleSpeakingComplete(stageIndex, qIndex) {
-    // 不再使用——由 _startRecording 替代
+  // --- 处理腾讯口语评测结果 ---
+  _handleTencentResult(result, statusEl, recordBtn, playBtn, q, refText, questions) {
     this.state.isWaiting = false;
+    if (recordBtn) { recordBtn.textContent = '🎤 开始跟读'; recordBtn.disabled = false; }
+    if (playBtn) playBtn.disabled = false;
+
+    const resultEl = document.getElementById('speaking-result');
+    const actionsEl = document.getElementById('speaking-actions');
+    const statusEl2 = document.getElementById('speaking-status');
+
+    if (!result.success) {
+      if (statusEl2) statusEl2.textContent = '⚠️ ' + (result.error || '评测失败');
+      if (resultEl) { resultEl.style.display = 'none'; }
+      if (actionsEl) {
+        actionsEl.style.display = 'flex';
+        actionsEl.innerHTML = '<button class="btn btn-small btn-outline" onclick="GameEngine._advanceSpeaking()">下一题 →</button>';
+      }
+      return;
+    }
+
+    var scoreVal = result.score || 0;
+    var accVal = result.accuracy || 0;
+    if (statusEl2) statusEl2.textContent = '✅ 评测完成！得分 ' + scoreVal + ' 分';
+
+    if (resultEl) {
+      var wordDetails = '';
+      if (result.words && result.words.length > 0) {
+        wordDetails = '<div style="margin-top:8px;font-size:12px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;">' +
+          result.words.map(function(w) {
+            return '<span style="padding:2px 6px;border-radius:4px;background:' + (w.isCorrect ? 'rgba(39,174,96,0.2)' : 'rgba(231,76,60,0.2)') + ';color:' + (w.isCorrect ? '#27AE60' : '#E74C3C') + ';">' + w.word + ' ' + w.score + '</span>';
+          }).join('') + '</div>';
+      }
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = '<div style="font-size:20px;font-weight:700;color:' + (scoreVal >= 80 ? '#27AE60' : '#F39C12') + ';">' + scoreVal + ' 分</div>' +
+        '<div style="font-size:13px;color:var(--text-secondary);">准确度 ' + accVal + '%</div>' +
+        wordDetails;
+    }
+
+    var speakingScore = Math.round(scoreVal * 10);
+    this.state.score += speakingScore;
+    this.state.allAnswers.push({
+      question: q,
+      selectedIndex: -1,
+      isCorrect: scoreVal >= 60,
+      score: speakingScore,
+      timeSpent: 5
+    });
+
+    if (actionsEl) {
+      actionsEl.style.display = 'flex';
+      actionsEl.innerHTML = '<button class="btn btn-small ' + (this.state.subject === 'en' ? 'btn-primary' : 'btn-math') + '" onclick="GameEngine._advanceSpeaking()">下一题 →</button>';
+    }
+  },
+
+  // --- 跟读完成后推进 ---
+  _advanceSpeaking() {
+    var state = this.state;
+    var questions = state.stageQuestions['speaking'];
+    var nextQ = state.questionIndex + 1;
+    if (nextQ >= questions.length) {
+      this._completeStage(3);
+    } else {
+      this._showQuestion(3, nextQ);
+    }
   },
 
   // --- 获取剩余时间 ---
