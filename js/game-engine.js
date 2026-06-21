@@ -463,6 +463,7 @@ _startRecording(stageIndex, qIndex) {
         var silenceCount = -1;
         var silencePromptShown = false;
         var silenceTimeoutHit = false;
+        var voiceDetected = false;
         var frameStart = Date.now();
         var elapsedSec = 0;
         var chunks = [];
@@ -484,17 +485,26 @@ _startRecording(stageIndex, qIndex) {
           if (level === 0) {
             if (silenceCount === -1) silenceCount = elapsedSec;
             var silenceDur = elapsedSec - silenceCount;
-            if (silenceDur >= 2.0 && !silencePromptShown) {
-              silencePromptShown = true;
-              if (statusEl) statusEl.textContent = '🔊 请大声朗读！';
-            }
-            if (silenceDur >= 6.0) {
-              silenceTimeoutHit = true;
-              if (recorder && recorder.state === 'recording') recorder.stop();
+            if (!voiceDetected) {
+              // 还没说过话：3s提示 → 6s超时 → 未作答
+              if (silenceDur >= 3.0 && !silencePromptShown) {
+                silencePromptShown = true;
+                if (statusEl) statusEl.textContent = '🔊 请大声朗读！';
+              }
+              if (silenceDur >= 6.0) {
+                silenceTimeoutHit = true;
+                if (recorder && recorder.state === 'recording') recorder.stop();
+              }
+            } else {
+              // 说过话：3s静音 → 认为读完了，提交评测
+              if (silenceDur >= 3.0) {
+                if (recorder && recorder.state === 'recording') recorder.stop();
+              }
             }
           } else {
             silenceCount = -1;
             silencePromptShown = false;
+            voiceDetected = true;
             if (statusEl && elapsedSec > 0.5) statusEl.textContent = '🎤 继续朗读...';
           }
           var now = Date.now();
@@ -508,68 +518,67 @@ _startRecording(stageIndex, qIndex) {
           volRAF = requestAnimationFrame(updateVolume);
         }
 
-        // 立即开始录音（取消前置播放）
-        setTimeout(function() {
-          if (statusEl) statusEl.textContent = '🎤 录音中... 请大声朗读';
-          var mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
-          recorder = new MediaRecorder(stream, { mimeType: mimeType });
-          recorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
+        // 立即开始录音
+        if (statusEl) statusEl.textContent = '🎤 录音中... 请大声朗读';
+        var mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
+        recorder = new MediaRecorder(stream, { mimeType: mimeType });
+        recorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
 
-          recorder.onstop = function() {
-            if (volRAF) { cancelAnimationFrame(volRAF); volRAF = null; }
-            try { audioCtx.close(); } catch(e) {}
-            stream.getTracks().forEach(function(t) { t.stop(); });
-            // 静音超时特殊处理
-            if (silenceTimeoutHit) {
-              _this.state.isWaiting = false;
-              if (statusEl) statusEl.textContent = '⏭️ 未作答';
-              if (recordBtn) { recordBtn.textContent = '🎤 开始跟读'; recordBtn.disabled = false; }
-              if (playBtn) playBtn.disabled = false;
-              _this.state.allAnswers.push({ question: q, selectedIndex: -1, isCorrect: false, score: 0, timeSpent: 0 });
-              var actionsEl2 = document.getElementById('speaking-actions');
-              if (actionsEl2) {
-                actionsEl2.style.display = 'flex';
-                actionsEl2.innerHTML = '<button class="btn btn-small btn-outline" onclick="GameEngine._advanceSpeaking()">进入下一题 →</button>';
-              }
-              return;
-            }
-            // 正常评测流程
-            var blob = new Blob(chunks, { type: 'audio/webm' });
-            var reader = new FileReader();
-            reader.onloadend = function() {
-              var base64 = reader.result.split(',')[1];
-              fetch('http://127.0.0.1:8126/api/evaluate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ audioBase64: base64, refText: refText })
-              })
-              .then(function(r) { return r.json(); })
-              .then(function(result) {
-                _this._handleTencentResult(result, statusEl, recordBtn, playBtn, q, refText, questions);
-              })
-              .catch(function(err) {
-                _this.state.isWaiting = false;
-                if (statusEl) statusEl.textContent = '⚠️ 评测服务连接失败';
-                if (recordBtn) { recordBtn.textContent = '🎤 开始跟读'; recordBtn.disabled = false; }
-                if (playBtn) playBtn.disabled = false;
-              });
-            };
-            reader.readAsDataURL(blob);
-          };
-
-          recorder.onerror = function() {
-            stream.getTracks().forEach(function(t) { t.stop(); });
+        recorder.onstop = function() {
+          if (volRAF) { cancelAnimationFrame(volRAF); volRAF = null; }
+          try { audioCtx.close(); } catch(e) {}
+          stream.getTracks().forEach(function(t) { t.stop(); });
+          // 未说过话 + 静音超时→ 未作答
+          if (silenceTimeoutHit) {
             _this.state.isWaiting = false;
-            if (statusEl) statusEl.textContent = '⚠️ 录音失败，请重试';
+            if (statusEl) statusEl.textContent = '⏭️ 未作答';
             if (recordBtn) { recordBtn.textContent = '🎤 开始跟读'; recordBtn.disabled = false; }
             if (playBtn) playBtn.disabled = false;
+            _this.state.allAnswers.push({ question: q, selectedIndex: -1, isCorrect: false, score: 0, timeSpent: 0 });
+            var actionsEl2 = document.getElementById('speaking-actions');
+            if (actionsEl2) {
+              actionsEl2.style.display = 'flex';
+              actionsEl2.innerHTML = '<button class="btn btn-small btn-outline" onclick="GameEngine._advanceSpeaking()">进入下一题 →</button>';
+            }
+            return;
+          }
+          // 说过话 + 静音 3s → 正常发送评测
+          if (statusEl) statusEl.textContent = '✅ 评价中...';
+          var blob = new Blob(chunks, { type: 'audio/webm' });
+          var reader = new FileReader();
+          reader.onloadend = function() {
+            var base64 = reader.result.split(',')[1];
+            fetch('http://127.0.0.1:8126/api/evaluate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ audioBase64: base64, refText: refText })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(result) {
+              _this._handleTencentResult(result, statusEl, recordBtn, playBtn, q, refText, questions);
+            })
+            .catch(function(err) {
+              _this.state.isWaiting = false;
+              if (statusEl) statusEl.textContent = '⚠️ 评测服务连接失败';
+              if (recordBtn) { recordBtn.textContent = '🎤 开始跟读'; recordBtn.disabled = false; }
+              if (playBtn) playBtn.disabled = false;
+            });
           };
+          reader.readAsDataURL(blob);
+        };
 
-          recorder.start();
-          frameStart = Date.now();
-          updateVolume();
-          setTimeout(function() { if (recorder.state === 'recording') recorder.stop(); }, maxDuration * 1000);
-        }, 500);
+        recorder.onerror = function() {
+          stream.getTracks().forEach(function(t) { t.stop(); });
+          _this.state.isWaiting = false;
+          if (statusEl) statusEl.textContent = '⚠️ 录音失败，请重试';
+          if (recordBtn) { recordBtn.textContent = '🎤 开始跟读'; recordBtn.disabled = false; }
+          if (playBtn) playBtn.disabled = false;
+        };
+
+        recorder.start();
+        frameStart = Date.now();
+        updateVolume();
+        setTimeout(function() { if (recorder.state === 'recording') recorder.stop(); }, maxDuration * 1000);
       })
       .catch(function() {
         _this.state.isWaiting = false;
