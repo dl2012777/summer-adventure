@@ -383,28 +383,18 @@ const GameEngine = {
     const isCorrect = selectedIndex === q.answer;
     const timeRemaining = this._getTimeRemaining();
 
-    // 计算得分
-    let score = 0;
-    const difficultyMult = { easy:1.0, medium:1.5, hard:2.0 }[q.difficulty] || 1.0;
-    const timeLimit = this.TIME_LIMITS[q.difficulty] || 20;
-    const speedRatio = timeLimit > 0 ? (timeRemaining / timeLimit) : 1.0;
-    const speedMult = Math.min(1.3, 1.0 + speedRatio * 0.3);
+   // 计算得分
+   let score = 0;
 
-    if (isCorrect) {
-      score = Math.round((q.pointValue || 10) * difficultyMult * speedMult);
-    }
-
-    // 连击
-    if (isCorrect) {
-      this.state.streak++;
-      if (this.state.streak > this.state.maxStreak) this.state.maxStreak = this.state.streak;
-      const streakMult = 1.0 + (this.state.streak - 1) * 0.05;
-      score = Math.round(score * Math.min(streakMult, 1.5));
-      this.state.score += score;
-    } else {
-      this.state.streak = 0;
-      this.state.wrongIds.add(q.id);
-    }
+   if (isCorrect) {
+     score = q.pointValue || 10;
+     this.state.streak++;
+     if (this.state.streak > this.state.maxStreak) this.state.maxStreak = this.state.streak;
+     this.state.score += score;
+   } else {
+     this.state.streak = 0;
+     this.state.wrongIds.add(q.id);
+   }
 
     // 记录答案
     this.state.allAnswers.push({
@@ -568,7 +558,7 @@ _startRecording(stageIndex, qIndex) {
           var reader = new FileReader();
           reader.onloadend = function() {
             var base64 = reader.result.split(',')[1];
-            fetch('http://127.0.0.1:8126/api/evaluate', {
+            fetch('http://'+window.location.hostname+':8126/api/evaluate', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ audioBase64: base64, refText: refText })
