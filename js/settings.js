@@ -37,7 +37,7 @@ const Settings = {
 
     modal.innerHTML = `
       <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s;">
-        <div style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:16px;max-width:400px;width:100%;padding:24px;">
+        <div style="background:#1a1a2e;color:#fff;border:1px solid rgba(255,255,255,0.1);border-radius:16px;max-width:400px;width:100%;padding:24px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
             <h3 style="font-size:18px;font-weight:700;">📊 题目类型设置</h3>
             <span style="font-size:24px;cursor:pointer;color:var(--text-secondary);" onclick="Settings.close()">✕</span>
@@ -46,22 +46,22 @@ const Settings = {
           <div style="text-align:center;">
             <canvas id="pie-chart" width="280" height="220" style="max-width:100%;"></canvas>
           </div>
-          <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;max-width:320px;margin-left:auto;margin-right:auto;">
             ${this.STAGES.map(function(s) {
              var val = w[s.key];
              var maxQ = {vocab:25,grammar:25,listening:12,speaking:12}[s.key] || 12;
              var count = Math.round(maxQ * val / 60);
-             return '<div style="display:flex;align-items:center;gap:8px;">' +
+             return '<div style="display:flex;align-items:center;justify-content:center;gap:8px;">' +
                '<span style="width:12px;height:12px;border-radius:3px;background:' + s.color + ';"></span>' +
-               '<span style="flex:1;font-size:14px;"><strong>' + s.label + '</strong> ' + count + '题</span>' +
+               '<span style="flex:0 1 auto;font-size:14px;"><strong>' + s.label + '</strong> ' + count + '题</span>' +
                 '<button class="btn-mini" onclick="Settings.adjust(\'' + s.key + '\',-5)" ' + (val <= 10 ? 'disabled style="opacity:0.3;"' : '') + '>−</button>' +
-                '<span style="font-size:15px;font-weight:600;min-width:40px;text-align:center;">' + val + '%</span>' +
+                '<span style="font-size:13px;color:var(--text-secondary);min-width:36px;text-align:center;">' + val + '分</span>' +
                 '<button class="btn-mini" onclick="Settings.adjust(\'' + s.key + '\',5)" ' + (val >= 60 ? 'disabled style="opacity:0.3;"' : '') + '>+</button>' +
                 '</div>';
             }).join('')}
           </div>
-          <div style="margin-top:16px;text-align:right;">
-            <span style="font-size:13px;color:var(--text-secondary);">合计 <strong style="color:#fff;">100%</strong></span>
+          <div style="margin-top:16px;text-align:center;">
+            <span style="font-size:13px;color:var(--text-secondary);">合计 <strong style="color:#fff;">100分</strong></span>
           </div>
           <button class="btn btn-primary btn-block" onclick="Settings.save()" style="margin-top:16px;">✅ 保存并关闭</button>
         </div>
