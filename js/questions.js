@@ -5,7 +5,7 @@ var QUESTIONS = {
 "id": "v1",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"mine\" 的中文意思是？",
+"question": "\"mine\"的中文意思是？",
 "options": [
 "我的",
 "你的",
@@ -13,13 +13,13 @@ var QUESTIONS = {
 "她的"
 ],
 "answer": 0,
-"explanation": "mine = 我的，名词性物主代词。"
+"explanation": "mine=我的，名词性物主代词。"
 },
 {
 "id": "v2",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"yours\" 的中文意思是？",
+"question": "\"yours\"的中文意思是？",
 "options": [
 "你的",
 "我的",
@@ -27,13 +27,13 @@ var QUESTIONS = {
 "她的"
 ],
 "answer": 0,
-"explanation": "yours = 你的，名词性物主代词。"
+"explanation": "yours=你的，名词性物主代词。"
 },
 {
 "id": "v3",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"his\" 的中文意思是？",
+"question": "\"his\"的中文意思是？",
 "options": [
 "他的",
 "我的",
@@ -41,13 +41,13 @@ var QUESTIONS = {
 "她的"
 ],
 "answer": 0,
-"explanation": "his = 他的，名词性物主代词。"
+"explanation": "his=他的，名词性物主代词。"
 },
 {
 "id": "v4",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"hers\" 的中文意思是？",
+"question": "\"hers\"的中文意思是？",
 "options": [
 "她的",
 "我的",
@@ -55,13 +55,13 @@ var QUESTIONS = {
 "他的"
 ],
 "answer": 0,
-"explanation": "hers = 她的，名词性物主代词。"
+"explanation": "hers=她的，名词性物主代词。"
 },
 {
 "id": "v5",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"its\" 的中文意思是？",
+"question": "\"its\"的中文意思是？",
 "options": [
 "它的",
 "我的",
@@ -69,13 +69,13 @@ var QUESTIONS = {
 "他的"
 ],
 "answer": 0,
-"explanation": "its = 它的，名词性物主代词。"
+"explanation": "its=它的，名词性物主代词。"
 },
 {
 "id": "v6",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"ours\" 的中文意思是？",
+"question": "\"ours\"的中文意思是？",
 "options": [
 "我们的",
 "我的",
@@ -83,13 +83,13 @@ var QUESTIONS = {
 "他的"
 ],
 "answer": 0,
-"explanation": "ours = 我们的，名词性物主代词。"
+"explanation": "ours=我们的，名词性物主代词。"
 },
 {
 "id": "v7",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"theirs\" 的中文意思是？",
+"question": "\"theirs\"的中文意思是？",
 "options": [
 "他们的",
 "我的",
@@ -97,7 +97,7 @@ var QUESTIONS = {
 "他的"
 ],
 "answer": 0,
-"explanation": "theirs = 他们的，名词性物主代词。"
+"explanation": "theirs=他们的，名词性物主代词。"
 },
 {
 "id": "v8",
@@ -111,7 +111,7 @@ var QUESTIONS = {
 "hers"
 ],
 "answer": 0,
-"explanation": "\"我的\" = mine。"
+"explanation": "\"我的\"=mine。"
 },
 {
 "id": "v9",
@@ -125,7 +125,7 @@ var QUESTIONS = {
 "hers"
 ],
 "answer": 0,
-"explanation": "\"你的\" = yours。"
+"explanation": "\"你的\"=yours。"
 },
 {
 "id": "v10",
@@ -139,7 +139,7 @@ var QUESTIONS = {
 "hers"
 ],
 "answer": 0,
-"explanation": "\"他的\" = his。"
+"explanation": "\"他的\"=his。"
 },
 {
 "id": "v11",
@@ -153,7 +153,7 @@ var QUESTIONS = {
 "his"
 ],
 "answer": 0,
-"explanation": "\"她的\" = hers。"
+"explanation": "\"她的\"=hers。"
 },
 {
 "id": "v12",
@@ -167,7 +167,7 @@ var QUESTIONS = {
 "his"
 ],
 "answer": 0,
-"explanation": "\"它的\" = its。"
+"explanation": "\"它的\"=its。"
 },
 {
 "id": "v13",
@@ -181,13 +181,13 @@ var QUESTIONS = {
 "his"
 ],
 "answer": 0,
-"explanation": "\"我们的\" = ours。"
+"explanation": "\"我们的\"=ours。"
 },
 {
 "id": "v14",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"我的\" 的形容词性物主代词是？",
+"question": "\"我的\"的形容词性物主代词是？",
 "options": [
 "my",
 "your",
@@ -195,13 +195,13 @@ var QUESTIONS = {
 "her"
 ],
 "answer": 0,
-"explanation": "我的 → my（形容词性）。"
+"explanation": "我的→my。"
 },
 {
 "id": "v15",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"你的\" 的形容词性物主代词是？",
+"question": "\"你的\"的形容词性物主代词是？",
 "options": [
 "your",
 "my",
@@ -209,13 +209,13 @@ var QUESTIONS = {
 "her"
 ],
 "answer": 0,
-"explanation": "你的 → your（形容词性）。"
+"explanation": "你的→your。"
 },
 {
 "id": "v16",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"他的\" 的形容词性物主代词是？",
+"question": "\"他的\"的形容词性物主代词是？",
 "options": [
 "his",
 "my",
@@ -223,13 +223,13 @@ var QUESTIONS = {
 "her"
 ],
 "answer": 0,
-"explanation": "他的 → his（形容词性）。"
+"explanation": "他的→his。"
 },
 {
 "id": "v17",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"她的\" 的形容词性物主代词是？",
+"question": "\"她的\"的形容词性物主代词是？",
 "options": [
 "her",
 "my",
@@ -237,13 +237,13 @@ var QUESTIONS = {
 "his"
 ],
 "answer": 0,
-"explanation": "她的 → her（形容词性）。"
+"explanation": "她的→her。"
 },
 {
 "id": "v18",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"我们的\" 的形容词性物主代词是？",
+"question": "\"我们的\"的形容词性物主代词是？",
 "options": [
 "our",
 "my",
@@ -251,13 +251,13 @@ var QUESTIONS = {
 "his"
 ],
 "answer": 0,
-"explanation": "我们的 → our（形容词性）。"
+"explanation": "我们的→our。"
 },
 {
 "id": "v19",
 "type": "vocabulary",
 "difficulty": "medium",
-"question": "\"第一\" 的英语是？",
+"question": "\"第一\"的英语是？",
 "options": [
 "first",
 "second",
@@ -265,13 +265,13 @@ var QUESTIONS = {
 "fourth"
 ],
 "answer": 0,
-"explanation": "第一 = first。"
+"explanation": "第一=first。"
 },
 {
 "id": "v20",
 "type": "vocabulary",
 "difficulty": "medium",
-"question": "\"第二\" 的英语是？",
+"question": "\"第二\"的英语是？",
 "options": [
 "second",
 "first",
@@ -279,13 +279,13 @@ var QUESTIONS = {
 "fourth"
 ],
 "answer": 0,
-"explanation": "第二 = second。"
+"explanation": "第二=second。"
 },
 {
 "id": "v21",
 "type": "vocabulary",
 "difficulty": "medium",
-"question": "\"第三\" 的英语是？",
+"question": "\"第三\"的英语是？",
 "options": [
 "third",
 "first",
@@ -293,13 +293,13 @@ var QUESTIONS = {
 "fourth"
 ],
 "answer": 0,
-"explanation": "第三 = third。"
+"explanation": "第三=third。"
 },
 {
 "id": "v22",
 "type": "vocabulary",
 "difficulty": "medium",
-"question": "\"第四\" 的英语是？",
+"question": "\"第四\"的英语是？",
 "options": [
 "fourth",
 "first",
@@ -307,13 +307,13 @@ var QUESTIONS = {
 "third"
 ],
 "answer": 0,
-"explanation": "第四 = fourth。"
+"explanation": "第四=fourth。"
 },
 {
 "id": "v23",
 "type": "vocabulary",
 "difficulty": "medium",
-"question": "\"第五\" 的英语是？",
+"question": "\"第五\"的英语是？",
 "options": [
 "fifth",
 "first",
@@ -321,13 +321,13 @@ var QUESTIONS = {
 "third"
 ],
 "answer": 0,
-"explanation": "第五 = fifth。"
+"explanation": "第五=fifth。"
 },
 {
 "id": "v24",
 "type": "vocabulary",
 "difficulty": "medium",
-"question": "\"第十\" 的英语是？",
+"question": "\"第十\"的英语是？",
 "options": [
 "tenth",
 "first",
@@ -335,13 +335,13 @@ var QUESTIONS = {
 "third"
 ],
 "answer": 0,
-"explanation": "第十 = tenth。"
+"explanation": "第十=tenth。"
 },
 {
 "id": "v25",
 "type": "vocabulary",
 "difficulty": "medium",
-"question": "\"第十二\" 的英语是？",
+"question": "\"第十二\"的英语是？",
 "options": [
 "eleventh",
 "first",
@@ -349,13 +349,13 @@ var QUESTIONS = {
 "third"
 ],
 "answer": 0,
-"explanation": "第十二 = eleventh。"
+"explanation": "第十二=eleventh。"
 },
 {
 "id": "v26",
 "type": "vocabulary",
 "difficulty": "medium",
-"question": "\"第十三\" 的英语是？",
+"question": "\"第十三\"的英语是？",
 "options": [
 "thirteenth",
 "first",
@@ -363,13 +363,13 @@ var QUESTIONS = {
 "third"
 ],
 "answer": 0,
-"explanation": "第十三 = thirteenth。"
+"explanation": "第十三=thirteenth。"
 },
 {
 "id": "v27",
 "type": "vocabulary",
 "difficulty": "medium",
-"question": "\"第二十\" 的英语是？",
+"question": "\"第二十\"的英语是？",
 "options": [
 "twentieth",
 "first",
@@ -377,13 +377,13 @@ var QUESTIONS = {
 "third"
 ],
 "answer": 0,
-"explanation": "第二十 = twentieth。"
+"explanation": "第二十=twentieth。"
 },
 {
 "id": "v28",
 "type": "vocabulary",
 "difficulty": "medium",
-"question": "\"第二十一\" 的英语是？",
+"question": "\"第二十一\"的英语是？",
 "options": [
 "twenty-first",
 "first",
@@ -391,13 +391,13 @@ var QUESTIONS = {
 "third"
 ],
 "answer": 0,
-"explanation": "第二十一 = twenty-first。"
+"explanation": "第二十一=twenty-first。"
 },
 {
 "id": "v29",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"birthday\" 的中文是？",
+"question": "\"birthday\"的中文是？",
 "options": [
 "生日",
 "派对",
@@ -405,13 +405,13 @@ var QUESTIONS = {
 "礼物"
 ],
 "answer": 0,
-"explanation": "birthday = 生日。"
+"explanation": "birthday=生日。"
 },
 {
 "id": "v30",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"party\" 的中文是？",
+"question": "\"party\"的中文是？",
 "options": [
 "派对",
 "生日",
@@ -419,13 +419,13 @@ var QUESTIONS = {
 "礼物"
 ],
 "answer": 0,
-"explanation": "party = 派对。"
+"explanation": "party=派对。"
 },
 {
 "id": "v31",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"cake\" 的中文是？",
+"question": "\"cake\"的中文是？",
 "options": [
 "蛋糕",
 "生日",
@@ -433,13 +433,13 @@ var QUESTIONS = {
 "礼物"
 ],
 "answer": 0,
-"explanation": "cake = 蛋糕。"
+"explanation": "cake=蛋糕。"
 },
 {
 "id": "v32",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"present\" 的中文是？",
+"question": "\"present\"的中文是？",
 "options": [
 "礼物",
 "生日",
@@ -447,13 +447,13 @@ var QUESTIONS = {
 "蛋糕"
 ],
 "answer": 0,
-"explanation": "present = 礼物。"
+"explanation": "present=礼物。"
 },
 {
 "id": "v33",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"invitation\" 的中文是？",
+"question": "\"invitation\"的中文是？",
 "options": [
 "邀请",
 "生日",
@@ -461,13 +461,13 @@ var QUESTIONS = {
 "蛋糕"
 ],
 "answer": 0,
-"explanation": "invitation = 邀请。"
+"explanation": "invitation=邀请。"
 },
 {
 "id": "v34",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"tidy\" 的中文是？",
+"question": "\"tidy\"的中文是？",
 "options": [
 "整洁的",
 "生日",
@@ -475,13 +475,13 @@ var QUESTIONS = {
 "蛋糕"
 ],
 "answer": 0,
-"explanation": "tidy = 整洁的。"
+"explanation": "tidy=整洁的。"
 },
 {
 "id": "v35",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"messy\" 的中文是？",
+"question": "\"messy\"的中文是？",
 "options": [
 "凌乱的",
 "生日",
@@ -489,13 +489,13 @@ var QUESTIONS = {
 "蛋糕"
 ],
 "answer": 0,
-"explanation": "messy = 凌乱的。"
+"explanation": "messy=凌乱的。"
 },
 {
 "id": "v36",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"put away\" 的中文是？",
+"question": "\"put away\"的中文是？",
 "options": [
 "收拾好",
 "生日",
@@ -503,13 +503,13 @@ var QUESTIONS = {
 "蛋糕"
 ],
 "answer": 0,
-"explanation": "put away = 收拾好。"
+"explanation": "put away=收拾好。"
 },
 {
 "id": "v37",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"whose\" 的中文是？",
+"question": "\"whose\"的中文是？",
 "options": [
 "谁的",
 "生日",
@@ -517,13 +517,13 @@ var QUESTIONS = {
 "蛋糕"
 ],
 "answer": 0,
-"explanation": "whose = 谁的。"
+"explanation": "whose=谁的。"
 },
 {
 "id": "v38",
 "type": "vocabulary",
 "difficulty": "easy",
-"question": "\"invite\" 的中文是？",
+"question": "\"invite\"的中文是？",
 "options": [
 "邀请",
 "生日",
@@ -531,13 +531,13 @@ var QUESTIONS = {
 "蛋糕"
 ],
 "answer": 0,
-"explanation": "invite = 邀请。"
+"explanation": "invite=邀请。"
 },
 {
 "id": "g1",
 "type": "grammar",
 "difficulty": "easy",
-"question": "This book is _____. (我的)",
+"question": "This book is _____.(我的)",
 "options": [
 "mine",
 "my",
@@ -545,13 +545,13 @@ var QUESTIONS = {
 "I"
 ],
 "answer": 0,
-"explanation": "后面无名词用名词性mine。"
+"explanation": "后无名词用mine。"
 },
 {
 "id": "g2",
 "type": "grammar",
 "difficulty": "easy",
-"question": "Is this _____ pen? (你的)",
+"question": "Is this _____ pen?(你的)",
 "options": [
 "your",
 "yours",
@@ -559,13 +559,13 @@ var QUESTIONS = {
 "yourselves"
 ],
 "answer": 0,
-"explanation": "后有名词pen用your。"
+"explanation": "后有pen用your。"
 },
 {
 "id": "g3",
 "type": "grammar",
 "difficulty": "easy",
-"question": "These are _____ shoes. (她的)",
+"question": "These are _____ shoes.(她的)",
 "options": [
 "her",
 "hers",
@@ -573,13 +573,13 @@ var QUESTIONS = {
 "herself"
 ],
 "answer": 0,
-"explanation": "后有名词shoes用her。"
+"explanation": "后有shoes用her。"
 },
 {
 "id": "g4",
 "type": "grammar",
 "difficulty": "medium",
-"question": "— Whose bag is this? — It's _____. (我的)",
+"question": "—Whose bag?—It's _____.(我的)",
 "options": [
 "mine",
 "my",
@@ -587,13 +587,13 @@ var QUESTIONS = {
 "myself"
 ],
 "answer": 0,
-"explanation": "回答谁的用名词性mine。"
+"explanation": "回答用名词性。"
 },
 {
 "id": "g5",
 "type": "grammar",
 "difficulty": "easy",
-"question": "The cat is _____. (她的)",
+"question": "The cat is _____.(她的)",
 "options": [
 "hers",
 "her",
@@ -601,7 +601,7 @@ var QUESTIONS = {
 "herself"
 ],
 "answer": 0,
-"explanation": "无名词用名词性hers。"
+"explanation": "无名词用hers。"
 },
 {
 "id": "g6",
@@ -629,7 +629,7 @@ var QUESTIONS = {
 "by"
 ],
 "answer": 0,
-"explanation": "星期前用on。"
+"explanation": "星期用on。"
 },
 {
 "id": "g8",
@@ -643,7 +643,7 @@ var QUESTIONS = {
 "by"
 ],
 "answer": 0,
-"explanation": "月份前用in。"
+"explanation": "月份用in。"
 },
 {
 "id": "g9",
@@ -657,7 +657,7 @@ var QUESTIONS = {
 "by"
 ],
 "answer": 0,
-"explanation": "具体时刻用at。"
+"explanation": "时刻用at。"
 },
 {
 "id": "g10",
@@ -705,21 +705,20 @@ var QUESTIONS = {
 "id": "g13",
 "type": "grammar",
 "difficulty": "medium",
-"question": "选出正确的句子：",
+"question": "正确句子：",
 "options": [
 "This is my pen.",
 "This is mine pen.",
-"This is I pen.",
-"This is me pen."
+"This is I pen."
 ],
 "answer": 0,
-"explanation": "my是形容词性，后跟名词。"
+"explanation": "my后跟名词。"
 },
 {
 "id": "g14",
 "type": "grammar",
 "difficulty": "hard",
-"question": "哪处有错误？\"This is mine book.\"",
+"question": "错误？\"This is mine book.\"",
 "options": [
 "This",
 "is",
@@ -727,13 +726,13 @@ var QUESTIONS = {
 "book"
 ],
 "answer": 2,
-"explanation": "mine不能修饰名词。"
+"explanation": "mine不能修名词。"
 },
 {
 "id": "g15",
 "type": "grammar",
 "difficulty": "hard",
-"question": "哪处有错误？\"My birthday is in May 1st.\"",
+"question": "错误？\"May 1st\"前介词",
 "options": [
 "My birthday",
 "is",
@@ -747,7 +746,7 @@ var QUESTIONS = {
 "id": "g16",
 "type": "grammar",
 "difficulty": "medium",
-"question": "选择正确的疑问词：_____ book is this?",
+"question": "_____ book is this?",
 "options": [
 "Whose",
 "Who",
@@ -755,7 +754,7 @@ var QUESTIONS = {
 "Which"
 ],
 "answer": 0,
-"explanation": "提问归属用Whose。"
+"explanation": "提问归属。"
 },
 {
 "id": "g17",
@@ -769,7 +768,7 @@ var QUESTIONS = {
 "no article"
 ],
 "answer": 1,
-"explanation": "apple元音用an。"
+"explanation": "apple用an。"
 },
 {
 "id": "g18",
@@ -783,7 +782,7 @@ var QUESTIONS = {
 "no article"
 ],
 "answer": 1,
-"explanation": "orange元音用an。"
+"explanation": "orange用an。"
 },
 {
 "id": "g19",
@@ -797,7 +796,7 @@ var QUESTIONS = {
 "invited"
 ],
 "answer": 0,
-"explanation": "祈使句用动词原形。"
+"explanation": "祈使句原形。"
 },
 {
 "id": "g20",
@@ -929,7 +928,7 @@ var QUESTIONS = {
 "id": "g29",
 "type": "grammar",
 "difficulty": "hard",
-"question": "We _____ to the party yesterday.",
+"question": "We _____ yesterday.",
 "options": [
 "went",
 "go",
@@ -937,7 +936,7 @@ var QUESTIONS = {
 "goes"
 ],
 "answer": 0,
-"explanation": "yesterday用过去时。"
+"explanation": "yesterday用过去。"
 },
 {
 "id": "g30",
@@ -965,7 +964,7 @@ var QUESTIONS = {
 "helped"
 ],
 "answer": 0,
-"explanation": "let+宾+原形。"
+"explanation": "let+原形。"
 },
 {
 "id": "g32",
@@ -973,61 +972,61 @@ var QUESTIONS = {
 "difficulty": "hard",
 "question": "Is this _____ book or _____?",
 "options": [
-"your, mine",
-"yours, my",
-"your, my",
-"yours, mine"
+"your,mine",
+"yours,my",
+"your,my",
+"yours,mine"
 ],
 "answer": 0,
-"explanation": "前有名词用your，后无用mine。"
+"explanation": "前后有名词用your，后用mine。"
 },
 {
 "id": "g33",
 "type": "grammar",
 "difficulty": "hard",
-"question": "_____ room is tidy, but _____ is not.",
+"question": "_____ room is tidy, _____ is not.",
 "options": [
-"My, hers",
-"Mine, her",
-"My, her",
-"Mine, hers"
+"My,hers",
+"Mine,her",
+"My,her",
+"Mine,hers"
 ],
 "answer": 0,
-"explanation": "前有名词用My，后用名词性hers。"
+"explanation": "前有名词用My，后用hers。"
 },
 {
 "id": "g34",
 "type": "grammar",
 "difficulty": "hard",
-"question": "This is not _____ pen. It's _____.",
+"question": "Not _____ pen.It's _____.",
 "options": [
-"my, yours",
-"mine, your",
-"my, your",
-"mine, yours"
+"my,yours",
+"mine,your",
+"my,your",
+"mine,yours"
 ],
 "answer": 0,
-"explanation": "前有名词用my，后用名词性yours。"
+"explanation": "前用my后用yours。"
 },
 {
 "id": "g35",
 "type": "grammar",
 "difficulty": "hard",
-"question": "_____ car is red, but _____ is blue.",
+"question": "_____ car is _____.",
 "options": [
-"Our, theirs",
-"Ours, their",
-"Our, their",
-"Ours, theirs"
+"Our,theirs",
+"Ours,their",
+"Our,their",
+"Ours,theirs"
 ],
 "answer": 0,
-"explanation": "前有名词用Our，后用名词性theirs。"
+"explanation": "前有名词用Our后用theirs。"
 },
 {
 "id": "g36",
 "type": "grammar",
 "difficulty": "medium",
-"question": "It's time _____ go to school.",
+"question": "It's time _____ go.",
 "options": [
 "to",
 "for",
@@ -1041,7 +1040,7 @@ var QUESTIONS = {
 "id": "g37",
 "type": "grammar",
 "difficulty": "easy",
-"question": "He _____ a new bike for his birthday.",
+"question": "He _____ a bike.",
 "options": [
 "gets",
 "get",
@@ -1055,7 +1054,7 @@ var QUESTIONS = {
 "id": "g38",
 "type": "grammar",
 "difficulty": "easy",
-"question": "We _____ Happy Birthday to her.",
+"question": "We _____ Happy Birthday.",
 "options": [
 "sing",
 "sings",
@@ -1069,421 +1068,451 @@ var QUESTIONS = {
 "id": "l1",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "This is my book.",
 "options": [
 "这是我的书。",
 "这是你的书。",
-"那是他的书。"
+"那是他的书。",
+"那是她的书。"
 ],
 "answer": 0,
-"explanation": "\"This is my book.\" = \"这是我的书。\""
+"explanation": "\"This is my book.\"=\"这是我的书。\""
 },
 {
 "id": "l2",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "Is this your pen?",
 "options": [
 "这是你的钢笔吗？",
 "那是我的钢笔。",
-"这是他的铅笔。"
+"这是他的铅笔。",
+"那是她的尺子。"
 ],
 "answer": 0,
-"explanation": "\"Is this your pen?\" = \"这是你的钢笔吗？\""
+"explanation": "\"Is this your pen?\"=\"这是你的钢笔吗？\""
 },
 {
 "id": "l3",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "Whose bag is this?",
 "options": [
 "这是谁的包？",
 "这是谁的钢笔？",
-"那是我的书包。"
+"那是我的书包。",
+"这是你的尺子。"
 ],
 "answer": 0,
-"explanation": "\"Whose bag is this?\" = \"这是谁的包？\""
+"explanation": "\"Whose bag is this?\"=\"这是谁的包？\""
 },
 {
 "id": "l4",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "This is mine.",
 "options": [
 "这是我的。",
 "这是你的。",
-"那是他的。"
+"那是他的。",
+"那是她的。"
 ],
 "answer": 0,
-"explanation": "\"This is mine.\" = \"这是我的。\""
+"explanation": "\"This is mine.\"=\"这是我的。\""
 },
 {
 "id": "l5",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "Is this yours?",
 "options": [
 "这是你的吗？",
 "这是我的吗？",
-"那是他的吗？"
+"那是他的吗？",
+"那是她的吗？"
 ],
 "answer": 0,
-"explanation": "\"Is this yours?\" = \"这是你的吗？\""
+"explanation": "\"Is this yours?\"=\"这是你的吗？\""
 },
 {
 "id": "l6",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "The book is hers.",
 "options": [
 "这本书是她的。",
 "这本书是他的。",
-"这本书是我的。"
+"这本书是我的。",
+"这本书是你的。"
 ],
 "answer": 0,
-"explanation": "\"The book is hers.\" = \"这本书是她的。\""
+"explanation": "\"The book is hers.\"=\"这本书是她的。\""
 },
 {
 "id": "l7",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "Put away your toys.",
 "options": [
 "收拾好玩具。",
 "扔掉玩具。",
-"拿出玩具。"
+"拿出玩具。",
+"找到玩具。"
 ],
 "answer": 0,
-"explanation": "\"Put away your toys.\" = \"收拾好玩具。\""
+"explanation": "\"Put away your toys.\"=\"收拾好玩具。\""
 },
 {
 "id": "l8",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "Tidy up your room.",
 "options": [
 "整理房间。",
 "打扫房间。",
-"装饰房间。"
+"装饰房间。",
+"离开房间。"
 ],
 "answer": 0,
-"explanation": "\"Tidy up your room.\" = \"整理房间。\""
+"explanation": "\"Tidy up your room.\"=\"整理房间。\""
 },
 {
 "id": "l9",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "My birthday is in July.",
 "options": [
 "生日在七月。",
 "生日在六月。",
-"生日在八月。"
+"生日在八月。",
+"生日在九月。"
 ],
 "answer": 0,
-"explanation": "\"My birthday is in July.\" = \"生日在七月。\""
+"explanation": "\"My birthday is in July.\"=\"生日在七月。\""
 },
 {
 "id": "l10",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
-"textToSpeak": "Her birthday is on May 1st.",
+"question": "请听句子选正确翻译",
+"textToSpeak": "Her birthday is May 1st.",
 "options": [
 "生日在五月一日。",
 "生日在五月五日。",
-"生日在三月一日。"
+"生日在三月一日。",
+"生日在四月一日。"
 ],
 "answer": 0,
-"explanation": "\"Her birthday is on May 1st.\" = \"生日在五月一日。\""
+"explanation": "\"Her birthday is May 1st.\"=\"生日在五月一日。\""
 },
 {
 "id": "l11",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "This classroom is ours.",
 "options": [
 "教室是我们的。",
 "教室是你们的。",
-"教室是他们的。"
+"教室是他们的。",
+"教室是我的。"
 ],
 "answer": 0,
-"explanation": "\"This classroom is ours.\" = \"教室是我们的。\""
+"explanation": "\"This classroom is ours.\"=\"教室是我们的。\""
 },
 {
 "id": "l12",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "Please come to my party.",
 "options": [
 "来参加派对。",
 "来参加生日。",
-"来参加聚会。"
+"来参加聚会。",
+"来参加晚餐。"
 ],
 "answer": 0,
-"explanation": "\"Please come to my party.\" = \"来参加派对。\""
+"explanation": "\"Please come to my party.\"=\"来参加派对。\""
 },
 {
 "id": "l13",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "I want to invite friends.",
 "options": [
 "想邀请朋友。",
 "想邀请老师。",
-"想邀请同学。"
+"想邀请同学。",
+"想邀请家人。"
 ],
 "answer": 0,
-"explanation": "\"I want to invite friends.\" = \"想邀请朋友。\""
+"explanation": "\"I want to invite friends.\"=\"想邀请朋友。\""
 },
 {
 "id": "l14",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
-"textToSpeak": "We eat cake at the party.",
+"question": "请听句子选正确翻译",
+"textToSpeak": "We eat cake at party.",
 "options": [
 "吃蛋糕。",
 "唱歌。",
-"玩游戏。"
+"玩游戏。",
+"跳舞。"
 ],
 "answer": 0,
-"explanation": "\"We eat cake at the party.\" = \"吃蛋糕。\""
+"explanation": "\"We eat cake at party.\"=\"吃蛋糕。\""
 },
 {
 "id": "l15",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "She blows out candles.",
 "options": [
 "吹灭蜡烛。",
 "点燃蜡烛。",
-"数蜡烛。"
+"数蜡烛。",
+"买蜡烛。"
 ],
 "answer": 0,
-"explanation": "\"She blows out candles.\" = \"吹灭蜡烛。\""
+"explanation": "\"She blows out candles.\"=\"吹灭蜡烛。\""
 },
 {
 "id": "l16",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "He makes a wish.",
 "options": [
 "许了个愿。",
 "做了个梦。",
-"唱了首歌。"
+"唱了首歌。",
+"讲了个故事。"
 ],
 "answer": 0,
-"explanation": "\"He makes a wish.\" = \"许了个愿。\""
+"explanation": "\"He makes a wish.\"=\"许了个愿。\""
 },
 {
 "id": "l17",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "These are our balloons.",
 "options": [
 "我们的气球。",
 "你们的气球。",
-"他们的气球。"
+"他们的气球。",
+"我的气球。"
 ],
 "answer": 0,
-"explanation": "\"These are our balloons.\" = \"我们的气球。\""
+"explanation": "\"These are our balloons.\"=\"我们的气球。\""
 },
 {
 "id": "l18",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
-"textToSpeak": "The presents are for you.",
+"question": "请听句子选正确翻译",
+"textToSpeak": "Presents are for you.",
 "options": [
 "礼物给你。",
 "礼物给我。",
-"礼物给她。"
+"礼物给她。",
+"礼物给他。"
 ],
 "answer": 0,
-"explanation": "\"The presents are for you.\" = \"礼物给你。\""
+"explanation": "\"Presents are for you.\"=\"礼物给你。\""
 },
 {
 "id": "l19",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "We sing Happy Birthday.",
 "options": [
 "唱生日歌。",
 "唱圣诞歌。",
-"唱儿歌。"
+"唱儿歌。",
+"唱国歌。"
 ],
 "answer": 0,
-"explanation": "\"We sing Happy Birthday.\" = \"唱生日歌。\""
+"explanation": "\"We sing Happy Birthday.\"=\"唱生日歌。\""
 },
 {
 "id": "l20",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "The party is on Sunday.",
 "options": [
 "派对在周日。",
 "派对在周六。",
-"派对在周五。"
+"派对在周五。",
+"派对在周一。"
 ],
 "answer": 0,
-"explanation": "\"The party is on Sunday.\" = \"派对在周日。\""
+"explanation": "\"The party is on Sunday.\"=\"派对在周日。\""
 },
 {
 "id": "l21",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "Let's decorate the room.",
 "options": [
 "装饰房间。",
 "打扫房间。",
-"整理房间。"
+"整理房间。",
+"离开房间。"
 ],
 "answer": 0,
-"explanation": "\"Let's decorate the room.\" = \"装饰房间。\""
+"explanation": "\"Let's decorate the room.\"=\"装饰房间。\""
 },
 {
 "id": "l22",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "I am ten years old.",
 "options": [
 "我十岁了。",
 "我九岁了。",
-"我十一岁。"
+"我十一岁。",
+"我十二岁。"
 ],
 "answer": 0,
-"explanation": "\"I am ten years old.\" = \"我十岁了。\""
+"explanation": "\"I am ten years old.\"=\"我十岁了。\""
 },
 {
 "id": "l23",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "When is your birthday?",
 "options": [
 "生日什么时候？",
 "派对什么时候？",
-"考试什么时候？"
+"考试什么时候？",
+"假期什么时候？"
 ],
 "answer": 0,
-"explanation": "\"When is your birthday?\" = \"生日什么时候？\""
+"explanation": "\"When is your birthday?\"=\"生日什么时候？\""
 },
 {
 "id": "l24",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
-"textToSpeak": "The party starts at 2 p.m.",
+"question": "请听句子选正确翻译",
+"textToSpeak": "Party starts at 2 p.m.",
 "options": [
 "下午两点开始。",
 "下午三点开始。",
-"下午一点开始。"
+"下午一点开始。",
+"下午四点开始。"
 ],
 "answer": 0,
-"explanation": "\"The party starts at 2 p.m.\" = \"下午两点开始。\""
+"explanation": "\"Party starts at 2 p.m.\"=\"下午两点开始。\""
 },
 {
 "id": "l25",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "I want a bicycle.",
 "options": [
 "想要自行车。",
 "想要书本。",
-"想要蛋糕。"
+"想要蛋糕。",
+"想要新衣服。"
 ],
 "answer": 0,
-"explanation": "\"I want a bicycle.\" = \"想要自行车。\""
+"explanation": "\"I want a bicycle.\"=\"想要自行车。\""
 },
 {
 "id": "l26",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "She gives me a gift.",
 "options": [
 "她给我礼物。",
 "他给我礼物。",
-"朋友给我礼物。"
+"朋友给我礼物。",
+"老师给我礼物。"
 ],
 "answer": 0,
-"explanation": "\"She gives me a gift.\" = \"她给我礼物。\""
+"explanation": "\"She gives me a gift.\"=\"她给我礼物。\""
 },
 {
 "id": "l27",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
-"textToSpeak": "This card is from my friend.",
+"question": "请听句子选正确翻译",
+"textToSpeak": "Card from my friend.",
 "options": [
 "朋友送的卡片。",
 "妈妈送的卡片。",
-"老师送的卡片。"
+"老师送的卡片。",
+"同学送的卡片。"
 ],
 "answer": 0,
-"explanation": "\"This card is from my friend.\" = \"朋友送的卡片。\""
+"explanation": "\"Card from my friend.\"=\"朋友送的卡片。\""
 },
 {
 "id": "l28",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
-"textToSpeak": "How old is your sister?",
+"question": "请听句子选正确翻译",
+"textToSpeak": "How old is sister?",
 "options": [
 "妹妹几岁？",
 "弟弟几岁？",
-"姐姐几岁？"
+"姐姐几岁？",
+"妈妈几岁？"
 ],
 "answer": 0,
-"explanation": "\"How old is your sister?\" = \"妹妹几岁？\""
+"explanation": "\"How old is sister?\"=\"妹妹几岁？\""
 },
 {
 "id": "l29",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "We have a party today.",
 "options": [
 "今天有派对。",
 "明天有派对。",
-"昨天有派对。"
+"昨天有派对。",
+"上周有派对。"
 ],
 "answer": 0,
-"explanation": "\"We have a party today.\" = \"今天有派对。\""
+"explanation": "\"We have a party today.\"=\"今天有派对。\""
 },
 {
 "id": "l30",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子，选择正确的翻译",
+"question": "请听句子选正确翻译",
 "textToSpeak": "My mother is a doctor.",
 "options": [
 "妈妈是医生。",
 "爸爸是医生。",
-"姐姐是医生。"
+"姐姐是医生。",
+"哥哥是医生。"
 ],
 "answer": 0,
-"explanation": "\"My mother is a doctor.\" = \"妈妈是医生。\""
+"explanation": "\"My mother is a doctor.\"=\"妈妈是医生。\""
 },
 {
 "id": "s1",
@@ -1499,7 +1528,7 @@ var QUESTIONS = {
 "difficulty": "medium",
 "question": "请跟读：This is mine, not yours.",
 "textToSpeak": "This is mine, not yours.",
-"explanation": "注意mine和yours区别。"
+"explanation": "注意mine/yours。"
 },
 {
 "id": "s3",
@@ -1515,7 +1544,7 @@ var QUESTIONS = {
 "difficulty": "medium",
 "question": "请跟读：This is ours, not theirs.",
 "textToSpeak": "This is ours, not theirs.",
-"explanation": "注意ours和theirs发音。"
+"explanation": "注意ours/theirs。"
 },
 {
 "id": "s5",
@@ -1523,7 +1552,7 @@ var QUESTIONS = {
 "difficulty": "medium",
 "question": "请跟读：Please tidy up your room!",
 "textToSpeak": "Please tidy up your room!",
-"explanation": "祈使句语气肯定。"
+"explanation": "祈使句语气。"
 },
 {
 "id": "s6",
@@ -1539,7 +1568,7 @@ var QUESTIONS = {
 "difficulty": "medium",
 "question": "请跟读：Is this your pen?",
 "textToSpeak": "Is this your pen?",
-"explanation": "问句语调上扬。"
+"explanation": "问句上扬。"
 },
 {
 "id": "s8",
@@ -1547,7 +1576,7 @@ var QUESTIONS = {
 "difficulty": "medium",
 "question": "请跟读：Whose bag is this?",
 "textToSpeak": "Whose bag is this?",
-"explanation": "特殊疑问句降调。"
+"explanation": "降调。"
 },
 {
 "id": "s9",
@@ -1555,39 +1584,39 @@ var QUESTIONS = {
 "difficulty": "medium",
 "question": "请跟读：My birthday is in July.",
 "textToSpeak": "My birthday is in July.",
-"explanation": "注意July发音。"
+"explanation": "July发音。"
 },
 {
 "id": "s10",
 "type": "speaking",
 "difficulty": "medium",
-"question": "请跟读：Her birthday is on May 1st.",
-"textToSpeak": "Her birthday is on May 1st.",
-"explanation": "注意序数词first。"
+"question": "请跟读：Her birthday is May 1st.",
+"textToSpeak": "Her birthday is May 1st.",
+"explanation": "first发音。"
 },
 {
 "id": "s11",
 "type": "speaking",
 "difficulty": "medium",
-"question": "请跟读：I want to invite my friends.",
-"textToSpeak": "I want to invite my friends.",
-"explanation": "注意want to连读。"
+"question": "请跟读：I want to invite friends.",
+"textToSpeak": "I want to invite friends.",
+"explanation": "want to连读。"
 },
 {
 "id": "s12",
 "type": "speaking",
 "difficulty": "medium",
-"question": "请跟读：We eat cake at the party.",
-"textToSpeak": "We eat cake at the party.",
-"explanation": "注意cake发音。"
+"question": "请跟读：We eat cake at party.",
+"textToSpeak": "We eat cake at party.",
+"explanation": "cake发音。"
 },
 {
 "id": "s13",
 "type": "speaking",
 "difficulty": "medium",
-"question": "请跟读：She blows out the candles.",
-"textToSpeak": "She blows out the candles.",
-"explanation": "注意复数发音。"
+"question": "请跟读：She blows out candles.",
+"textToSpeak": "She blows out candles.",
+"explanation": "复数发音。"
 },
 {
 "id": "s14",
@@ -1595,7 +1624,7 @@ var QUESTIONS = {
 "difficulty": "medium",
 "question": "请跟读：He makes a wish.",
 "textToSpeak": "He makes a wish.",
-"explanation": "注意wish发音。"
+"explanation": "wish发音。"
 },
 {
 "id": "s15",
@@ -1603,7 +1632,7 @@ var QUESTIONS = {
 "difficulty": "medium",
 "question": "请跟读：This classroom is ours.",
 "textToSpeak": "This classroom is ours.",
-"explanation": "强调ours名词性。"
+"explanation": "ours名词性。"
 },
 {
 "id": "s16",
@@ -1611,7 +1640,7 @@ var QUESTIONS = {
 "difficulty": "medium",
 "question": "请跟读：The party is on Sunday.",
 "textToSpeak": "The party is on Sunday.",
-"explanation": "注意Sunday重音。"
+"explanation": "Sunday重音。"
 },
 {
 "id": "s17",
@@ -1619,7 +1648,7 @@ var QUESTIONS = {
 "difficulty": "medium",
 "question": "请跟读：Let's decorate the room.",
 "textToSpeak": "Let's decorate the room.",
-"explanation": "注意decorate发音。"
+"explanation": "decorate发音。"
 },
 {
 "id": "s18",
@@ -1627,7 +1656,7 @@ var QUESTIONS = {
 "difficulty": "medium",
 "question": "请跟读：I am ten years old.",
 "textToSpeak": "I am ten years old.",
-"explanation": "注意years发音。"
+"explanation": "years发音。"
 },
 {
 "id": "s19",
@@ -1643,7 +1672,7 @@ var QUESTIONS = {
 "difficulty": "medium",
 "question": "请跟读：I want a bicycle.",
 "textToSpeak": "I want a bicycle.",
-"explanation": "注意bicycle音节。"
+"explanation": "bicycle音节。"
 },
 {
 "id": "r1",

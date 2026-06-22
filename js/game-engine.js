@@ -1080,7 +1080,32 @@ _startRecording(stageIndex, qIndex) {
     }
   },
 
+  // --- 重算各关卡成绩（错题订正后更新） ---
+  _recalculateStageResults() {
+    var state = this.state;
+    if (!state.stageResults || !state.allAnswers) return;
+    function _stageKey(t) {
+      if (t === 'vocabulary' || t === 'vocab') return 'vocab';
+      if (t === 'grammar') return 'grammar';
+      if (t === 'listening') return 'listening';
+      if (t === 'speaking') return 'speaking';
+      if (t === 'boss' || t === 'reading') return 'boss';
+      return 'vocab';
+    }
+    state.stageResults.forEach(function(sr) {
+      var sa = state.allAnswers.filter(function(a) { return _stageKey(a.question && a.question.type) === sr.key; });
+      if (sa.length === 0) return;
+      var cr = sa.filter(function(a) { return a.isCorrect; }).length;
+      var sc = sa.reduce(function(s, a) { return s + (a.score || 0); }, 0);
+      sr.correct = cr;
+      sr.total = sa.length;
+      sr.score = Math.round(sc);
+      sr.accuracy = Math.round(cr / sa.length * 100);
+    });
+  },
+
   _completeReview() {
+    this._recalculateStageResults();
     this._completeGame();
   },
 
@@ -1131,12 +1156,13 @@ _finishAndSave() {
       dateCompleted: new Date().toISOString(),
       subject: state.subject,
       dayKey: state.dayKey,
-      stages: {
-        vocab: state.stageResults[0] || { correct:0, total:0, score:0 },
-        grammar: state.stageResults[1] || { correct:0, total:0, score:0 },
-        speaking: state.stageResults[2] || { correct:0, total:0, score:0 },
-        boss: state.stageResults[3] || { correct:0, total:0, score:0 }
-      },
+     stages: {
+       vocab: state.stageResults[0] || { correct:0, total:0, score:0 },
+       grammar: state.stageResults[1] || { correct:0, total:0, score:0 },
+       listening: state.stageResults[2] || { correct:0, total:0, score:0 },
+       speaking: state.stageResults[3] || { correct:0, total:0, score:0 },
+       boss: state.stageResults[4] || { correct:0, total:0, score:0 }
+     },
       wrongQuestionIds: [...state.wrongIds],
       attempts: 1,
       timeSpent: Math.round(state.allAnswers.reduce((s, a) => s + (a.timeSpent || 5), 0))
