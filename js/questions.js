@@ -1,10 +1,1759 @@
 // Questions — 40天题库 (首批3天完整)
 var QUESTIONS = {
-  'en-day1': [{"id": "v1", "type": "vocabulary", "difficulty": "easy", "pointValue": 100, "question": "\"mine\" 的中文是？", "options": ["我的", "你的", "他的", "她的"], "answer": 0, "explanation": "mine = 我的，名词性物主代词。"}, {"id": "v2", "type": "vocabulary", "difficulty": "easy", "pointValue": 100, "question": "\"yours\" 的中文是？", "options": ["你的", "我的", "他的", "她的"], "answer": 0, "explanation": "yours = 你的/你们的。"}, {"id": "v3", "type": "vocabulary", "difficulty": "easy", "pointValue": 100, "question": "\"tidy\" 的中文是？", "options": ["整洁的", "凌乱的", "安静的", "大声的"], "answer": 0, "explanation": "tidy = 整洁的，收拾整齐。"}, {"id": "v4", "type": "vocabulary", "difficulty": "easy", "pointValue": 100, "question": "\"messy\" 的中文是？", "options": ["凌乱的", "整洁的", "干净的", "明亮的"], "answer": 0, "explanation": "messy = 凌乱的，不整洁。"}, {"id": "v5", "type": "vocabulary", "difficulty": "medium", "pointValue": 100, "question": "\"他的\" 用英语怎么说（名词性）？", "options": ["his", "him", "he", "her"], "answer": 0, "explanation": "his = 他的（名词性物主代词，his既是形容词性也是名词性）。"}, {"id": "v6", "type": "vocabulary", "difficulty": "medium", "pointValue": 100, "question": "\"她的\" 用英语怎么说（名词性）？", "options": ["hers", "her", "she", "herself"], "answer": 0, "explanation": "hers = 她的，如 This book is hers."}, {"id": "v7", "type": "vocabulary", "difficulty": "medium", "pointValue": 100, "question": "\"收拾好\" 用英语怎么说？", "options": ["put away", "take away", "throw away", "run away"], "answer": 0, "explanation": "put away = 收拾好，放回原处。"}, {"id": "v8", "type": "vocabulary", "difficulty": "medium", "pointValue": 100, "question": "\"谁的\" 用英语怎么说？", "options": ["whose", "who", "whom", "who's"], "answer": 0, "explanation": "whose = 谁的，用于提问物品归属。"}, {"id": "v9", "type": "vocabulary", "difficulty": "hard", "pointValue": 100, "question": "补全单词: \"我们的\" 名词性 = o _ _ s", "options": ["ours", "our", "ourselves", "ourself"], "answer": 0, "explanation": "ours = 我们的，如 This classroom is ours."}, {"id": "v10", "type": "vocabulary", "difficulty": "hard", "pointValue": 100, "question": "\"他们的\" 名词性物主代词是？", "options": ["theirs", "their", "them", "themselves"], "answer": 0, "explanation": "theirs = 他们的/她们的/它们的。"}, {"id": "g1", "type": "grammar", "difficulty": "easy", "pointValue": 100, "question": "This book is _____. (它是我的)", "options": ["mine", "my", "me", "I"], "answer": 0, "explanation": "后面没有名词，用名词性物主代词 mine。"}, {"id": "g2", "type": "grammar", "difficulty": "easy", "pointValue": 100, "question": "Is this _____ pen? (你的)", "options": ["your", "yours", "you", "yourselves"], "answer": 0, "explanation": "后面有名词 pen，用形容词性物主代词 your。"}, {"id": "g3", "type": "grammar", "difficulty": "easy", "pointValue": 100, "question": "These are _____ shoes. (她的)", "options": ["her", "hers", "she", "herself"], "answer": 0, "explanation": "后面有名词 shoes，用形容词性物主代词 her。"}, {"id": "g4", "type": "grammar", "difficulty": "medium", "pointValue": 100, "question": "— Whose bag is this? — It's _____. (我的)", "options": ["mine", "my", "me", "myself"], "answer": 0, "explanation": "回答\"这是谁的包\"时，用名词性物主代词 mine，等于 my bag。"}, {"id": "g5", "type": "grammar", "difficulty": "medium", "pointValue": 100, "question": "— Is this _____ bike? — No, it's _____. (你的)(他的)", "options": ["your, his", "yours, his", "your, him", "yours, him"], "answer": 0, "explanation": "第一个空后有bike填your，第二个空后无名词填his。"}, {"id": "g6", "type": "grammar", "difficulty": "medium", "pointValue": 100, "question": "Put _____ your toys, please.", "options": ["away", "on", "off", "up"], "answer": 0, "explanation": "put away = 收拾好。"}, {"id": "g7", "type": "grammar", "difficulty": "hard", "pointValue": 100, "question": "哪一处有错误？\"This is mine book. That is yours.\"", "options": ["This", "mine", "That", "yours"], "answer": 1, "explanation": "mine 是名词性，不能修饰名词。应改为 my。"}, {"id": "g8", "type": "grammar", "difficulty": "hard", "pointValue": 100, "question": "哪一处有错误？\"The cat is her. The dog is mine.\"", "options": ["The cat", "her", "The dog", "mine"], "answer": 1, "explanation": "her 是形容词性，不能单独使用。应改为 hers。"}, {"id": "l1", "type": "listening", "difficulty": "easy", "pointValue": 100, "question": "请听句子，选择正确的回答", "textToSpeak": "This is my book.", "options": ["这是我的书。", "这是你的书。", "那是他的书。", "那是她的书。"], "answer": 0, "explanation": "This is my book = 这是我的书。"}, {"id": "l2", "type": "listening", "difficulty": "easy", "pointValue": 100, "question": "请听句子，选择正确答案", "textToSpeak": "Is this your pen?", "options": ["这是你的钢笔吗？", "那是我的钢笔。", "这是他的铅笔。", "那是她的尺子。"], "answer": 0, "explanation": "Is this your pen? = 这是你的钢笔吗？"}, {"id": "l3", "type": "listening", "difficulty": "medium", "pointValue": 100, "question": "请听句子，选择正确答案", "textToSpeak": "Whose bag is this?", "options": ["这是谁的包？", "这是谁的钢笔？", "那是我的书包。", "这是你的尺子。"], "answer": 0, "explanation": "Whose bag is this? = 这是谁的包？"}, {"id": "s4", "type": "speaking", "difficulty": "medium", "pointValue": 100, "question": "请跟读：It's mine. Put it away.", "textToSpeak": "It's mine. Put it away.", "explanation": "注意连读 \"put it\"。"}, {"id": "s5", "type": "speaking", "difficulty": "hard", "pointValue": 100, "question": "请跟读：This is ours, not theirs.", "textToSpeak": "This is ours, not theirs.", "explanation": "注意 ours 和 theirs 的 /z/ 结尾。"}, {"id": "s6", "type": "speaking", "difficulty": "hard", "pointValue": 100, "question": "请跟读：Please tidy up your room!", "textToSpeak": "Please tidy up your room!", "explanation": "祈使句的语调要肯定有力。"}, {"id":  "r1", "type": "boss", "difficulty":  "medium", "pointValue":  100, "passage":  "Kitty's birthday is on 1st October. She is going to have a birthday party. She writes some invitations. On the invitation, she writes: 'Please come to my birthday party. It's on Sunday, 1st October. The party is at my home. It starts at two o'clock in the afternoon. We will play games and eat cakes. Please come and have fun!'", "question":  "When is Kitty's birthday?", "options":  ["1st October", "1st November", "2nd October", "10th October"], "answer":  0, "explanation":  "从 'Kitty's birthday is on 1st October.' 可知"}, {"id":  "r2", "type": "boss", "difficulty":  "hard", "pointValue":  100, "passage":  "Today is Alice's birthday. She is ten years old. Her mother gives her a new dress. Her father gives her a bicycle. Her friend Jill gives her a picture book. Alice is very happy. In the evening, they go to a restaurant. Alice's favourite food is pizza. She eats a lot!", "question":  "How old is Alice?", "options":  ["Ten", "Nine", "Eleven", "Twelve"], "answer":  0, "explanation":  "从 'She is ten years old.' 可知"}, {"id":  "r3", "type": "boss", "difficulty":  "medium", "pointValue":  100, "passage":  "Peter's birthday is on 22nd September. He invites his classmates to his birthday party. They play games together. Tom wins the game. Then they sing 'Happy Birthday' to Peter. Peter blows out the candles. He makes a wish. Then they eat the birthday cake. The cake has strawberries and cream on top.", "question":  "Who wins the game?", "options":  ["Tom", "Peter", "Alice", "Jill"], "answer":  0, "explanation":  "从 'Tom wins the game.' 可知"}, 
-    {"id": "b1", "type": "boss", "difficulty": "hard", "pointValue": 100, "question": "选择正确的句子：", "options": ["This is my pen. That is yours.", "This is mine pen. That is your.", "This is my. That is your.", "This is mine. That is yours."], "answer": 0, "explanation": "第一空后有名词pen用my，第二空后无名词用yours。"},
-    {"id": "b2", "type": "boss", "difficulty": "hard", "pointValue": 100, "question": "— _____ book is this? — It's _____ .", "options": ["Whose, hers", "Who, her", "Whose, her", "Who, hers"], "answer": 0, "explanation": "提问归属用Whose，回答用名词性物主代词hers。"},
-    {"id": "b3", "type": "boss", "difficulty": "hard", "pointValue": 100, "question": "选出与 \"They are our books.\" 意思相同的句子：", "options": ["These books are ours.", "These books are our.", "These are we books.", "These books are them."], "answer": 0, "explanation": "our books = ours，物主代词转换。"},
-{"id": "b4", "type": "boss", "difficulty": "hard", "pointValue": 100, "question": "请选出错误的一项并改正：\"Her room is tidy, but mine room is messy.\"", "options": ["Her → She", "mine → my", "tidy → tidily", "messy → mess"], "answer": 1, "explanation": "mine 后面不能跟名词 room，应改为 my room。"}],
+  'en-day1': [
+{
+"id": "v1",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"mine\" 的中文意思是？",
+"options": [
+"我的",
+"你的",
+"他的",
+"她的"
+],
+"answer": 0,
+"explanation": "mine = 我的，名词性物主代词。"
+},
+{
+"id": "v2",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"yours\" 的中文意思是？",
+"options": [
+"你的",
+"我的",
+"他的",
+"她的"
+],
+"answer": 0,
+"explanation": "yours = 你的，名词性物主代词。"
+},
+{
+"id": "v3",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"his\" 的中文意思是？",
+"options": [
+"他的",
+"我的",
+"你的",
+"她的"
+],
+"answer": 0,
+"explanation": "his = 他的，名词性物主代词。"
+},
+{
+"id": "v4",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"hers\" 的中文意思是？",
+"options": [
+"她的",
+"我的",
+"你的",
+"他的"
+],
+"answer": 0,
+"explanation": "hers = 她的，名词性物主代词。"
+},
+{
+"id": "v5",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"its\" 的中文意思是？",
+"options": [
+"它的",
+"我的",
+"你的",
+"他的"
+],
+"answer": 0,
+"explanation": "its = 它的，名词性物主代词。"
+},
+{
+"id": "v6",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"ours\" 的中文意思是？",
+"options": [
+"我们的",
+"我的",
+"你的",
+"他的"
+],
+"answer": 0,
+"explanation": "ours = 我们的，名词性物主代词。"
+},
+{
+"id": "v7",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"theirs\" 的中文意思是？",
+"options": [
+"他们的",
+"我的",
+"你的",
+"他的"
+],
+"answer": 0,
+"explanation": "theirs = 他们的，名词性物主代词。"
+},
+{
+"id": "v8",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"我的\"（名词性）的英语是？",
+"options": [
+"mine",
+"yours",
+"his",
+"hers"
+],
+"answer": 0,
+"explanation": "\"我的\" = mine。"
+},
+{
+"id": "v9",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"你的\"（名词性）的英语是？",
+"options": [
+"yours",
+"mine",
+"his",
+"hers"
+],
+"answer": 0,
+"explanation": "\"你的\" = yours。"
+},
+{
+"id": "v10",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"他的\"（名词性）的英语是？",
+"options": [
+"his",
+"mine",
+"yours",
+"hers"
+],
+"answer": 0,
+"explanation": "\"他的\" = his。"
+},
+{
+"id": "v11",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"她的\"（名词性）的英语是？",
+"options": [
+"hers",
+"mine",
+"yours",
+"his"
+],
+"answer": 0,
+"explanation": "\"她的\" = hers。"
+},
+{
+"id": "v12",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"它的\"（名词性）的英语是？",
+"options": [
+"its",
+"mine",
+"yours",
+"his"
+],
+"answer": 0,
+"explanation": "\"它的\" = its。"
+},
+{
+"id": "v13",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"我们的\"（名词性）的英语是？",
+"options": [
+"ours",
+"mine",
+"yours",
+"his"
+],
+"answer": 0,
+"explanation": "\"我们的\" = ours。"
+},
+{
+"id": "v14",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"我的\" 的形容词性物主代词是？",
+"options": [
+"my",
+"your",
+"his",
+"her"
+],
+"answer": 0,
+"explanation": "我的 → my（形容词性）。"
+},
+{
+"id": "v15",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"你的\" 的形容词性物主代词是？",
+"options": [
+"your",
+"my",
+"his",
+"her"
+],
+"answer": 0,
+"explanation": "你的 → your（形容词性）。"
+},
+{
+"id": "v16",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"他的\" 的形容词性物主代词是？",
+"options": [
+"his",
+"my",
+"your",
+"her"
+],
+"answer": 0,
+"explanation": "他的 → his（形容词性）。"
+},
+{
+"id": "v17",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"她的\" 的形容词性物主代词是？",
+"options": [
+"her",
+"my",
+"your",
+"his"
+],
+"answer": 0,
+"explanation": "她的 → her（形容词性）。"
+},
+{
+"id": "v18",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"我们的\" 的形容词性物主代词是？",
+"options": [
+"our",
+"my",
+"your",
+"his"
+],
+"answer": 0,
+"explanation": "我们的 → our（形容词性）。"
+},
+{
+"id": "v19",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"第一\" 的英语是？",
+"options": [
+"first",
+"second",
+"third",
+"fourth"
+],
+"answer": 0,
+"explanation": "第一 = first。"
+},
+{
+"id": "v20",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"第二\" 的英语是？",
+"options": [
+"second",
+"first",
+"third",
+"fourth"
+],
+"answer": 0,
+"explanation": "第二 = second。"
+},
+{
+"id": "v21",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"第三\" 的英语是？",
+"options": [
+"third",
+"first",
+"second",
+"fourth"
+],
+"answer": 0,
+"explanation": "第三 = third。"
+},
+{
+"id": "v22",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"第四\" 的英语是？",
+"options": [
+"fourth",
+"first",
+"second",
+"third"
+],
+"answer": 0,
+"explanation": "第四 = fourth。"
+},
+{
+"id": "v23",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"第五\" 的英语是？",
+"options": [
+"fifth",
+"first",
+"second",
+"third"
+],
+"answer": 0,
+"explanation": "第五 = fifth。"
+},
+{
+"id": "v24",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"第十\" 的英语是？",
+"options": [
+"tenth",
+"first",
+"second",
+"third"
+],
+"answer": 0,
+"explanation": "第十 = tenth。"
+},
+{
+"id": "v25",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"第十二\" 的英语是？",
+"options": [
+"eleventh",
+"first",
+"second",
+"third"
+],
+"answer": 0,
+"explanation": "第十二 = eleventh。"
+},
+{
+"id": "v26",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"第十三\" 的英语是？",
+"options": [
+"thirteenth",
+"first",
+"second",
+"third"
+],
+"answer": 0,
+"explanation": "第十三 = thirteenth。"
+},
+{
+"id": "v27",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"第二十\" 的英语是？",
+"options": [
+"twentieth",
+"first",
+"second",
+"third"
+],
+"answer": 0,
+"explanation": "第二十 = twentieth。"
+},
+{
+"id": "v28",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "\"第二十一\" 的英语是？",
+"options": [
+"twenty-first",
+"first",
+"second",
+"third"
+],
+"answer": 0,
+"explanation": "第二十一 = twenty-first。"
+},
+{
+"id": "v29",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"birthday\" 的中文是？",
+"options": [
+"生日",
+"派对",
+"蛋糕",
+"礼物"
+],
+"answer": 0,
+"explanation": "birthday = 生日。"
+},
+{
+"id": "v30",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"party\" 的中文是？",
+"options": [
+"派对",
+"生日",
+"蛋糕",
+"礼物"
+],
+"answer": 0,
+"explanation": "party = 派对。"
+},
+{
+"id": "v31",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"cake\" 的中文是？",
+"options": [
+"蛋糕",
+"生日",
+"派对",
+"礼物"
+],
+"answer": 0,
+"explanation": "cake = 蛋糕。"
+},
+{
+"id": "v32",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"present\" 的中文是？",
+"options": [
+"礼物",
+"生日",
+"派对",
+"蛋糕"
+],
+"answer": 0,
+"explanation": "present = 礼物。"
+},
+{
+"id": "v33",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"invitation\" 的中文是？",
+"options": [
+"邀请",
+"生日",
+"派对",
+"蛋糕"
+],
+"answer": 0,
+"explanation": "invitation = 邀请。"
+},
+{
+"id": "v34",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"tidy\" 的中文是？",
+"options": [
+"整洁的",
+"生日",
+"派对",
+"蛋糕"
+],
+"answer": 0,
+"explanation": "tidy = 整洁的。"
+},
+{
+"id": "v35",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"messy\" 的中文是？",
+"options": [
+"凌乱的",
+"生日",
+"派对",
+"蛋糕"
+],
+"answer": 0,
+"explanation": "messy = 凌乱的。"
+},
+{
+"id": "v36",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"put away\" 的中文是？",
+"options": [
+"收拾好",
+"生日",
+"派对",
+"蛋糕"
+],
+"answer": 0,
+"explanation": "put away = 收拾好。"
+},
+{
+"id": "v37",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"whose\" 的中文是？",
+"options": [
+"谁的",
+"生日",
+"派对",
+"蛋糕"
+],
+"answer": 0,
+"explanation": "whose = 谁的。"
+},
+{
+"id": "v38",
+"type": "vocabulary",
+"difficulty": "easy",
+"question": "\"invite\" 的中文是？",
+"options": [
+"邀请",
+"生日",
+"派对",
+"蛋糕"
+],
+"answer": 0,
+"explanation": "invite = 邀请。"
+},
+{
+"id": "g1",
+"type": "grammar",
+"difficulty": "easy",
+"question": "This book is _____. (我的)",
+"options": [
+"mine",
+"my",
+"me",
+"I"
+],
+"answer": 0,
+"explanation": "后面无名词用名词性mine。"
+},
+{
+"id": "g2",
+"type": "grammar",
+"difficulty": "easy",
+"question": "Is this _____ pen? (你的)",
+"options": [
+"your",
+"yours",
+"you",
+"yourselves"
+],
+"answer": 0,
+"explanation": "后有名词pen用your。"
+},
+{
+"id": "g3",
+"type": "grammar",
+"difficulty": "easy",
+"question": "These are _____ shoes. (她的)",
+"options": [
+"her",
+"hers",
+"she",
+"herself"
+],
+"answer": 0,
+"explanation": "后有名词shoes用her。"
+},
+{
+"id": "g4",
+"type": "grammar",
+"difficulty": "medium",
+"question": "— Whose bag is this? — It's _____. (我的)",
+"options": [
+"mine",
+"my",
+"me",
+"myself"
+],
+"answer": 0,
+"explanation": "回答谁的用名词性mine。"
+},
+{
+"id": "g5",
+"type": "grammar",
+"difficulty": "easy",
+"question": "The cat is _____. (她的)",
+"options": [
+"hers",
+"her",
+"she",
+"herself"
+],
+"answer": 0,
+"explanation": "无名词用名词性hers。"
+},
+{
+"id": "g6",
+"type": "grammar",
+"difficulty": "easy",
+"question": "My birthday is _____ July 15th.",
+"options": [
+"on",
+"in",
+"at",
+"by"
+],
+"answer": 0,
+"explanation": "具体日期用on。"
+},
+{
+"id": "g7",
+"type": "grammar",
+"difficulty": "easy",
+"question": "The party is _____ Sunday.",
+"options": [
+"on",
+"in",
+"at",
+"by"
+],
+"answer": 0,
+"explanation": "星期前用on。"
+},
+{
+"id": "g8",
+"type": "grammar",
+"difficulty": "medium",
+"question": "I was born _____ May.",
+"options": [
+"in",
+"on",
+"at",
+"by"
+],
+"answer": 0,
+"explanation": "月份前用in。"
+},
+{
+"id": "g9",
+"type": "grammar",
+"difficulty": "easy",
+"question": "The party starts _____ 2 o'clock.",
+"options": [
+"at",
+"on",
+"in",
+"by"
+],
+"answer": 0,
+"explanation": "具体时刻用at。"
+},
+{
+"id": "g10",
+"type": "grammar",
+"difficulty": "medium",
+"question": "We have a party _____ the afternoon.",
+"options": [
+"in",
+"on",
+"at",
+"by"
+],
+"answer": 0,
+"explanation": "上/下午用in。"
+},
+{
+"id": "g11",
+"type": "grammar",
+"difficulty": "easy",
+"question": "She _____ to be a teacher.",
+"options": [
+"wants",
+"want",
+"wanting",
+"wanted"
+],
+"answer": 0,
+"explanation": "三单用wants。"
+},
+{
+"id": "g12",
+"type": "grammar",
+"difficulty": "easy",
+"question": "They _____ going to have a party.",
+"options": [
+"are",
+"is",
+"am",
+"be"
+],
+"answer": 0,
+"explanation": "They用are。"
+},
+{
+"id": "g13",
+"type": "grammar",
+"difficulty": "medium",
+"question": "选出正确的句子：",
+"options": [
+"This is my pen.",
+"This is mine pen.",
+"This is I pen.",
+"This is me pen."
+],
+"answer": 0,
+"explanation": "my是形容词性，后跟名词。"
+},
+{
+"id": "g14",
+"type": "grammar",
+"difficulty": "hard",
+"question": "哪处有错误？\"This is mine book.\"",
+"options": [
+"This",
+"is",
+"mine",
+"book"
+],
+"answer": 2,
+"explanation": "mine不能修饰名词。"
+},
+{
+"id": "g15",
+"type": "grammar",
+"difficulty": "hard",
+"question": "哪处有错误？\"My birthday is in May 1st.\"",
+"options": [
+"My birthday",
+"is",
+"in",
+"May 1st"
+],
+"answer": 2,
+"explanation": "具体日期用on。"
+},
+{
+"id": "g16",
+"type": "grammar",
+"difficulty": "medium",
+"question": "选择正确的疑问词：_____ book is this?",
+"options": [
+"Whose",
+"Who",
+"Whom",
+"Which"
+],
+"answer": 0,
+"explanation": "提问归属用Whose。"
+},
+{
+"id": "g17",
+"type": "grammar",
+"difficulty": "easy",
+"question": "This is _____ apple.",
+"options": [
+"a",
+"an",
+"the",
+"no article"
+],
+"answer": 1,
+"explanation": "apple元音用an。"
+},
+{
+"id": "g18",
+"type": "grammar",
+"difficulty": "easy",
+"question": "I have _____ orange.",
+"options": [
+"a",
+"an",
+"the",
+"no article"
+],
+"answer": 1,
+"explanation": "orange元音用an。"
+},
+{
+"id": "g19",
+"type": "grammar",
+"difficulty": "easy",
+"question": "Please _____ me to your party.",
+"options": [
+"invite",
+"invitation",
+"inviting",
+"invited"
+],
+"answer": 0,
+"explanation": "祈使句用动词原形。"
+},
+{
+"id": "g20",
+"type": "grammar",
+"difficulty": "easy",
+"question": "Let's _____ a cake.",
+"options": [
+"make",
+"making",
+"makes",
+"made"
+],
+"answer": 0,
+"explanation": "let's+原形。"
+},
+{
+"id": "g21",
+"type": "grammar",
+"difficulty": "easy",
+"question": "I _____ eleven years old.",
+"options": [
+"am",
+"is",
+"are",
+"be"
+],
+"answer": 0,
+"explanation": "I用am。"
+},
+{
+"id": "g22",
+"type": "grammar",
+"difficulty": "easy",
+"question": "He _____ my best friend.",
+"options": [
+"is",
+"am",
+"are",
+"be"
+],
+"answer": 0,
+"explanation": "He用is。"
+},
+{
+"id": "g23",
+"type": "grammar",
+"difficulty": "easy",
+"question": "They _____ my classmates.",
+"options": [
+"are",
+"is",
+"am",
+"be"
+],
+"answer": 0,
+"explanation": "They用are。"
+},
+{
+"id": "g24",
+"type": "grammar",
+"difficulty": "easy",
+"question": "How old _____ you?",
+"options": [
+"are",
+"is",
+"am",
+"be"
+],
+"answer": 0,
+"explanation": "you用are。"
+},
+{
+"id": "g25",
+"type": "grammar",
+"difficulty": "easy",
+"question": "When _____ your birthday?",
+"options": [
+"is",
+"are",
+"am",
+"be"
+],
+"answer": 0,
+"explanation": "单数用is。"
+},
+{
+"id": "g26",
+"type": "grammar",
+"difficulty": "easy",
+"question": "My mother _____ a doctor.",
+"options": [
+"is",
+"are",
+"am",
+"be"
+],
+"answer": 0,
+"explanation": "单数用is。"
+},
+{
+"id": "g27",
+"type": "grammar",
+"difficulty": "easy",
+"question": "_____ you like parties?",
+"options": [
+"Does",
+"Do",
+"Is",
+"Are"
+],
+"answer": 1,
+"explanation": "you用Do。"
+},
+{
+"id": "g28",
+"type": "grammar",
+"difficulty": "easy",
+"question": "She _____ a birthday cake.",
+"options": [
+"has",
+"have",
+"having",
+"had"
+],
+"answer": 0,
+"explanation": "三单用has。"
+},
+{
+"id": "g29",
+"type": "grammar",
+"difficulty": "hard",
+"question": "We _____ to the party yesterday.",
+"options": [
+"went",
+"go",
+"going",
+"goes"
+],
+"answer": 0,
+"explanation": "yesterday用过去时。"
+},
+{
+"id": "g30",
+"type": "grammar",
+"difficulty": "medium",
+"question": "I can _____ a card.",
+"options": [
+"make",
+"making",
+"makes",
+"made"
+],
+"answer": 0,
+"explanation": "can+原形。"
+},
+{
+"id": "g31",
+"type": "grammar",
+"difficulty": "medium",
+"question": "Let me _____ you.",
+"options": [
+"help",
+"helping",
+"helps",
+"helped"
+],
+"answer": 0,
+"explanation": "let+宾+原形。"
+},
+{
+"id": "g32",
+"type": "grammar",
+"difficulty": "hard",
+"question": "Is this _____ book or _____?",
+"options": [
+"your, mine",
+"yours, my",
+"your, my",
+"yours, mine"
+],
+"answer": 0,
+"explanation": "前有名词用your，后无用mine。"
+},
+{
+"id": "g33",
+"type": "grammar",
+"difficulty": "hard",
+"question": "_____ room is tidy, but _____ is not.",
+"options": [
+"My, hers",
+"Mine, her",
+"My, her",
+"Mine, hers"
+],
+"answer": 0,
+"explanation": "前有名词用My，后用名词性hers。"
+},
+{
+"id": "g34",
+"type": "grammar",
+"difficulty": "hard",
+"question": "This is not _____ pen. It's _____.",
+"options": [
+"my, yours",
+"mine, your",
+"my, your",
+"mine, yours"
+],
+"answer": 0,
+"explanation": "前有名词用my，后用名词性yours。"
+},
+{
+"id": "g35",
+"type": "grammar",
+"difficulty": "hard",
+"question": "_____ car is red, but _____ is blue.",
+"options": [
+"Our, theirs",
+"Ours, their",
+"Our, their",
+"Ours, theirs"
+],
+"answer": 0,
+"explanation": "前有名词用Our，后用名词性theirs。"
+},
+{
+"id": "g36",
+"type": "grammar",
+"difficulty": "medium",
+"question": "It's time _____ go to school.",
+"options": [
+"to",
+"for",
+"at",
+"in"
+],
+"answer": 0,
+"explanation": "It's time to+原形。"
+},
+{
+"id": "g37",
+"type": "grammar",
+"difficulty": "easy",
+"question": "He _____ a new bike for his birthday.",
+"options": [
+"gets",
+"get",
+"getting",
+"got"
+],
+"answer": 0,
+"explanation": "三单用gets。"
+},
+{
+"id": "g38",
+"type": "grammar",
+"difficulty": "easy",
+"question": "We _____ Happy Birthday to her.",
+"options": [
+"sing",
+"sings",
+"singing",
+"sang"
+],
+"answer": 0,
+"explanation": "We用原形。"
+},
+{
+"id": "l1",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "This is my book.",
+"options": [
+"这是我的书。",
+"这是你的书。",
+"那是他的书。"
+],
+"answer": 0,
+"explanation": "\"This is my book.\" = \"这是我的书。\""
+},
+{
+"id": "l2",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "Is this your pen?",
+"options": [
+"这是你的钢笔吗？",
+"那是我的钢笔。",
+"这是他的铅笔。"
+],
+"answer": 0,
+"explanation": "\"Is this your pen?\" = \"这是你的钢笔吗？\""
+},
+{
+"id": "l3",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "Whose bag is this?",
+"options": [
+"这是谁的包？",
+"这是谁的钢笔？",
+"那是我的书包。"
+],
+"answer": 0,
+"explanation": "\"Whose bag is this?\" = \"这是谁的包？\""
+},
+{
+"id": "l4",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "This is mine.",
+"options": [
+"这是我的。",
+"这是你的。",
+"那是他的。"
+],
+"answer": 0,
+"explanation": "\"This is mine.\" = \"这是我的。\""
+},
+{
+"id": "l5",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "Is this yours?",
+"options": [
+"这是你的吗？",
+"这是我的吗？",
+"那是他的吗？"
+],
+"answer": 0,
+"explanation": "\"Is this yours?\" = \"这是你的吗？\""
+},
+{
+"id": "l6",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "The book is hers.",
+"options": [
+"这本书是她的。",
+"这本书是他的。",
+"这本书是我的。"
+],
+"answer": 0,
+"explanation": "\"The book is hers.\" = \"这本书是她的。\""
+},
+{
+"id": "l7",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "Put away your toys.",
+"options": [
+"收拾好玩具。",
+"扔掉玩具。",
+"拿出玩具。"
+],
+"answer": 0,
+"explanation": "\"Put away your toys.\" = \"收拾好玩具。\""
+},
+{
+"id": "l8",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "Tidy up your room.",
+"options": [
+"整理房间。",
+"打扫房间。",
+"装饰房间。"
+],
+"answer": 0,
+"explanation": "\"Tidy up your room.\" = \"整理房间。\""
+},
+{
+"id": "l9",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "My birthday is in July.",
+"options": [
+"生日在七月。",
+"生日在六月。",
+"生日在八月。"
+],
+"answer": 0,
+"explanation": "\"My birthday is in July.\" = \"生日在七月。\""
+},
+{
+"id": "l10",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "Her birthday is on May 1st.",
+"options": [
+"生日在五月一日。",
+"生日在五月五日。",
+"生日在三月一日。"
+],
+"answer": 0,
+"explanation": "\"Her birthday is on May 1st.\" = \"生日在五月一日。\""
+},
+{
+"id": "l11",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "This classroom is ours.",
+"options": [
+"教室是我们的。",
+"教室是你们的。",
+"教室是他们的。"
+],
+"answer": 0,
+"explanation": "\"This classroom is ours.\" = \"教室是我们的。\""
+},
+{
+"id": "l12",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "Please come to my party.",
+"options": [
+"来参加派对。",
+"来参加生日。",
+"来参加聚会。"
+],
+"answer": 0,
+"explanation": "\"Please come to my party.\" = \"来参加派对。\""
+},
+{
+"id": "l13",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "I want to invite friends.",
+"options": [
+"想邀请朋友。",
+"想邀请老师。",
+"想邀请同学。"
+],
+"answer": 0,
+"explanation": "\"I want to invite friends.\" = \"想邀请朋友。\""
+},
+{
+"id": "l14",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "We eat cake at the party.",
+"options": [
+"吃蛋糕。",
+"唱歌。",
+"玩游戏。"
+],
+"answer": 0,
+"explanation": "\"We eat cake at the party.\" = \"吃蛋糕。\""
+},
+{
+"id": "l15",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "She blows out candles.",
+"options": [
+"吹灭蜡烛。",
+"点燃蜡烛。",
+"数蜡烛。"
+],
+"answer": 0,
+"explanation": "\"She blows out candles.\" = \"吹灭蜡烛。\""
+},
+{
+"id": "l16",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "He makes a wish.",
+"options": [
+"许了个愿。",
+"做了个梦。",
+"唱了首歌。"
+],
+"answer": 0,
+"explanation": "\"He makes a wish.\" = \"许了个愿。\""
+},
+{
+"id": "l17",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "These are our balloons.",
+"options": [
+"我们的气球。",
+"你们的气球。",
+"他们的气球。"
+],
+"answer": 0,
+"explanation": "\"These are our balloons.\" = \"我们的气球。\""
+},
+{
+"id": "l18",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "The presents are for you.",
+"options": [
+"礼物给你。",
+"礼物给我。",
+"礼物给她。"
+],
+"answer": 0,
+"explanation": "\"The presents are for you.\" = \"礼物给你。\""
+},
+{
+"id": "l19",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "We sing Happy Birthday.",
+"options": [
+"唱生日歌。",
+"唱圣诞歌。",
+"唱儿歌。"
+],
+"answer": 0,
+"explanation": "\"We sing Happy Birthday.\" = \"唱生日歌。\""
+},
+{
+"id": "l20",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "The party is on Sunday.",
+"options": [
+"派对在周日。",
+"派对在周六。",
+"派对在周五。"
+],
+"answer": 0,
+"explanation": "\"The party is on Sunday.\" = \"派对在周日。\""
+},
+{
+"id": "l21",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "Let's decorate the room.",
+"options": [
+"装饰房间。",
+"打扫房间。",
+"整理房间。"
+],
+"answer": 0,
+"explanation": "\"Let's decorate the room.\" = \"装饰房间。\""
+},
+{
+"id": "l22",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "I am ten years old.",
+"options": [
+"我十岁了。",
+"我九岁了。",
+"我十一岁。"
+],
+"answer": 0,
+"explanation": "\"I am ten years old.\" = \"我十岁了。\""
+},
+{
+"id": "l23",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "When is your birthday?",
+"options": [
+"生日什么时候？",
+"派对什么时候？",
+"考试什么时候？"
+],
+"answer": 0,
+"explanation": "\"When is your birthday?\" = \"生日什么时候？\""
+},
+{
+"id": "l24",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "The party starts at 2 p.m.",
+"options": [
+"下午两点开始。",
+"下午三点开始。",
+"下午一点开始。"
+],
+"answer": 0,
+"explanation": "\"The party starts at 2 p.m.\" = \"下午两点开始。\""
+},
+{
+"id": "l25",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "I want a bicycle.",
+"options": [
+"想要自行车。",
+"想要书本。",
+"想要蛋糕。"
+],
+"answer": 0,
+"explanation": "\"I want a bicycle.\" = \"想要自行车。\""
+},
+{
+"id": "l26",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "She gives me a gift.",
+"options": [
+"她给我礼物。",
+"他给我礼物。",
+"朋友给我礼物。"
+],
+"answer": 0,
+"explanation": "\"She gives me a gift.\" = \"她给我礼物。\""
+},
+{
+"id": "l27",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "This card is from my friend.",
+"options": [
+"朋友送的卡片。",
+"妈妈送的卡片。",
+"老师送的卡片。"
+],
+"answer": 0,
+"explanation": "\"This card is from my friend.\" = \"朋友送的卡片。\""
+},
+{
+"id": "l28",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "How old is your sister?",
+"options": [
+"妹妹几岁？",
+"弟弟几岁？",
+"姐姐几岁？"
+],
+"answer": 0,
+"explanation": "\"How old is your sister?\" = \"妹妹几岁？\""
+},
+{
+"id": "l29",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "We have a party today.",
+"options": [
+"今天有派对。",
+"明天有派对。",
+"昨天有派对。"
+],
+"answer": 0,
+"explanation": "\"We have a party today.\" = \"今天有派对。\""
+},
+{
+"id": "l30",
+"type": "listening",
+"difficulty": "medium",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "My mother is a doctor.",
+"options": [
+"妈妈是医生。",
+"爸爸是医生。",
+"姐姐是医生。"
+],
+"answer": 0,
+"explanation": "\"My mother is a doctor.\" = \"妈妈是医生。\""
+},
+{
+"id": "s1",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：This is my book.",
+"textToSpeak": "This is my book.",
+"explanation": "注意this发音。"
+},
+{
+"id": "s2",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：This is mine, not yours.",
+"textToSpeak": "This is mine, not yours.",
+"explanation": "注意mine和yours区别。"
+},
+{
+"id": "s3",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：It's mine. Put it away.",
+"textToSpeak": "It's mine. Put it away.",
+"explanation": "注意连读。"
+},
+{
+"id": "s4",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：This is ours, not theirs.",
+"textToSpeak": "This is ours, not theirs.",
+"explanation": "注意ours和theirs发音。"
+},
+{
+"id": "s5",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：Please tidy up your room!",
+"textToSpeak": "Please tidy up your room!",
+"explanation": "祈使句语气肯定。"
+},
+{
+"id": "s6",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：Please come to my party.",
+"textToSpeak": "Please come to my party.",
+"explanation": "祈使句语调。"
+},
+{
+"id": "s7",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：Is this your pen?",
+"textToSpeak": "Is this your pen?",
+"explanation": "问句语调上扬。"
+},
+{
+"id": "s8",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：Whose bag is this?",
+"textToSpeak": "Whose bag is this?",
+"explanation": "特殊疑问句降调。"
+},
+{
+"id": "s9",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：My birthday is in July.",
+"textToSpeak": "My birthday is in July.",
+"explanation": "注意July发音。"
+},
+{
+"id": "s10",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：Her birthday is on May 1st.",
+"textToSpeak": "Her birthday is on May 1st.",
+"explanation": "注意序数词first。"
+},
+{
+"id": "s11",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：I want to invite my friends.",
+"textToSpeak": "I want to invite my friends.",
+"explanation": "注意want to连读。"
+},
+{
+"id": "s12",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：We eat cake at the party.",
+"textToSpeak": "We eat cake at the party.",
+"explanation": "注意cake发音。"
+},
+{
+"id": "s13",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：She blows out the candles.",
+"textToSpeak": "She blows out the candles.",
+"explanation": "注意复数发音。"
+},
+{
+"id": "s14",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：He makes a wish.",
+"textToSpeak": "He makes a wish.",
+"explanation": "注意wish发音。"
+},
+{
+"id": "s15",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：This classroom is ours.",
+"textToSpeak": "This classroom is ours.",
+"explanation": "强调ours名词性。"
+},
+{
+"id": "s16",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：The party is on Sunday.",
+"textToSpeak": "The party is on Sunday.",
+"explanation": "注意Sunday重音。"
+},
+{
+"id": "s17",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：Let's decorate the room.",
+"textToSpeak": "Let's decorate the room.",
+"explanation": "注意decorate发音。"
+},
+{
+"id": "s18",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：I am ten years old.",
+"textToSpeak": "I am ten years old.",
+"explanation": "注意years发音。"
+},
+{
+"id": "s19",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：When is your birthday?",
+"textToSpeak": "When is your birthday?",
+"explanation": "问句语调。"
+},
+{
+"id": "s20",
+"type": "speaking",
+"difficulty": "medium",
+"question": "请跟读：I want a bicycle.",
+"textToSpeak": "I want a bicycle.",
+"explanation": "注意bicycle音节。"
+},
+{
+"id": "r1",
+"type": "boss",
+"difficulty": "medium",
+"pointValue": 100,
+"passage": "Kitty's birthday is on 1st October. She is going to have a birthday party. She writes some invitations. On the invitation, she writes: 'Please come to my birthday party. It's on Sunday, 1st October. The party is at my home. It starts at two o'clock in the afternoon. We will play games and eat cakes. Please come and have fun!'",
+"question": "When is Kitty's birthday?",
+"options": [
+"1st October",
+"1st November",
+"2nd October",
+"10th October"
+],
+"answer": 0,
+"explanation": "从 'Kitty's birthday is on 1st October.' 可知"
+},
+{
+"id": "r2",
+"type": "boss",
+"difficulty": "hard",
+"pointValue": 100,
+"passage": "Today is Alice's birthday. She is ten years old. Her mother gives her a new dress. Her father gives her a bicycle. Her friend Jill gives her a picture book. Alice is very happy. In the evening, they go to a restaurant. Alice's favourite food is pizza. She eats a lot!",
+"question": "How old is Alice?",
+"options": [
+"Ten",
+"Nine",
+"Eleven",
+"Twelve"
+],
+"answer": 0,
+"explanation": "从 'She is ten years old.' 可知"
+},
+{
+"id": "r3",
+"type": "boss",
+"difficulty": "medium",
+"pointValue": 100,
+"passage": "Peter's birthday is on 22nd September. He invites his classmates to his birthday party. They play games together. Tom wins the game. Then they sing 'Happy Birthday' to Peter. Peter blows out the candles. He makes a wish. Then they eat the birthday cake. The cake has strawberries and cream on top.",
+"question": "Who wins the game?",
+"options": [
+"Tom",
+"Peter",
+"Alice",
+"Jill"
+],
+"answer": 0,
+"explanation": "从 'Tom wins the game.' 可知"
+},
+{
+"id": "b1",
+"type": "boss",
+"difficulty": "hard",
+"pointValue": 100,
+"question": "选择正确的句子：",
+"options": [
+"This is my pen. That is yours.",
+"This is mine pen. That is your.",
+"This is my. That is your.",
+"This is mine. That is yours."
+],
+"answer": 0,
+"explanation": "第一空后有名词pen用my，第二空后无名词用yours。"
+},
+{
+"id": "b2",
+"type": "boss",
+"difficulty": "hard",
+"pointValue": 100,
+"question": "— _____ book is this? — It's _____ .",
+"options": [
+"Whose, hers",
+"Who, her",
+"Whose, her",
+"Who, hers"
+],
+"answer": 0,
+"explanation": "提问归属用Whose，回答用名词性物主代词hers。"
+},
+{
+"id": "b3",
+"type": "boss",
+"difficulty": "hard",
+"pointValue": 100,
+"question": "选出与 \"They are our books.\" 意思相同的句子：",
+"options": [
+"These books are ours.",
+"These books are our.",
+"These are we books.",
+"These books are them."
+],
+"answer": 0,
+"explanation": "our books = ours，物主代词转换。"
+},
+{
+"id": "b4",
+"type": "boss",
+"difficulty": "hard",
+"pointValue": 100,
+"question": "请选出错误的一项并改正：\"Her room is tidy, but mine room is messy.\"",
+"options": [
+"Her → She",
+"mine → my",
+"tidy → tidily",
+"messy → mess"
+],
+"answer": 1,
+"explanation": "mine 后面不能跟名词 room，应改为 my room。"
+}
+],
   'en-day2': [{"id": "en-d2-v1", "type": "vocabulary", "difficulty": "easy", "pointValue": 100, "question": "\"eleventh\"的中文是？", "options": ["第十一", "第十二", "第十三", "第十四"], "answer": 0, "explanation": "eleventh=第十一"}, {"id": "en-d2-v2", "type": "vocabulary", "difficulty": "easy", "pointValue": 100, "question": "\"twelfth\"的中文是？", "options": ["第十二", "第十一", "第十三", "第二十"], "answer": 0, "explanation": "twelfth=第十二"}, {"id": "en-d2-v3", "type": "vocabulary", "difficulty": "medium", "pointValue": 100, "question": "\"invite\"的中文是？", "options": ["邀请", "发明", "访问", "投资"], "answer": 0, "explanation": "invite=邀请"}, {"id": "en-d2-g1", "type": "grammar", "difficulty": "easy", "pointValue": 100, "question": "My birthday is _____ July 15th.", "options": ["on", "in", "at", "by"], "answer": 0, "explanation": "具体日期用on"}, {"id": "en-d2-g2", "type": "grammar", "difficulty": "medium", "pointValue": 100, "question": "Please _____ me to your party.", "options": ["invite", "invitation", "inviting", "invited"], "answer": 0, "explanation": "祈使句用动词原形"}, {"id": "en-d2-s1", "type": "speaking", "difficulty": "easy", "pointValue": 100, "question": "请跟读：Please come to my party.", "textToSpeak": "Please come to my party.", "explanation": "祈使句语调"}, {"id": "en-d2-b1", "type": "boss", "difficulty": "hard", "pointValue": 100, "question": "选出正确句子：", "options": ["My birthday is on June 1st.", "My birthday is in June 1st."], "answer": 0, "explanation": "具体日期用on"}],
   'en-day3': [{"id": "en-d3-v1", "type": "vocabulary", "difficulty": "easy", "pointValue": 100, "question": "\"by bus\"的中文是？", "options": ["乘公共汽车", "骑自行车", "步行", "乘地铁"], "answer": 0, "explanation": "by bus=乘公共汽车"}, {"id": "en-d3-v2", "type": "vocabulary", "difficulty": "easy", "pointValue": 100, "question": "\"on foot\"的中文是？", "options": ["步行", "骑自行车", "乘汽车", "跑步"], "answer": 0, "explanation": "on foot=步行"}, {"id": "en-d3-v3", "type": "vocabulary", "difficulty": "medium", "pointValue": 100, "question": "\"far from\"的中文是？", "options": ["远离", "靠近", "在旁边", "在对面"], "answer": 0, "explanation": "far from=远离"}, {"id": "en-d3-g1", "type": "grammar", "difficulty": "easy", "pointValue": 100, "question": "How _____ you come to school?", "options": ["do", "does", "are", "is"], "answer": 0, "explanation": "you用助动词do"}, {"id": "en-d3-g2", "type": "grammar", "difficulty": "easy", "pointValue": 100, "question": "I come _____ bus.", "options": ["by", "on", "in", "with"], "answer": 0, "explanation": "by+交通工具"}, {"id": "en-d3-g3", "type": "grammar", "difficulty": "medium", "pointValue": 100, "question": "She comes _____ foot.", "options": ["on", "by", "in", "with"], "answer": 0, "explanation": "on foot固定搭配"}, {"id": "en-d3-b1", "type": "boss", "difficulty": "hard", "pointValue": 100, "question": "选出正确问法：", "options": ["How do you come to school?", "How are you come to school?", "How does you come to school?"], "answer": 0, "explanation": "问交通方式用How do"}],
   'en-day4': [{"id":"en-d4-v1","type":"vocabulary","difficulty":"easy","pointValue":100,"question":"\"teacher\"的中文是？","options":["老师","医生","护士","司机"],"answer":0,"explanation":"teacher=老师"},{"id":"en-d4-v2","type":"vocabulary","difficulty":"easy","pointValue":100,"question":"\"doctor\"的中文是？","options":["医生","老师","厨师","警察"],"answer":0,"explanation":"doctor=医生"},{"id":"en-d4-v3","type":"vocabulary","difficulty":"easy","pointValue":100,"question":"\"nurse\"的中文是？","options":["护士","医生","老师","飞行员"],"answer":0,"explanation":"nurse=护士"},{"id":"en-d4-v4","type":"vocabulary","difficulty":"easy","pointValue":100,"question":"\"pilot\"的中文是？","options":["飞行员","厨师","司机","消防员"],"answer":0,"explanation":"pilot=飞行员"},{"id":"en-d4-v5","type":"vocabulary","difficulty":"medium","pointValue":100,"question":"\"cook\"的中文是？","options":["厨师","医生","书","音乐"],"answer":0,"explanation":"cook可以做名词\"厨师\""},{"id":"en-d4-v6","type":"vocabulary","difficulty":"medium","pointValue":100,"question":"\"driver\"的中文是？","options":["司机","医生","老师","警察"],"answer":0,"explanation":"driver=司机"},{"id":"en-d4-v7","type":"vocabulary","difficulty":"medium","pointValue":100,"question":"\"firefighter\"的中文是？","options":["消防员","飞行员","医生","司机"],"answer":0,"explanation":"firefighter=消防员"},{"id":"en-d4-v8","type":"vocabulary","difficulty":"medium","pointValue":100,"question":"\"worker\"的中文是？","options":["工人","医生","老师","学生"],"answer":0,"explanation":"worker=工人"},{"id":"en-d4-v9","type":"vocabulary","difficulty":"hard","pointValue":100,"question":"\"future\"的中文是？","options":["未来","过去","现在","昨天"],"answer":0,"explanation":"future=未来"},{"id":"en-d4-v10","type":"vocabulary","difficulty":"hard","pointValue":100,"question":"\"want\"的意思是？","options":["想要","行走","等待","观看"],"answer":0,"explanation":"want=想要"},{"id":"en-d4-g1","type":"grammar","difficulty":"easy","pointValue":100,"question":"What do you want _____ be?","options":["to","for","in","at"],"answer":0,"explanation":"want to + 动词原形"},{"id":"en-d4-g2","type":"grammar","difficulty":"easy","pointValue":100,"question":"I want to be _____ teacher.","options":["a","an","the","no article"],"answer":0,"explanation":"teacher辅音开头用a"},{"id":"en-d4-g3","type":"grammar","difficulty":"easy","pointValue":100,"question":"She wants to be _____ nurse.","options":["a","an","the","no article"],"answer":1,"explanation":"nurse元音发音开头用an"},{"id":"en-d4-g4","type":"grammar","difficulty":"medium","pointValue":100,"question":"He _____ to be a pilot.","options":["wants","want","wanting","wanted"],"answer":0,"explanation":"第三人称单数he，want加s"},{"id":"en-d4-g5","type":"grammar","difficulty":"medium","pointValue":100,"question":"What _____ she want to be?","options":["does","do","is","are"],"answer":0,"explanation":"she用助动词does"},{"id":"en-d4-g6","type":"grammar","difficulty":"medium","pointValue":100,"question":"They want _____ be doctors.","options":["to","for","in","at"],"answer":0,"explanation":"want to + 动词原形"},{"id":"en-d4-g7","type":"grammar","difficulty":"hard","pointValue":100,"question":"哪一处有错误？\"He want to be a doctor.\"","options":["He","want","to be","a doctor"],"answer":1,"explanation":"He是第三人称单数，want应改为wants"},{"id":"en-d4-g8","type":"grammar","difficulty":"hard","pointValue":100,"question":"哪一处有错误？\"She wants be an teacher.\"","options":["She wants","be","an","teacher"],"answer":2,"explanation":"teacher是辅音开头用a"},{"id":"en-d4-s1","type":"speaking","difficulty":"easy","pointValue":100,"question":"请跟读：I want to be a teacher.","textToSpeak":"I want to be a teacher.","explanation":"注意want to的连读"},{"id":"en-d4-s2","type":"speaking","difficulty":"easy","pointValue":100,"question":"请跟读：She is a nurse.","textToSpeak":"She is a nurse.","explanation":"注意nurse的发音"},{"id":"en-d4-s3","type":"speaking","difficulty":"medium","pointValue":100,"question":"请跟读：What do you want to be?","textToSpeak":"What do you want to be?","explanation":"问句语调要上扬"},{"id":"en-d4-s4","type":"speaking","difficulty":"medium","pointValue":100,"question":"请跟读：He wants to be a pilot.","textToSpeak":"He wants to be a pilot.","explanation":"注意wants的/s/发音"},{"id":"en-d4-s5","type":"speaking","difficulty":"hard","pointValue":100,"question":"请跟读：My father is a firefighter.","textToSpeak":"My father is a firefighter.","explanation":"firefighter音节较多"},{"id":"en-d4-s6","type":"speaking","difficulty":"hard","pointValue":100,"question":"请跟读：I want to be a doctor in the future.","textToSpeak":"I want to be a doctor in the future.","explanation":"future的/f/发音要轻"},{"id":"en-d4-b1","type":"boss","difficulty":"hard","pointValue":100,"question":"Tom问：\"_____ do you want to be?\"","options":["What","Who","Where","When"],"answer":0,"explanation":"询问职业用What"},{"id":"en-d4-b2","type":"boss","difficulty":"hard","pointValue":100,"question":"选择正确句子：","options":["She wants to be a nurse.","She want to be an nurse.","She wants be a nurse.","She want be an nurse."],"answer":0,"explanation":"wants表第三人称，nurse辅音开头用a"},{"id":"en-d4-b3","type":"boss","difficulty":"hard","pointValue":100,"question":"\"My mother is a doctor.\" 妈妈是？","options":["医生","护士","老师","厨师"],"answer":0,"explanation":"a doctor=医生"},{"id":"en-d4-b4","type":"boss","difficulty":"hard","pointValue":100,"question":"含义相同的句子：\"I want to be a teacher.\"","options":["My dream job is a teacher.","I am a teacher.","I like my teacher.","I have a teacher."],"answer":0,"explanation":"梦想职业是老师"}], // TODO: 5A M1U3 My future

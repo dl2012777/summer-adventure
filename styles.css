@@ -903,3 +903,10 @@ h3 { font-size: 18px; font-weight: 600; }
   color: #fff;
 }
 .subject-tab:active { transform: scale(.97); }
+/* Settings */
+.btn-mini {
+  width:28px;height:28px;border:none;border-radius:6px;background:rgba(255,255,255,0.1);
+  color:#fff;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.btn-mini:hover { background:rgba(255,255,255,0.2); }
+.btn-mini:active { transform:scale(.92); }

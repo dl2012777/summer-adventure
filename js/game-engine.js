@@ -23,8 +23,23 @@ const GameEngine = {
     listening: 30, speaking: 0, boss: 30  // 听力30s, 跟读不限, 阅读45s
   },
 
-  FEEDBACK_WAIT_CORRECT: 3,   // 答对等3秒
-  FEEDBACK_WAIT_WRONG: 8,     // 答错等8秒
+  FEEDBACK_WAIT_CORRECT: 4,   // 答对等4秒
+  FEEDBACK_WAIT_WRONG: 7,     // 答错等7秒
+
+  // --- 题目权重配置（可调节，单科 >= 10%，总和 100%） ---
+  _getStageWeights() {
+    try {
+      var userName = Auth.currentUser;
+      var all = Store._getData().stageWeights;
+      var w = all && userName && all[userName];
+      if (w && w.vocab && w.grammar && w.listening && w.speaking &&
+          w.vocab >= 10 && w.grammar >= 10 && w.listening >= 10 && w.speaking >= 10 &&
+          w.vocab + w.grammar + w.listening + w.speaking === 100) {
+        return w;
+      }
+    } catch(e) {}
+    return { vocab: 30, grammar: 30, listening: 20, speaking: 20 };
+  },
 
   // --- 开始游戏 ---
   start(dayKey, questions, subject, dayNum, onCompleteCb) {
@@ -49,26 +64,31 @@ const GameEngine = {
     this._shuffleAllOptions(grouped);
     Object.keys(grouped).forEach(k => this._shuffle(grouped[k]));
 
-    // 每个关卡选指定数量的题
-    // 每天题数: 词汇12+语法10+听力3+跟读3+阅读3 = 31题
-    const counts = { vocab:12, grammar:10, listening:3, speaking:3, boss:3 };
-    Object.keys(counts).forEach(k => {
-      grouped[k] = grouped[k].slice(0, Math.min(counts[k], grouped[k].length));
-    });
-    
-    // 兼容旧题库：听力/阅读不够就从其他类型借题
-    // 兼容旧题库：听力/阅读不够就从其他类型借题（只借有选项的题）
-    function _borrowFrom(src, dest, need) {
-      for (var i = src.length - 1; i >= 0 && dest.length < need; i--) {
-        if (src[i].options && src[i].options.length > 0) {
-          dest.push(src.splice(i, 1)[0]);
-        }
+    // 根据权重分配题数和分值（最大题数：词汇20/语法20/听力12/跟读12）
+    var weights = GameEngine._getStageWeights();
+    var MAX_COUNTS = { vocab:25, grammar:25, listening:12, speaking:12 };
+    var stageKeys = ['vocab','grammar','listening','speaking'];
+    stageKeys.forEach(function(k) {
+      var avail = grouped[k].length;
+      if (avail === 0) return;
+      var target = Math.round(MAX_COUNTS[k] * weights[k] / 60);
+      target = Math.max(2, Math.min(target, avail));
+      var totalPts = weights[k];
+      var bestC = target, bestS = totalPts / target, bestScore = 999999;
+      for (var c = Math.min(avail, MAX_COUNTS[k]); c >= 2; c--) {
+        var s = totalPts / c, r = Math.round(s * 2) / 2;
+        var total = Math.round(c * r);
+        var totalDiff = Math.abs(total - totalPts);
+        var countDiff = Math.abs(c - target);
+        var score = totalDiff * 1000 + countDiff;
+        if (score < bestScore) { bestScore = score; bestC = c; bestS = r; }
       }
-    }
-    _borrowFrom(grouped.vocab, grouped.listening, 3);
-    _borrowFrom(grouped.grammar, grouped.boss, 3);
-    // 如果还不够，再从语法借给听力
-    _borrowFrom(grouped.grammar, grouped.listening, 3);
+      grouped[k] = grouped[k].slice(0, bestC);
+      grouped[k].forEach(function(q) { q.pointValue = bestS; });
+    });
+    // Boss 固定 3 题 × 10 分
+    grouped.boss = grouped.boss.slice(0, 3);
+    grouped.boss.forEach(function(q) { q.pointValue = 10; });
 
     this.state = {
       dayKey, subject, dayNum,
@@ -371,7 +391,7 @@ const GameEngine = {
     const speedMult = Math.min(1.3, 1.0 + speedRatio * 0.3);
 
     if (isCorrect) {
-      score = Math.round(100 * difficultyMult * speedMult);
+      score = Math.round((q.pointValue || 10) * difficultyMult * speedMult);
     }
 
     // 连击
@@ -633,23 +653,36 @@ _startRecording(stageIndex, qIndex) {
 
     var scoreVal = result.score || 0;
     var accVal = result.accuracy || 0;
+
+    // 分数校准：每个词 +10%，最高 100 分
+    var boostedScore = scoreVal;
+    var boostedWords = null;
+    if (result.words && result.words.length > 0) {
+      boostedWords = result.words.map(function(w) {
+        return { word: w.word, orig: w.score, boosted: Math.min(100, Math.round(w.score * 1.1)), origCorrect: w.isCorrect };
+      });
+      var sum = boostedWords.reduce(function(s, w) { return s + w.boosted; }, 0);
+      boostedScore = Math.round(sum / boostedWords.length);
+    }
+    scoreVal = boostedScore;
+
     if (statusEl2) statusEl2.textContent = '✅ 评测完成！得分 ' + scoreVal + ' 分';
 
     if (resultEl) {
       var wordDetails = '';
-      if (result.words && result.words.length > 0) {
+      if (boostedWords && boostedWords.length > 0) {
         wordDetails = '<div style="margin-top:8px;font-size:12px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;">' +
-          result.words.map(function(w) {
-            return '<span style="padding:2px 6px;border-radius:4px;background:' + (w.isCorrect ? 'rgba(39,174,96,0.2)' : 'rgba(231,76,60,0.2)') + ';color:' + (w.isCorrect ? '#27AE60' : '#E74C3C') + ';">' + w.word + ' ' + w.score + '</span>';
+          boostedWords.map(function(w) {
+            var ds = Math.max(0, w.boosted);
+            return '<span style="padding:2px 6px;border-radius:4px;background:' + (ds >= 60 ? 'rgba(39,174,96,0.2)' : 'rgba(231,76,60,0.2)') + ';color:' + (ds >= 60 ? '#27AE60' : '#E74C3C') + ';">' + w.word + ' ' + ds + '</span>';
           }).join('') + '</div>';
       }
       resultEl.style.display = 'block';
       resultEl.innerHTML = '<div style="font-size:20px;font-weight:700;color:' + (scoreVal >= 80 ? '#27AE60' : '#F39C12') + ';">' + scoreVal + ' 分</div>' +
-        '<div style="font-size:13px;color:var(--text-secondary);">准确度 ' + accVal + '%</div>' +
         wordDetails;
     }
 
-    var speakingScore = Math.round(scoreVal * 10);
+    var speakingScore = Math.round(scoreVal / 100 * (q.pointValue || 10));
     this.state.score += speakingScore;
     this.state.allAnswers.push({
       question: q,
@@ -723,10 +756,7 @@ _startRecording(stageIndex, qIndex) {
         </div>
 
         <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;align-items:center;">
-          <button class="btn btn-small ${this.state.subject === 'en' ? 'btn-primary' : 'btn-math'}" onclick="GameEngine._skipFeedback()" style="min-width:120px;">
-            下一题 →
-          </button>
-          <div id="feedback-countdown" style="font-size:13px;color:var(--text-secondary);">
+          <div id="feedback-countdown" style="font-size:13px;color:var(--text-secondary);margin-top:12px;">
             ${waitTime}秒后自动跳转...
           </div>
         </div>
@@ -742,7 +772,7 @@ _startRecording(stageIndex, qIndex) {
       remaining--;
       if (countdownEl) countdownEl.textContent = `${remaining}秒后自动跳转...`;
       if (remaining <= 0) {
-        clearInterval(interval);
+        clearInterval(this._feedbackInterval);
         const overlay = container.querySelector('.feedback-overlay');
         if (overlay) overlay.remove();
         this.state.isWaiting = false;
@@ -775,7 +805,7 @@ _startRecording(stageIndex, qIndex) {
       remaining--;
       if (countdownEl) countdownEl.textContent = `${remaining}秒后继续...`;
       if (remaining <= 0) {
-        clearInterval(interval);
+        clearInterval(this._feedbackInterval);
         const overlay = container.querySelector('.feedback-overlay');
         if (overlay) overlay.remove();
         this.state.isWaiting = false;
@@ -862,7 +892,7 @@ _startRecording(stageIndex, qIndex) {
 
     let checkinData = null;
     try {
-      checkinData = Store.processCheckin(Auth.currentUser);
+      checkinData = Store.getCheckin(Auth.currentUser);
       if (checkinData && checkinData.bonus > 0) {
         state.score += checkinData.bonus;
       }
@@ -871,8 +901,8 @@ _startRecording(stageIndex, qIndex) {
     const container = document.getElementById('game-content');
     container.innerHTML = `
       <div style="display:flex;flex-direction:column;align-items:center;padding:20px;animation:fadeIn .4s ease;">
-        <div style="font-size:64px;margin-bottom:8px;">🎉</div>
-        <h2 style="font-size:24px;font-weight:800;margin-bottom:4px;">第${state.dayNum}天 闯关完成！</h2>
+        <div style="font-size:64px;margin-bottom:8px;">${wrongCount === 0 ? '🏆' : '🎉'}</div>
+        <h2 style="font-size:24px;font-weight:800;margin-bottom:4px;">${wrongCount === 0 ? '🎉 全部通关！满分鼓励！🎉' : '第' + state.dayNum + '天 闯关完成！'}</h2>
 
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:320px;margin:20px 0;">
           <div style="text-align:center;padding:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;">
@@ -906,7 +936,7 @@ _startRecording(stageIndex, qIndex) {
 
         <div style="display:flex;flex-direction:column;gap:10px;width:100%;margin-top:20px;">
           ${wrongCount > 0 ? `
-            <button class="btn btn-outline btn-block" onclick="GameEngine._startWrongReview()" style="padding:14px;font-size:16px;">
+            <button class="btn btn-block" onclick="GameEngine._startWrongReview()" style="background:#FFF3CD;color:#856404;border-color:#FFEAA7;padding:14px;font-size:16px;">
               🔄 重做错题，抢回积分 (${wrongCount}道)
             </button>
           ` : ''}
@@ -923,10 +953,10 @@ _startRecording(stageIndex, qIndex) {
     this._clearTimer();
     const state = this.state;
 
-    // 收集所有错题
-    const wrongQuestions = state.allAnswers
-      .filter(a => !a.isCorrect)
-      .map(a => a.question);
+   // 收集所有错题
+   const wrongQuestions = state.allAnswers
+      .filter(a => !a.isCorrect && a.question && a.question.options)
+     .map(a => a.question);
 
     if (wrongQuestions.length === 0) {
       this._completeGame();
@@ -950,6 +980,9 @@ _startRecording(stageIndex, qIndex) {
     }
 
     const q = state.reviewQuestions[state.reviewIndex];
+    // 听力题音频支持
+    window._reviewListenText = q.textToSpeak || '';
+    window._reviewAudio = function() { if (window._reviewListenText) Speak.speak(window._reviewListenText); };
     const labels = ['A','B','C','D'];
     const remaining = state.reviewQuestions.length - state.reviewIndex;
 
@@ -964,6 +997,7 @@ _startRecording(stageIndex, qIndex) {
         <div class="question-text" style="font-size:17px;font-weight:500;line-height:1.7;">
           ${q.question}
         </div>
+        ${q.textToSpeak ? '<div style="text-align:center;margin:12px 0;"><button class="btn btn-small btn-primary" onclick="window._reviewAudio();">🔊 播放声音</button></div>' : ''}
         <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
           ${q.options.map((opt, i) => `
             <button class="game-option" onclick="GameEngine._handleReviewAnswer(${i})">
@@ -974,6 +1008,10 @@ _startRecording(stageIndex, qIndex) {
         </div>
       </div>
     `;
+    // 听力题自动播放
+    if (q.textToSpeak) {
+      setTimeout(function() { if (window._reviewListenText) Speak.speak(window._reviewListenText); }, 500);
+    }
   },
 
   _handleReviewAnswer(selectedIndex) {
@@ -1014,9 +1052,17 @@ _startRecording(stageIndex, qIndex) {
     if (overlay) overlay.remove();
 
     if (isCorrect) {
-      // 做对了，从错题列表移除
+      // 做对了，从错题列表移除 + 更新记录
       state.reviewQuestions.splice(state.reviewIndex, 1);
       state.reviewCorrectCount++;
+      // 更新原始答题记录，把错题分数加回去
+      var origRec = state.allAnswers.find(function(a) { return a.question === q; });
+      if (origRec && !origRec.isCorrect) {
+        origRec.isCorrect = true;
+        origRec.score = 50;
+        state.score += 50;
+        if (q.id) state.wrongIds.delete(q.id);
+      }
     } else {
       state.reviewIndex++;
     }
@@ -1035,17 +1081,7 @@ _startRecording(stageIndex, qIndex) {
   },
 
   _completeReview() {
-    const container = document.getElementById('game-content');
-    container.innerHTML = `
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:20px;animation:fadeIn .4s ease;">
-        <div style="font-size:64px;margin-bottom:8px;">🏆</div>
-        <h2 style="font-size:22px;font-weight:700;margin-bottom:6px;">错题全部订正！</h2>
-        <p style="font-size:14px;color:var(--text-secondary);margin-bottom:24px;">所有错题都做对了，太棒了！</p>
-        <button class="btn ${this.state.subject === 'en' ? 'btn-primary' : 'btn-math'}" onclick="GameEngine._finishAndSave()">
-          🏠 返回首页
-        </button>
-      </div>
-    `;
+    this._completeGame();
   },
 
   // --- 完成并保存 ---

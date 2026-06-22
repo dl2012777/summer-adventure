@@ -144,6 +144,20 @@ const Store = {
     this._saveData(data);
 
     return { streak: checkin.streak, bonus, isNew: true, longest: checkin.longest, totalBonus: checkin.totalBonus };
+  },
+
+  // --- 题目权重配置 ---
+  getStageWeights(userName) {
+    try {
+      var all = this._getData().stageWeights;
+      return (all && userName && all[userName]) || null;
+    } catch(e) { return null; }
+  },
+  setStageWeights(userName, weights) {
+    const data = this._getData();
+    if (!data.stageWeights) data.stageWeights = {};
+    data.stageWeights[userName] = weights;
+    this._saveData(data);
   }
 };
 window.Store = Store;

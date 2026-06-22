@@ -184,8 +184,9 @@ const App = {
             <span class="avatar">${avatar}</span>
             <span>${Auth.currentUser}</span>
           </div>
-          <div class="stars-display">⭐ ${stars}</div>
-        </div>
+         <div class="stars-display">⭐ ${stars}</div>
+          <div style="font-size:18px;cursor:pointer;padding:4px;" onclick="Settings.open()" title="比例配置">⚙️</div>
+       </div>
       </div>
 
       <div class="home-hero slide-up">
@@ -199,7 +200,7 @@ const App = {
       </div>
 
       <div class="subject-grid">
-        <a class="subject-card en" onclick="App.goToDays('en')">
+        <a class="subject-card en" onclick="App.checkSettingsThenGo('en')">
           <div class="icon">🗺️</div>
           <h2>英语大冒险</h2>
           <p>沪教版 5A + 5B · 跟着课本闯关<br>词汇 + 语法 + 听说挑战 + Boss</p>
@@ -358,6 +359,16 @@ const App = {
   },
 
   // ==================== 导航辅助 ====================
+  // --- 点击英语前先检查题目类型设置 ---
+  checkSettingsThenGo(subject) {
+    var w = Store.getStageWeights(Auth.currentUser);
+    if (!w) {
+      Settings.open(function() { window.location.hash = 'days/' + subject; });
+    } else {
+      window.location.hash = 'days/' + subject;
+    }
+  },
+
   goToDays(subject) {
     window.location.hash = `days/${subject}`;
   },
