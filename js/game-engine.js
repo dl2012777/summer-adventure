@@ -380,10 +380,9 @@ const GameEngine = {
     const stage = this.STAGES[stageIndex];
     const questions = this.state.stageQuestions[stage.key];
     const q = questions[qIndex];
-    const isCorrect = selectedIndex === q.answer;
-    const timeRemaining = this._getTimeRemaining();
+   const isCorrect = selectedIndex === q.answer;
 
-   // 计算得分
+  // 计算得分
    let score = 0;
 
    if (isCorrect) {
@@ -402,7 +401,7 @@ const GameEngine = {
       selectedIndex,
       isCorrect,
       score,
-      timeSpent: timeLimit - timeRemaining
+      timeSpent: 5
     });
 
     // 渲染反馈
@@ -672,7 +671,7 @@ _startRecording(stageIndex, qIndex) {
         wordDetails;
     }
 
-    var speakingScore = Math.round(scoreVal / 100 * (q.pointValue || 10));
+    var speakingScore = scoreVal >= 50 ? (q.pointValue || 10) : 0;
     this.state.score += speakingScore;
     this.state.allAnswers.push({
       question: q,
@@ -813,7 +812,7 @@ _startRecording(stageIndex, qIndex) {
     const stageScore = stageAnswers.reduce((sum, a) => sum + (a.score || 0), 0);
 
     // Boss关分数翻倍
-    const finalScore = stage.key === 'boss' ? stageScore * 2 : stageScore;
+    const finalScore = stageScore;
     const accuracy = Math.round((correctCount / questions.length) * 100);
 
     this.state.stageResults.push({
@@ -896,7 +895,7 @@ _startRecording(stageIndex, qIndex) {
 
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:320px;margin:20px 0;">
           <div style="text-align:center;padding:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;">
-            <div style="font-size:26px;font-weight:700;">${totalScore}</div>
+            <div style="font-size:26px;font-weight:700;">${Math.round(totalScore)}</div>
             <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">总得分</div>
           </div>
           <div style="text-align:center;padding:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;">
@@ -945,7 +944,7 @@ _startRecording(stageIndex, qIndex) {
 
    // 收集所有错题
    const wrongQuestions = state.allAnswers
-      .filter(a => !a.isCorrect && a.question && a.question.options)
+      .filter(a => !a.isCorrect && a.question)
      .map(a => a.question);
 
     if (wrongQuestions.length === 0) {
@@ -988,6 +987,7 @@ _startRecording(stageIndex, qIndex) {
           ${q.question}
         </div>
         ${q.textToSpeak ? '<div style="text-align:center;margin:12px 0;"><button class="btn btn-small btn-primary" onclick="window._reviewAudio();">🔊 播放声音</button></div>' : ''}
+        ${q.options && q.options.length > 0 ? `
         <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
           ${q.options.map((opt, i) => `
             <button class="game-option" onclick="GameEngine._handleReviewAnswer(${i})">
@@ -995,7 +995,11 @@ _startRecording(stageIndex, qIndex) {
               <span class="opt-text">${opt}</span>
             </button>
           `).join('')}
-        </div>
+        </div>` : `
+        <div style="text-align:center;margin-top:20px;">
+          <button class="btn btn-primary" onclick="GameEngine._markSpeakingCorrect()">✅ 已掌握，继续</button>
+          <p style="font-size:12px;color:var(--text-secondary);margin-top:8px;">点击“已掌握”标记为正确，获得满分</p>
+        </div>`}
       </div>
     `;
     // 听力题自动播放
@@ -1047,11 +1051,11 @@ _startRecording(stageIndex, qIndex) {
       state.reviewCorrectCount++;
       // 更新原始答题记录，把错题分数加回去
       var origRec = state.allAnswers.find(function(a) { return a.question === q; });
-      if (origRec && !origRec.isCorrect) {
-        origRec.isCorrect = true;
-        origRec.score = 50;
-        state.score += 50;
-        if (q.id) state.wrongIds.delete(q.id);
+     if (origRec && !origRec.isCorrect) {
+       origRec.isCorrect = true;
+       origRec.score = q.pointValue || 10;
+       state.score += (q.pointValue || 10);
+       if (q.id) state.wrongIds.delete(q.id);
       }
     } else {
       state.reviewIndex++;
@@ -1092,6 +1096,25 @@ _startRecording(stageIndex, qIndex) {
       sr.score = Math.round(sc);
       sr.accuracy = Math.round(cr / sa.length * 100);
     });
+  },
+
+  // --- 跟读题在错题重做中标记为已掌握 ---
+  _markSpeakingCorrect() {
+    var state = this.state;
+    if (!state || !state.reviewQuestions) return;
+    var q = state.reviewQuestions[state.reviewIndex];
+    if (!q) return;
+    state.reviewQuestions.splice(state.reviewIndex, 1);
+    state.reviewCorrectCount++;
+    var origRec = state.allAnswers.find(function(a) { return a.question === q; });
+    if (origRec && !origRec.isCorrect) {
+      origRec.isCorrect = true;
+      origRec.score = q.pointValue || 10;
+      state.score += origRec.score;
+      if (q.id) state.wrongIds.delete(q.id);
+    }
+    if (state.reviewQuestions.length === 0) { this._completeReview(); }
+    else { this._showReviewQuestion(); }
   },
 
   _completeReview() {

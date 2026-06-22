@@ -158,6 +158,12 @@ const Store = {
     if (!data.stageWeights) data.stageWeights = {};
     data.stageWeights[userName] = weights;
     this._saveData(data);
-  }
+  },
+
+  // --- 重置全部数据（用户/记录/设置全部清空） ---
+  resetProgress() {
+    try { localStorage.removeItem(this.KEY); } catch(e) {}
+    try { localStorage.removeItem('summer_last_user'); } catch(e) {}
+  },
 };
 window.Store = Store;

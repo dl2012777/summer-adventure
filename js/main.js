@@ -185,7 +185,6 @@ const App = {
             <span>${Auth.currentUser}</span>
           </div>
          <div class="stars-display">⭐ ${stars}</div>
-          <div style="font-size:18px;cursor:pointer;padding:4px;" onclick="Settings.open()" title="比例配置">⚙️</div>
        </div>
       </div>
 
@@ -218,15 +217,18 @@ const App = {
         </a>
       </div>
 
-      <div class="home-footer">
-        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
-          <div class="parent-link" onclick="App.goToDashboard()">
-            📊 学习进度
+     <div class="home-footer">
+       <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+         <div class="parent-link" onclick="App.goToDashboard()">
+           📊 学习进度
+         </div>
+         <div class="parent-link" style="border-color:rgba(124,92,191,0.3);" onclick="window.location.hash='game/en/1/3'">
+           🎤 直接跟读
+         </div>
+          <div class="parent-link" style="border-color:rgba(239,68,68,0.3);" onclick="Store.resetProgress();window.location.reload();">
+           🔄 重置
           </div>
-          <div class="parent-link" style="border-color:rgba(124,92,191,0.3);" onclick="window.location.hash='game/en/1/3'">
-            🎤 直接跟读
-          </div>
-        </div>
+       </div>
       </div>
     `;
 
@@ -360,13 +362,8 @@ const App = {
 
   // ==================== 导航辅助 ====================
   // --- 点击英语前先检查题目类型设置 ---
-  checkSettingsThenGo(subject) {
-    var w = Store.getStageWeights(Auth.currentUser);
-    if (!w) {
-      Settings.open(function() { window.location.hash = 'days/' + subject; });
-    } else {
-      window.location.hash = 'days/' + subject;
-    }
+ checkSettingsThenGo(subject) {
+    Settings.open(function() { App.goToDays(subject); });
   },
 
   goToDays(subject) {

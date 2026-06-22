@@ -125,6 +125,7 @@ const Auth = {
     }
 
     this.login(name);
+    App.showHome();
     window.location.hash = "home";
   },
 

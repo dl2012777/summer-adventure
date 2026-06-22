@@ -709,7 +709,8 @@ var QUESTIONS = {
 "options": [
 "This is my pen.",
 "This is mine pen.",
-"This is I pen."
+"This is I pen.",
+"以上都不对"
 ],
 "answer": 0,
 "explanation": "my后跟名词。"
