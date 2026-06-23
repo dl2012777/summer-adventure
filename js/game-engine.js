@@ -1080,11 +1080,11 @@ _startRecording(stageIndex, qIndex) {
               <span class="opt-text">${opt}</span>
             </button>
           `).join('')}
-        </div>` : `
+        </div>` : q.answerValue === undefined ? `
         <div style="text-align:center;margin-top:20px;">
           <button class="btn btn-primary" onclick="GameEngine._markSpeakingCorrect()">✅ 已掌握，继续</button>
           <p style="font-size:12px;color:var(--text-secondary);margin-top:8px;">点击“已掌握”标记为正确，获得满分</p>
-        </div>`}
+        </div>` : ''}
       </div>
     `;
     // 听力题自动播放
