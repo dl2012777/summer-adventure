@@ -156,12 +156,14 @@ const Speak = {
   }
 }
 
-  // --- 腾讯口语评测（需要后端 server.js 运行在 8126 端口） ---
-  evaluateWithTencent: function ev(refText) {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      return { success: false, error: '微风不支持录音', accuracy: 0 };
-    }
-    try {
+ // --- 腾讯口语评测（需要后端 server.js 运行在 8126 端口） ---
+ evaluateWithTencent: function ev(refText) {
+   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+     return { success: false, error: '微风不支持录音', accuracy: 0 };
+   }
+    // API 地址：默认当前主机:8126，生产环境可设 window.SOE_API_URL
+    var apiUrl = window.SOE_API_URL || ('http://' + window.location.hostname + ':8126/api/evaluate');
+   try {
       navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
         var mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
         var recorder = new MediaRecorder(stream, { mimeType: mimeType });
@@ -173,9 +175,9 @@ const Speak = {
           var blob = new Blob(chunks, { type: 'audio/webm' });
           var reader = new FileReader();
           reader.onloadend = function() {
-            var base64 = reader.result.split(',')[1];
-            fetch('http://'+window.location.hostname+':8126/api/evaluate', {
-              method: 'POST',
+           var base64 = reader.result.split(',')[1];
+            fetch(apiUrl, {
+             method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ audioBase64: base64, refText: refText })
             }).then(function(r) { return r.json(); }).then(function(data) {
