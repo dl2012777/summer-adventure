@@ -189,11 +189,6 @@ const App = {
       </div>
 
       <div class="home-hero slide-up">
-        <div class="greeting">欢迎回来，${Auth.currentUser}！</div>
-        <div class="status">
-          已完成 ${stats.totalDays} 天 · 平均正确率 ${stats.avgAccuracy}%
-          ${stats.totalDays > 0 ? `· 总分 ${stats.totalScore}` : ''}
-        </div>
         <div id="home-ranking"></div>
         <div id="home-podium"></div>
       </div>
@@ -220,7 +215,7 @@ const App = {
      <div class="home-footer">
        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
          <div class="parent-link" onclick="App.goToDashboard()">
-           📊 学习进度
+           📊 学习看板
          </div>
          <div class="parent-link" style="border-color:rgba(124,92,191,0.3);" onclick="window.location.hash='game/en/1/3'">
            🎤 直接跟读

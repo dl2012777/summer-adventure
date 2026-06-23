@@ -165,11 +165,12 @@ const GameEngine = {
     const qCount = this.state.stageQuestions[stage.key].length;
     const container = document.getElementById('game-content');
 
+
     // 听说关特殊提示
     let timeDesc = '';
     if (stage.key === 'listening') {
       timeDesc = '听音选答 · 每题播一遍';
-    } else if (stage.key === 'speaking' && q.answerValue === undefined) {
+    } else if (stage.key === 'speaking') {
       timeDesc = '不限时 · 跟读评分';
     } else if (stage.key === 'boss') {
       timeDesc = `限时 ${this.TIME_LIMITS.boss}s/题 · 分数翻倍`;
@@ -1060,7 +1061,25 @@ _startRecording(stageIndex, qIndex) {
     const labels = ['A','B','C','D'];
     const remaining = state.reviewQuestions.length - state.reviewIndex;
 
-    const container = document.getElementById('game-content');
+        const container = document.getElementById('game-content');
+    // 错题重做：应用题输入框（含分数支持）
+    var reviewAnswerHtml = '';
+    if ('answerValue' in q) {
+      var isFrac_ = String(q.answerValue).indexOf('/') >= 0;
+      if (isFrac_) {
+        reviewAnswerHtml = '<div style="text-align:center;margin-top:16px;">' +
+          '<div style="display:flex;align-items:center;justify-content:center;gap:4px;">' +
+          '<input id="review-text-answer-num" type="text" inputmode="numeric" maxlength="3" class="input" placeholder="?" style="width:52px;text-align:center;font-size:20px;padding:8px;">' +
+          '<span style="font-size:24px;font-weight:600;color:var(--text);">/</span>' +
+          '<input id="review-text-answer-den" type="text" inputmode="numeric" maxlength="3" class="input" placeholder="?" style="width:52px;text-align:center;font-size:20px;padding:8px;">' +
+          '</div>' +
+          '<button class="btn btn-primary" onclick="GameEngine._reviewSubmitAnswer()" style="margin-top:8px;">确认答案</button></div>';
+      } else {
+        reviewAnswerHtml = '<div style="text-align:center;margin-top:16px;">' +
+          '<input id="review-text-answer-input" type="text" inputmode="decimal" class="input" placeholder="输入答案" style="width:100px;text-align:center;font-size:20px;padding:10px;margin:0 auto;">' +
+          '<button class="btn btn-primary" onclick="GameEngine._reviewSubmitAnswer()" style="margin-top:8px;display:block;margin-left:auto;margin-right:auto;">确认答案</button></div>';
+      }
+    }
     container.innerHTML = `
       <div style="display:flex;flex-direction:column;padding:20px 0;animation:fadeIn .3s ease;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;">
@@ -1072,6 +1091,7 @@ _startRecording(stageIndex, qIndex) {
           ${q.question}
         </div>
         ${q.textToSpeak ? '<div style="text-align:center;margin:12px 0;"><button class="btn btn-small btn-primary" onclick="window._reviewAudio();">🔊 播放声音</button></div>' : ''}
+        ${reviewAnswerHtml}
         ${q.options && q.options.length > 0 ? `
         <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
           ${q.options.map((opt, i) => `
@@ -1080,7 +1100,7 @@ _startRecording(stageIndex, qIndex) {
               <span class="opt-text">${opt}</span>
             </button>
           `).join('')}
-        </div>` : q.answerValue === undefined ? `
+        </div>` : !('answerValue' in q) ? `
         <div style="text-align:center;margin-top:20px;">
           <button class="btn btn-primary" onclick="GameEngine._markSpeakingCorrect()">✅ 已掌握，继续</button>
           <p style="font-size:12px;color:var(--text-secondary);margin-top:8px;">点击“已掌握”标记为正确，获得满分</p>
@@ -1097,7 +1117,7 @@ _startRecording(stageIndex, qIndex) {
     const state = this.state;
     const q = state.reviewQuestions[state.reviewIndex];
     let isCorrect;
-    if (q.answerValue !== undefined) {
+    if ('answerValue' in q) {
       var isFrac = String(q.answerValue).indexOf('/') >= 0;
       var userAnswer;
       if (isFrac) {
@@ -1112,6 +1132,8 @@ _startRecording(stageIndex, qIndex) {
     } else {
       isCorrect = selectedIndex === q.answer;
     }
+    try { if (isCorrect) { Sounds.playCorrect(); } else { Sounds.playWrong(); Sounds.playHammer(); } } catch(e) {}
+    var wt = isCorrect ? 4 : 7;
     const labels = ['A','B','C','D'];
 
     const container = document.getElementById('game-content');
@@ -1122,14 +1144,14 @@ _startRecording(stageIndex, qIndex) {
           ${isCorrect ? '✅ 这次答对了！' : '还是不对哦'}
         </div>
         ${!isCorrect ? `<div style="font-size:17px;color:var(--text-secondary);margin-bottom:8px;">
-          正确答案：<span style="color:#27AE60;font-weight:600;">${q.answerValue !== undefined ? q.answerValue : labels[q.answer] + '. ' + q.options[q.answer]}</span>
+          正确答案：<span style="color:#27AE60;font-weight:600;">${('answerValue' in q) ? q.answerValue : labels[q.answer] + '. ' + q.options[q.answer]}</span>
         </div>` : ''}
         <div style="font-size:16px;color:var(--text-secondary);max-width:350px;line-height:1.6;">
           💡 ${q.explanation || ''}
         </div>
-        <div style="margin-top:20px;font-size:12px;color:var(--text-secondary);" id="review-countdown">${waitTime}秒后自动跳转...</div>
+        <div style="margin-top:20px;font-size:12px;color:var(--text-secondary);" id="review-countdown">${wt}秒后自动跳转...</div>
         <div style="margin-top:8px;">
-          <span style="font-size:12px;color:var(--text-tertiary);cursor:pointer;" onclick="GameEngine._finishAndSave()">跳过，结束重做</span>
+          <span style="font-size:12px;color:var(--text-tertiary);cursor:pointer;" onclick="GameEngine._completeReview()">跳过，结束重做</span>
         </div>
       </div>
     `;
