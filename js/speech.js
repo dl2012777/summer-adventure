@@ -25,13 +25,15 @@ const Speak = {
      this._ttsReady = true;
       // 解锁 speechSynthesis（Chrome 需要用户交互后才能播放）
       var self = this;
-      function _unlockSpeech() {
-        if (window.speechSynthesis) {
-          window.speechSynthesis.cancel();
-          var _u = new SpeechSynthesisUtterance('');
-          _u.volume = 0;
-          window.speechSynthesis.speak(_u);
-        }
+     function _unlockSpeech() {
+       if (window.speechSynthesis) {
+         window.speechSynthesis.cancel();
+          // 用真实单词解锁（空字符串 Chrome 会忽略）
+          window.speechSynthesis.getVoices();
+          var _u2 = new SpeechSynthesisUtterance('hello');
+          _u2.volume = 0.05;
+          window.speechSynthesis.speak(_u2);
+       }
         document.removeEventListener('click', _unlockSpeech);
         document.removeEventListener('touchstart', _unlockSpeech);
       }
@@ -63,7 +65,17 @@ const Speak = {
     ) || voices.find(v => v.lang.startsWith('en'));
     if (goodVoice) utterance.voice = goodVoice;
 
-    if (callback) utterance.onend = callback;
+     if (callback) utterance.onend = callback;
+    // Chrome bug: 首次 speechSynthesis.speak() 可能静默失败
+
+    // 先播一个助跑发音（带点音量，确保引擎启动）
+    if (!window.speechSynthesis._unlocked) {
+      window.speechSynthesis._unlocked = true;
+      var _wu = new SpeechSynthesisUtterance(text.slice(0,3) || 'go');
+      _wu.lang = 'en-US';
+      _wu.volume = 0.1;
+      window.speechSynthesis.speak(_wu);
+    }
     window.speechSynthesis.speak(utterance);
   },
 
