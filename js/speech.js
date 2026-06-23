@@ -18,13 +18,27 @@ const Speak = {
       this._recognition.maxAlternatives = 3;
       this._isSupported = true;
     }
-    // TTS 预加载 voice
-    if (window.speechSynthesis) {
-      // 某些浏览器需要触发一次才能加载 voices
-      window.speechSynthesis.getVoices();
-      this._ttsReady = true;
-    }
-  },
+   // TTS 预加载 voice
+   if (window.speechSynthesis) {
+     // 某些浏览器需要触发一次才能加载 voices
+     window.speechSynthesis.getVoices();
+     this._ttsReady = true;
+      // 解锁 speechSynthesis（Chrome 需要用户交互后才能播放）
+      var self = this;
+      function _unlockSpeech() {
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+          var _u = new SpeechSynthesisUtterance('');
+          _u.volume = 0;
+          window.speechSynthesis.speak(_u);
+        }
+        document.removeEventListener('click', _unlockSpeech);
+        document.removeEventListener('touchstart', _unlockSpeech);
+      }
+      document.addEventListener('click', _unlockSpeech);
+      document.addEventListener('touchstart', _unlockSpeech);
+   }
+ },
 
   isSupported() { return this._isSupported; },
 
