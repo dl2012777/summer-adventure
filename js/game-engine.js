@@ -257,7 +257,7 @@ const GameEngine = {
       // 自动播放一次
       var _this = this;
       setTimeout(function() { _this._playListenAudio(); }, 500);
-    } else if (stage.key === 'speaking') {
+    } else if (stage.key === 'speaking' && q.answerValue === undefined) {
       // 听说挑战——听原声 + 跟读 + 评分
       var speakText = q.textToSpeak || q.question || '';
       this._speakText = speakText;
