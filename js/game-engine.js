@@ -1098,8 +1098,17 @@ _startRecording(stageIndex, qIndex) {
     const q = state.reviewQuestions[state.reviewIndex];
     let isCorrect;
     if (q.answerValue !== undefined) {
-      var input = document.getElementById('review-text-answer-input');
-      isCorrect = (input ? input.value.trim() : '') === String(q.answerValue).trim();
+      var isFrac = String(q.answerValue).indexOf('/') >= 0;
+      var userAnswer;
+      if (isFrac) {
+        var num = document.getElementById('review-text-answer-num');
+        var den = document.getElementById('review-text-answer-den');
+        userAnswer = (num ? num.value.trim() : '0') + '/' + (den ? den.value.trim() : '0');
+      } else {
+        var input = document.getElementById('review-text-answer-input');
+        userAnswer = input ? input.value.trim() : '';
+      }
+      isCorrect = userAnswer === String(q.answerValue).trim();
     } else {
       isCorrect = selectedIndex === q.answer;
     }
@@ -1193,6 +1202,11 @@ _startRecording(stageIndex, qIndex) {
       sr.score = Math.round(sc);
       sr.accuracy = Math.round(cr / sa.length * 100);
     });
+  },
+
+  // --- 提交重做应用题答案 ---
+  _reviewSubmitAnswer() {
+    this._handleReviewAnswer(-1);
   },
 
   // --- 跟读题在错题重做中标记为已掌握 ---
