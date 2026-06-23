@@ -27,7 +27,19 @@ const GameEngine = {
   FEEDBACK_WAIT_WRONG: 7,     // 答错等7秒
 
   // --- 题目权重配置（可调节，单科 >= 10%，总和 100%） ---
-  _getStageWeights() {
+  _getStageWeights(subject) {
+    // 数学固定权重
+    if (subject === 'math') return { vocab: 40, grammar: 32, listening: 0, speaking: 28 };
+    // 英语：优先使用 Settings 内存
+    try {
+      var sw = window.Settings && window.Settings._weights;
+      if (sw && sw.vocab && sw.grammar && sw.listening && sw.speaking &&
+          sw.vocab >= 10 && sw.grammar >= 10 && sw.listening >= 10 && sw.speaking >= 10 &&
+          sw.vocab + sw.grammar + sw.listening + sw.speaking === 100) {
+        return sw;
+      }
+    } catch(e) {}
+    // 英语：从 Store 读取
     try {
       var userName = Auth.currentUser;
       var all = Store._getData().stageWeights;
@@ -38,6 +50,7 @@ const GameEngine = {
         return w;
       }
     } catch(e) {}
+    return { vocab: 30, grammar: 30, listening: 20, speaking: 20 };
   },
 
 
@@ -1079,14 +1092,20 @@ _startRecording(stageIndex, qIndex) {
         <div style="font-size:16px;color:var(--text-secondary);max-width:350px;line-height:1.6;">
           💡 ${q.explanation || ''}
         </div>
-        <button class="btn ${state.subject === 'en' ? 'btn-primary' : 'btn-math'}" onclick="GameEngine._continueReview(${isCorrect})" style="margin-top:20px;padding:12px 24px;font-size:16px;">
-          ${isCorrect ? '✅ 继续' : '下一题 →'}
-        </button>
-        <div style="margin-top:12px;">
-          <span style="font-size:13px;color:var(--text-tertiary);cursor:pointer;" onclick="GameEngine._finishAndSave()">跳过，结束重做</span>
+        <div style="margin-top:20px;font-size:12px;color:var(--text-secondary);" id="review-countdown">${waitTime}秒后自动跳转...</div>
+        <div style="margin-top:8px;">
+          <span style="font-size:12px;color:var(--text-tertiary);cursor:pointer;" onclick="GameEngine._finishAndSave()">跳过，结束重做</span>
         </div>
       </div>
     `;
+    // 自动倒计时
+    var _reviewTimer = setInterval(function() {
+      var el = document.getElementById('review-countdown');
+      if (!el) { clearInterval(_reviewTimer); return; }
+      var sec = parseInt(el.textContent) - 1;
+      if (sec <= 0) { clearInterval(_reviewTimer); GameEngine._continueReview(isCorrect); }
+      else el.textContent = sec + '秒后自动跳转...';
+    }, 1000);
   },
 
   _continueReview(isCorrect) {
