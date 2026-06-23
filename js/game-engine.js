@@ -38,7 +38,25 @@ const GameEngine = {
         return w;
       }
     } catch(e) {}
-    return { vocab: 30, grammar: 30, listening: 20, speaking: 20 };
+  },
+
+
+  // --- 获取关卡显示名称（根据科目动态调整） ---
+  _getStageDisplay(stageIndex) {
+    var stage = this.STAGES[stageIndex];
+    if (!stage) return { name: '', icon: '', desc: '' };
+    var subject = this.state && this.state.subject;
+    if (subject === 'math') {
+      var m = {
+        vocab: { name: '口算闯关', icon: '🔢', desc: '口算题·计算能力大考验' },
+        grammar: { name: '概念闯关', icon: '📐', desc: '概念题·数学知识要记牢' },
+        listening: { name: '审题挑战', icon: '📖', desc: '读题·理解题意选答案' },
+        speaking: { name: '应用题', icon: '✏️', desc: '应用题·纸笔计算再输入答案' },
+        boss: { name: '综合挑战', icon: '⚡', desc: '综合题·挑战更高难度' }
+      }[stage.key];
+      if (m) return m;
+    }
+    return { name: stage.name, icon: stage.icon, desc: stage.desc };
   },
 
   // --- 开始游戏 ---
@@ -65,12 +83,13 @@ const GameEngine = {
     Object.keys(grouped).forEach(k => this._shuffle(grouped[k]));
 
     // 根据权重分配题数和分值（最大题数：词汇20/语法20/听力12/跟读12）
-    var weights = GameEngine._getStageWeights();
+    var weights = GameEngine._getStageWeights(subject);
     var MAX_COUNTS = { vocab:25, grammar:25, listening:12, speaking:12 };
+    if (subject === 'math') MAX_COUNTS = { vocab:15, grammar:15, listening:0, speaking:15 };
     var stageKeys = ['vocab','grammar','listening','speaking'];
     stageKeys.forEach(function(k) {
       var avail = grouped[k].length;
-      if (avail === 0) return;
+      if (avail === 0 || weights[k] <= 0) return;
       var target = Math.round(MAX_COUNTS[k] * weights[k] / 60);
       target = Math.max(2, Math.min(target, avail));
       var totalPts = weights[k];
@@ -107,7 +126,14 @@ const GameEngine = {
       isWaiting: false      // 冷却等待中
     };
 
-    this._renderStageIntro(0);
+    // 找到第一个有题目的关卡（跳过空关卡）
+    var _fs = 0;
+    while (_fs < this.STAGES.length) {
+      var _sk = this.STAGES[_fs].key;
+      if (this.state.stageQuestions[_sk] && this.state.stageQuestions[_sk].length > 0) break;
+      _fs++;
+    }
+    this._renderStageIntro(_fs);
 
     // 如果设置了 _skipToStage，直接跳到指定关卡
     if (this._skipToStage !== undefined) {
@@ -122,6 +148,7 @@ const GameEngine = {
   _renderStageIntro(stageIndex) {
     this._clearTimer();
     const stage = this.STAGES[stageIndex];
+    var display = this._getStageDisplay(stageIndex);
     const qCount = this.state.stageQuestions[stage.key].length;
     const container = document.getElementById('game-content');
 
@@ -129,7 +156,7 @@ const GameEngine = {
     let timeDesc = '';
     if (stage.key === 'listening') {
       timeDesc = '听音选答 · 每题播一遍';
-    } else if (stage.key === 'speaking') {
+    } else if (stage.key === 'speaking' && q.answerValue === undefined) {
       timeDesc = '不限时 · 跟读评分';
     } else if (stage.key === 'boss') {
       timeDesc = `限时 ${this.TIME_LIMITS.boss}s/题 · 分数翻倍`;
@@ -139,9 +166,9 @@ const GameEngine = {
 
     container.innerHTML = `
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:20px;animation:fadeIn .4s ease;">
-        <div style="font-size:64px;margin-bottom:12px;">${stage.icon}</div>
-        <h2 style="font-size:24px;font-weight:800;margin-bottom:6px;">第${stageIndex+1}关 · ${stage.name}</h2>
-        <p style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;">${stage.desc}</p>
+        <div style="font-size:64px;margin-bottom:12px;">${display.icon}</div>
+        <h2 style="font-size:24px;font-weight:800;margin-bottom:6px;">第${stageIndex+1}关 · ${display.name}</h2>
+        <p style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;">${display.desc}</p>
         <p style="font-size:13px;color:var(--text-tertiary);margin-bottom:24px;">${qCount}道题 · ${timeDesc}</p>
         <button class="btn ${this.state.subject === 'en' ? 'btn-primary' : 'btn-math'}" onclick="GameEngine._startStage(${stageIndex})">
           🚀 准备开始
@@ -161,6 +188,7 @@ const GameEngine = {
   // --- 显示题目 ---
   _showQuestion(stageIndex, qIndex) {
     const stage = this.STAGES[stageIndex];
+    var display = this._getStageDisplay(stageIndex);
     const questions = this.state.stageQuestions[stage.key];
     if (qIndex >= questions.length) {
       this._completeStage(stageIndex);
@@ -254,6 +282,11 @@ const GameEngine = {
           </p>
         </div>
       `;
+    } else if (q.answerValue !== undefined) {
+      // 应用题——文本输入答案
+      optionsHtml = '<div style="text-align:center;margin-top:16px;">' +
+        '<input id="text-answer-input" type="text" inputmode="decimal" class="input" placeholder="输入你的答案" style="max-width:200px;text-align:center;font-size:20px;padding:12px;margin:0 auto;">' +
+        '<button class="btn btn-primary" onclick="GameEngine._submitTextAnswer()" style="margin-top:12px;">确认答案</button></div>';
     } else {
       // 普通选择题（含阅读理解显示文章）
       var pText = (q.passage || '').replace(/'/g, "\\'");
@@ -294,7 +327,7 @@ const GameEngine = {
           <span class="game-stage-badge" style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:10px;
             background:${this.state.subject === 'en' ? 'rgba(124,92,191,0.2)' : 'rgba(230,126,34,0.2)'};
             color:${this.state.subject === 'en' ? '#A78BDB' : '#F0B27A'};
-          ">${stage.icon} ${stage.name}</span>
+          ">${display.icon} ${display.name}</span>
           <span style="flex:1;"></span>
           ${stage.key !== 'speaking' && stage.key !== 'listening' ? `<span id="game-timer-text" style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;min-width:32px;text-align:right;">
             ${timeLimit > 0 ? timeLimit + 's' : '--'}</span>` : ''}
@@ -378,6 +411,7 @@ const GameEngine = {
     this._clearTimer();
 
     const stage = this.STAGES[stageIndex];
+    var display = this._getStageDisplay(stageIndex);
     const questions = this.state.stageQuestions[stage.key];
     const q = questions[qIndex];
    const isCorrect = selectedIndex === q.answer;
@@ -620,6 +654,11 @@ _startRecording(stageIndex, qIndex) {
     }
   },
 
+  // --- 提交应用题答案 ---
+  _submitTextAnswer() {
+    this._handleAnswer(this.state.stageIndex, this.state.questionIndex, -1);
+  },
+
   // --- 处理腾讯口语评测结果 ---
   _handleTencentResult(result, statusEl, recordBtn, playBtn, q, refText, questions) {
     this.state.isWaiting = false;
@@ -736,8 +775,8 @@ _startRecording(stageIndex, qIndex) {
 
         <div style="margin-top:16px;padding:16px 20px;background:rgba(255,255,255,0.05);border-radius:12px;max-width:340px;">
           ${!isCorrect ? `<div style="font-size:17px;color:var(--text-secondary);margin-bottom:8px;">
-            正确答案：<span style="color:#27AE60;font-weight:600;">${labels[q.answer]}. ${q.options[q.answer]}</span>
-            <br>你的答案：<span style="color:#E74C3C;">${labels[selectedIndex]}. ${q.options[selectedIndex]}</span>
+            正确答案：<span style="color:#27AE60;font-weight:600;">${q.answerValue !== undefined ? q.answerValue : labels[q.answer] + '. ' + q.options[q.answer]}</span>
+            ${q.answerValue === undefined ? '<br>你的答案：<span style="color:#E74C3C;">' + labels[selectedIndex] + '. ' + q.options[selectedIndex] + '</span>' : ''}
           </div>` : ''}
           <div style="font-size:16px;color:var(--text-secondary);margin-top:8px;line-height:1.6;">
             💡 ${q.explanation || ''}
@@ -806,6 +845,7 @@ _startRecording(stageIndex, qIndex) {
   // --- 完成一个关卡 ---
   _completeStage(stageIndex) {
     const stage = this.STAGES[stageIndex];
+    var display = this._getStageDisplay(stageIndex);
     const questions = this.state.stageQuestions[stage.key];
     const stageAnswers = this.state.allAnswers.filter(a => questions.includes(a.question));
     const correctCount = stageAnswers.filter(a => a.isCorrect).length;
@@ -817,27 +857,33 @@ _startRecording(stageIndex, qIndex) {
 
     this.state.stageResults.push({
       key: stage.key,
-      name: stage.name,
-      icon: stage.icon,
+      name: display.name,
+      icon: display.icon,
       correct: correctCount,
       total: questions.length,
       accuracy,
       score: finalScore
     });
 
-    // 如果所有关卡完成
-    const nextStage = stageIndex + 1;
-    if (nextStage >= this.STAGES.length) {
+    // 找到下一个有题目的关卡
+    var n = stageIndex + 1;
+    while (n < this.STAGES.length) {
+      var sk = this.STAGES[n].key;
+      if (this.state.stageQuestions[sk] && this.state.stageQuestions[sk].length > 0) break;
+      n++;
+    }
+    if (n >= this.STAGES.length) {
       this._completeGame();
       return;
     }
+    var nextStage = n;
 
     // 显示关卡完成
     const container = document.getElementById('game-content');
     container.innerHTML = `
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:20px;animation:fadeIn .4s ease;">
         <div style="font-size:52px;margin-bottom:8px;">${accuracy >= 80 ? '🎉' : '👍'}</div>
-        <h2 style="font-size:22px;font-weight:700;margin-bottom:6px;">${stage.icon} ${stage.name} 完成！</h2>
+        <h2 style="font-size:22px;font-weight:700;margin-bottom:6px;">${display.icon} ${display.name} 完成！</h2>
         <div style="display:flex;gap:16px;margin:16px 0;">
           <div style="text-align:center;">
             <div style="font-size:20px;font-weight:700;color:#27AE60;">${correctCount}/${questions.length}</div>
@@ -855,7 +901,7 @@ _startRecording(stageIndex, qIndex) {
           </div>
         </div>
         <button class="btn ${this.state.subject === 'en' ? 'btn-primary' : 'btn-math'}" onclick="GameEngine._startStage(${nextStage})" style="margin-top:8px;">
-          ${this.STAGES[nextStage].icon} 进入${this.STAGES[nextStage].name} →
+          ${this._getStageDisplay(nextStage).icon} 进入${this._getStageDisplay(nextStage).name} →
         </button>
       </div>
     `;
@@ -1011,7 +1057,13 @@ _startRecording(stageIndex, qIndex) {
   _handleReviewAnswer(selectedIndex) {
     const state = this.state;
     const q = state.reviewQuestions[state.reviewIndex];
-    const isCorrect = selectedIndex === q.answer;
+    let isCorrect;
+    if (q.answerValue !== undefined) {
+      var input = document.getElementById('review-text-answer-input');
+      isCorrect = (input ? input.value.trim() : '') === String(q.answerValue);
+    } else {
+      isCorrect = selectedIndex === q.answer;
+    }
     const labels = ['A','B','C','D'];
 
     const container = document.getElementById('game-content');
@@ -1022,7 +1074,7 @@ _startRecording(stageIndex, qIndex) {
           ${isCorrect ? '✅ 这次答对了！' : '还是不对哦'}
         </div>
         ${!isCorrect ? `<div style="font-size:17px;color:var(--text-secondary);margin-bottom:8px;">
-          正确答案：<span style="color:#27AE60;font-weight:600;">${labels[q.answer]}. ${q.options[q.answer]}</span>
+          正确答案：<span style="color:#27AE60;font-weight:600;">${q.answerValue !== undefined ? q.answerValue : labels[q.answer] + '. ' + q.options[q.answer]}</span>
         </div>` : ''}
         <div style="font-size:16px;color:var(--text-secondary);max-width:350px;line-height:1.6;">
           💡 ${q.explanation || ''}

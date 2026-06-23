@@ -1239,8 +1239,8 @@ var QUESTIONS = {
 "options": [
 "来参加派对。",
 "来参加生日。",
-"来参加聚会。",
-"来参加晚餐。"
+"来参加婚礼。",
+"来参加考试。"
 ],
 "answer": 0,
 "explanation": "\"Please come to my party.\"=\"来参加派对。\""
@@ -1474,13 +1474,13 @@ var QUESTIONS = {
 "id": "l28",
 "type": "listening",
 "difficulty": "medium",
-"question": "请听句子选正确翻译",
-"textToSpeak": "How old is sister?",
+"question": "请听句子，选择正确的翻译",
+"textToSpeak": "How old is your little sister?",
 "options": [
 "妹妹几岁？",
 "弟弟几岁？",
 "姐姐几岁？",
-"妈妈几岁？"
+"奶奶几岁？"
 ],
 "answer": 0,
 "explanation": "\"How old is sister?\"=\"妹妹几岁？\""
@@ -1823,7 +1823,690 @@ var QUESTIONS = {
   'en-day38': [], // TODO: 5B M4U3 Earth Hour
   'en-day39': [], // TODO: 5B 冲刺
   'en-day40': [], // TODO: 🏆 Final Boss
-  'math-day1': [{"id": "m-d1-1", "type": "vocabulary", "difficulty": "easy", "pointValue": 100, "question": "0.48÷4=？", "options": ["0.12", "0.012", "1.2", "12"], "answer": 0, "explanation": "0.48÷4=0.12"}, {"id": "m-d1-2", "type": "vocabulary", "difficulty": "easy", "pointValue": 100, "question": "1.26÷0.3=？", "options": ["4.2", "42", "0.42", "420"], "answer": 0, "explanation": "1.26÷0.3=4.2"}, {"id": "m-d1-3", "type": "vocabulary", "difficulty": "medium", "pointValue": 100, "question": "除数是小数时应先转化成什么？", "options": ["整数", "分数", "百分数", "自然数"], "answer": 0, "explanation": "除数转化成整数"}, {"id": "m-d1-4", "type": "grammar", "difficulty": "medium", "pointValue": 100, "question": "0.25÷0.5=？", "options": ["0.5", "5", "0.05", "50"], "answer": 0, "explanation": "0.25÷0.5=0.5"}, {"id": "m-d1-5", "type": "boss", "difficulty": "hard", "pointValue": 100, "question": "买3支笔花了7.5元，每支笔多少钱？", "options": ["2.5元", "2元", "3元", "25元"], "answer": 0, "explanation": "7.5÷3=2.5"}],
+  'math-day1': [
+{
+"id": "m-d1-v1",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "0.48÷4=？",
+"options": [
+"0.12",
+"0.012",
+"1.2",
+"12"
+],
+"answer": 0,
+"explanation": "0.48÷4=0.12"
+},
+{
+"id": "m-d1-v2",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "1.26÷0.3=？",
+"options": [
+"4.2",
+"42",
+"0.42",
+"420"
+],
+"answer": 0,
+"explanation": "1.26÷0.3=4.2"
+},
+{
+"id": "m-d1-v3",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "7.2÷0.8=？",
+"options": [
+"9",
+"0.9",
+"90",
+"0.09"
+],
+"answer": 0,
+"explanation": "7.2÷0.8=9"
+},
+{
+"id": "m-d1-v4",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "0.56÷0.7=？",
+"options": [
+"0.8",
+"8",
+"0.08",
+"80"
+],
+"answer": 0,
+"explanation": "0.56÷0.7=0.8"
+},
+{
+"id": "m-d1-v5",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "3.6÷0.9=？",
+"options": [
+"4",
+"0.4",
+"40",
+"0.04"
+],
+"answer": 0,
+"explanation": "3.6÷0.9=4"
+},
+{
+"id": "m-d1-v6",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "1.5÷0.5=？",
+"options": [
+"3",
+"0.3",
+"30",
+"0.03"
+],
+"answer": 0,
+"explanation": "1.5÷0.5=3"
+},
+{
+"id": "m-d1-v7",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "2.4÷0.6=？",
+"options": [
+"4",
+"0.4",
+"40",
+"0.04"
+],
+"answer": 0,
+"explanation": "2.4÷0.6=4"
+},
+{
+"id": "m-d1-v8",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "0.36÷0.6=？",
+"options": [
+"0.6",
+"6",
+"0.06",
+"60"
+],
+"answer": 0,
+"explanation": "0.36÷0.6=0.6"
+},
+{
+"id": "m-d1-v9",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "0.42÷0.7=？",
+"options": [
+"0.6",
+"6",
+"0.06",
+"60"
+],
+"answer": 0,
+"explanation": "0.42÷0.7=0.6"
+},
+{
+"id": "m-d1-v10",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "4.8÷0.8=？",
+"options": [
+"6",
+"0.6",
+"60",
+"0.06"
+],
+"answer": 0,
+"explanation": "4.8÷0.8=6"
+},
+{
+"id": "m-d1-v11",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "0.64÷0.8=？",
+"options": [
+"0.8",
+"8",
+"0.08",
+"80"
+],
+"answer": 0,
+"explanation": "0.64÷0.8=0.8"
+},
+{
+"id": "m-d1-v12",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "0.54÷0.6=？",
+"options": [
+"0.9",
+"9",
+"0.09",
+"90"
+],
+"answer": 0,
+"explanation": "0.54÷0.6=0.9"
+},
+{
+"id": "m-d1-v13",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "1.2÷0.4=？",
+"options": [
+"3",
+"0.3",
+"30",
+"0.03"
+],
+"answer": 0,
+"explanation": "1.2÷0.4=3"
+},
+{
+"id": "m-d1-v14",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "1.8÷0.6=？",
+"options": [
+"3",
+"0.3",
+"30",
+"0.03"
+],
+"answer": 0,
+"explanation": "1.8÷0.6=3"
+},
+{
+"id": "m-d1-v15",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "2.8÷0.7=？",
+"options": [
+"4",
+"0.4",
+"40",
+"0.04"
+],
+"answer": 0,
+"explanation": "2.8÷0.7=4"
+},
+{
+"id": "m-d1-v16",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "0.96÷0.8=？",
+"options": [
+"1.2",
+"12",
+"0.12",
+"120"
+],
+"answer": 0,
+"explanation": "0.96÷0.8=1.2"
+},
+{
+"id": "m-d1-v17",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "0.25÷0.5=？",
+"options": [
+"0.5",
+"5",
+"0.05",
+"50"
+],
+"answer": 0,
+"explanation": "0.25÷0.5=0.5"
+},
+{
+"id": "m-d1-v18",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "0.72÷0.9=？",
+"options": [
+"0.8",
+"8",
+"0.08",
+"80"
+],
+"answer": 0,
+"explanation": "0.72÷0.9=0.8"
+},
+{
+"id": "m-d1-v19",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "0.81÷0.9=？",
+"options": [
+"0.9",
+"9",
+"0.09",
+"90"
+],
+"answer": 0,
+"explanation": "0.81÷0.9=0.9"
+},
+{
+"id": "m-d1-v20",
+"type": "vocabulary",
+"difficulty": "medium",
+"question": "0.32÷0.04=？",
+"options": [
+"8",
+"80",
+"0.8",
+"0.08"
+],
+"answer": 0,
+"explanation": "0.32÷0.04=8"
+},
+{
+"id": "m-d1-g1",
+"type": "grammar",
+"difficulty": "medium",
+"question": "除数是小数时应先转化成什么？",
+"options": [
+"整数",
+"分数",
+"百分数",
+"自然数"
+],
+"answer": 0,
+"explanation": "除数转化为整数。"
+},
+{
+"id": "m-d1-g2",
+"type": "grammar",
+"difficulty": "medium",
+"question": "0.25÷0.5中除数应扩大几倍变整数？",
+"options": [
+"2倍",
+"10倍",
+"100倍",
+"5倍"
+],
+"answer": 0,
+"explanation": "0.5×2=1。"
+},
+{
+"id": "m-d1-g3",
+"type": "grammar",
+"difficulty": "medium",
+"question": "被除数和除数同时×10，商会怎样？",
+"options": [
+"不变",
+"×10",
+"÷10",
+"×100"
+],
+"answer": 0,
+"explanation": "同时扩大相同倍数商不变。"
+},
+{
+"id": "m-d1-g4",
+"type": "grammar",
+"difficulty": "medium",
+"question": "商的小数点要和谁对齐？",
+"options": [
+"被除数",
+"除数",
+"积",
+"不用对齐"
+],
+"answer": 0,
+"explanation": "商的小数点与被除数对齐。"
+},
+{
+"id": "m-d1-g5",
+"type": "grammar",
+"difficulty": "medium",
+"question": "0.48÷4的最高位在什么位？",
+"options": [
+"十分位",
+"个位",
+"百分位",
+"千分位"
+],
+"answer": 0,
+"explanation": "0÷4=0，最高位是十分位。"
+},
+{
+"id": "m-d1-g6",
+"type": "grammar",
+"difficulty": "medium",
+"question": "除数0.05要扩大几倍变成整数？",
+"options": [
+"100倍",
+"10倍",
+"2倍",
+"5倍"
+],
+"answer": 0,
+"explanation": "0.05×100=5。"
+},
+{
+"id": "m-d1-g7",
+"type": "grammar",
+"difficulty": "medium",
+"question": "一个数÷0.5等于乘以几？",
+"options": [
+"2",
+"0.5",
+"5",
+"10"
+],
+"answer": 0,
+"explanation": "÷0.5=×2。"
+},
+{
+"id": "m-d1-g8",
+"type": "grammar",
+"difficulty": "medium",
+"question": "0.45÷0.09=？",
+"options": [
+"5",
+"0.5",
+"50",
+"0.05"
+],
+"answer": 0,
+"explanation": "0.45÷0.09=5。"
+},
+{
+"id": "m-d1-g9",
+"type": "grammar",
+"difficulty": "medium",
+"question": "2.5÷0.5=5，改成5÷1等于？",
+"options": [
+"5",
+"0.5",
+"10",
+"2"
+],
+"answer": 0,
+"explanation": "5÷1=5。"
+},
+{
+"id": "m-d1-g10",
+"type": "grammar",
+"difficulty": "medium",
+"question": "除不尽时商应该怎么表示？",
+"options": [
+"保留几位小数",
+"直接写分数",
+"取整",
+"四舍五入"
+],
+"answer": 0,
+"explanation": "用四舍五入法取近似值。"
+},
+{
+"id": "m-d1-g11",
+"type": "grammar",
+"difficulty": "medium",
+"question": "0.3÷0.06=？",
+"options": [
+"5",
+"0.5",
+"50",
+"0.05"
+],
+"answer": 0,
+"explanation": "0.3÷0.06=5。"
+},
+{
+"id": "m-d1-g12",
+"type": "grammar",
+"difficulty": "medium",
+"question": "除数小数位比被除数多怎么办？",
+"options": [
+"补0再除",
+"直接除",
+"去掉小数点",
+"×10"
+],
+"answer": 0,
+"explanation": "被除数末尾补0再除。"
+},
+{
+"id": "m-d1-g13",
+"type": "grammar",
+"difficulty": "medium",
+"question": "0.12÷0.3=？",
+"options": [
+"0.4",
+"4",
+"0.04",
+"40"
+],
+"answer": 0,
+"explanation": "0.12÷0.3=0.4。"
+},
+{
+"id": "m-d1-g14",
+"type": "grammar",
+"difficulty": "medium",
+"question": "商保留两位小数要看第几位？",
+"options": [
+"第三位",
+"第二位",
+"第一位",
+"第四位"
+],
+"answer": 0,
+"explanation": "看千分位四舍五入。"
+},
+{
+"id": "m-d1-g15",
+"type": "grammar",
+"difficulty": "medium",
+"question": "0.6÷0.12=5，除数化整数需×？",
+"options": [
+"100",
+"10",
+"2",
+"5"
+],
+"answer": 0,
+"explanation": "0.12×100=12。"
+},
+{
+"id": "m-d1-g16",
+"type": "grammar",
+"difficulty": "medium",
+"question": "0.5÷0.25=？",
+"options": [
+"2",
+"0.2",
+"20",
+"0.02"
+],
+"answer": 0,
+"explanation": "0.5÷0.25=2。"
+},
+{
+"id": "m-d1-s1",
+"type": "speaking",
+"difficulty": "hard",
+"question": "（纸笔计算）买3支笔花7.5元，每支笔几元？",
+"answerValue": "2.5",
+"explanation": "7.5÷3=2.5"
+},
+{
+"id": "m-d1-s2",
+"type": "speaking",
+"difficulty": "hard",
+"question": "（纸笔计算）5本练习本12.5元，每本几元？",
+"answerValue": "2.5",
+"explanation": "12.5÷5=2.5"
+},
+{
+"id": "m-d1-s3",
+"type": "speaking",
+"difficulty": "hard",
+"question": "（纸笔计算）2.5kg苹果15元，每kg几元？",
+"answerValue": "6",
+"explanation": "15÷2.5=6"
+},
+{
+"id": "m-d1-s4",
+"type": "speaking",
+"difficulty": "hard",
+"question": "（纸笔计算）绳子4.8米剪8段，每段几米？",
+"answerValue": "0.6",
+"explanation": "4.8÷8=0.6"
+},
+{
+"id": "m-d1-s5",
+"type": "speaking",
+"difficulty": "hard",
+"question": "（纸笔计算）3瓶果汁共7.2元，每瓶几元？",
+"answerValue": "2.4",
+"explanation": "7.2÷3=2.4"
+},
+{
+"id": "m-d1-s6",
+"type": "speaking",
+"difficulty": "hard",
+"question": "（纸笔计算）4块蛋糕共10元，每块几元？",
+"answerValue": "2.5",
+"explanation": "10÷4=2.5"
+},
+{
+"id": "m-d1-s7",
+"type": "speaking",
+"difficulty": "hard",
+"question": "（纸笔计算）3个蛋糕平均分4人，每人几个？",
+"answerValue": "3/4",
+"explanation": "3÷4=3/4"
+},
+{
+"id": "m-d1-s8",
+"type": "speaking",
+"difficulty": "hard",
+"question": "（纸笔计算）1.5米布做5条手帕，每条用几米？",
+"answerValue": "0.3",
+"explanation": "1.5÷5=0.3"
+},
+{
+"id": "m-d1-s9",
+"type": "speaking",
+"difficulty": "hard",
+"question": "（纸笔计算）6个苹果平分8个孩子，每人几个？",
+"answerValue": "6/8",
+"explanation": "6÷8=6/8可化简为3/4"
+},
+{
+"id": "m-d1-s10",
+"type": "speaking",
+"difficulty": "hard",
+"question": "（纸笔计算）面积7.2m²，宽0.8m，长几米？",
+"answerValue": "9",
+"explanation": "7.2÷0.8=9"
+},
+{
+"id": "m-d1-s11",
+"type": "speaking",
+"difficulty": "hard",
+"question": "（纸笔计算）小明跑1.2km用0.3小时，时速几km？",
+"answerValue": "4",
+"explanation": "1.2÷0.3=4"
+},
+{
+"id": "m-d1-s12",
+"type": "speaking",
+"difficulty": "hard",
+"question": "（纸笔计算）3台机器产9.6万个零件，每台产几个？",
+"answerValue": "3.2",
+"explanation": "9.6÷3=3.2"
+},
+{
+"id": "m-d1-s13",
+"type": "speaking",
+"difficulty": "hard",
+"question": "（纸笔计算）0.6kg糖花9元，每kg几元？",
+"answerValue": "15",
+"explanation": "9÷0.6=15"
+},
+{
+"id": "m-d1-s14",
+"type": "speaking",
+"difficulty": "hard",
+"question": "（纸笔计算）1.2米绳每0.4米剪一段，剪几段？",
+"answerValue": "3",
+"explanation": "1.2÷0.4=3"
+},
+{
+"id": "m-d1-b1",
+"type": "boss",
+"difficulty": "hard",
+"question": "买4.5kg苹果36元，每kg几元？",
+"options": [
+"8",
+"7",
+"9",
+"10"
+],
+"answer": 0,
+"explanation": "36÷4.5=8"
+},
+{
+"id": "m-d1-b2",
+"type": "boss",
+"difficulty": "hard",
+"question": "0.48÷0.12=？",
+"options": [
+"4",
+"0.4",
+"40",
+"0.04"
+],
+"answer": 0,
+"explanation": "0.48÷0.12=4"
+},
+{
+"id": "m-d1-b3",
+"type": "boss",
+"difficulty": "hard",
+"question": "2.4÷0.016=？",
+"options": [
+"150",
+"15",
+"1.5",
+"0.15"
+],
+"answer": 0,
+"explanation": "2.4÷0.016=150"
+},
+{
+"id": "m-d1-b4",
+"type": "boss",
+"difficulty": "hard",
+"question": "50kg小麦磨35kg面粉，每kg小麦磨几kg面粉？",
+"answerValue": "0.7",
+"explanation": "35÷50=0.7"
+},
+{
+"id": "m-d1-b5",
+"type": "boss",
+"difficulty": "hard",
+"question": "小芳0.6小时走3.6km，时速几km？",
+"answerValue": "6",
+"explanation": "3.6÷0.6=6"
+},
+{
+"id": "m-d1-b6",
+"type": "boss",
+"difficulty": "hard",
+"question": "2.4m³沙土铺0.6m宽的路，可铺几米长？",
+"answerValue": "4",
+"explanation": "2.4÷0.6=4"
+}
+],
   'math-day2': [{"id": "m-d2-1", "type": "vocabulary", "difficulty": "easy", "pointValue": 100, "question": "3.14保留一位小数为？", "options": ["3.1", "3.14", "3.2", "3.0"], "answer": 0, "explanation": "3.14≈3.1"}, {"id": "m-d2-2", "type": "vocabulary", "difficulty": "medium", "pointValue": 100, "question": "2.667保留两位小数为？", "options": ["2.67", "2.66", "2.7", "2.6"], "answer": 0, "explanation": "2.667≈2.67"}, {"id": "m-d2-3", "type": "vocabulary", "difficulty": "medium", "pointValue": 100, "question": "1÷3用循环小数表示为？", "options": ["0.333…", "0.3", "3", "0.33"], "answer": 0, "explanation": "1÷3=0.333…"}, {"id": "m-d2-4", "type": "grammar", "difficulty": "easy", "pointValue": 100, "question": "四舍五入到十分位看哪一位？", "options": ["百分位", "千分位", "个位", "十分位"], "answer": 0, "explanation": "看百分位"}, {"id": "m-d2-5", "type": "boss", "difficulty": "hard", "pointValue": 100, "question": "一个数÷0.25相当于×？", "options": ["4", "0.25", "2.5", "25"], "answer": 0, "explanation": "÷0.25=×4"}],
   'math-day3': [{"id": "m-d3-1", "type": "vocabulary", "difficulty": "medium", "pointValue": 100, "question": "哪个是循环小数？", "options": ["0.333…", "0.5", "0.25", "1.5"], "answer": 0, "explanation": "0.333…循环"}, {"id": "m-d3-2", "type": "vocabulary", "difficulty": "easy", "pointValue": 100, "question": "7.2÷0.8=？", "options": ["9", "0.9", "90", "0.09"], "answer": 0, "explanation": "7.2÷0.8=9"}, {"id": "m-d3-3", "type": "vocabulary", "difficulty": "hard", "pointValue": 100, "question": "0.56÷0.7=？", "options": ["0.8", "8", "0.08", "80"], "answer": 0, "explanation": "0.56÷0.7=0.8"}, {"id": "m-d3-4", "type": "boss", "difficulty": "hard", "pointValue": 100, "question": "8.4kg饼干平分6盒，每盒？", "options": ["1.4kg", "1.5kg", "1.3kg", "1.6kg"], "answer": 0, "explanation": "8.4÷6=1.4"}],
   'math-day4': [], // TODO: 数学 小数除法复习
