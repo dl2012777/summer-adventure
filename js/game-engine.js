@@ -427,7 +427,13 @@ const GameEngine = {
     var display = this._getStageDisplay(stageIndex);
     const questions = this.state.stageQuestions[stage.key];
     const q = questions[qIndex];
-   const isCorrect = selectedIndex === q.answer;
+   let isCorrect;
+   if (q.answerValue !== undefined) {
+     var input = document.getElementById('text-answer-input');
+     isCorrect = (input ? input.value.trim() : '') === String(q.answerValue).trim();
+   } else {
+     isCorrect = selectedIndex === q.answer;
+   }
 
   // 计算得分
    let score = 0;
@@ -1073,7 +1079,7 @@ _startRecording(stageIndex, qIndex) {
     let isCorrect;
     if (q.answerValue !== undefined) {
       var input = document.getElementById('review-text-answer-input');
-      isCorrect = (input ? input.value.trim() : '') === String(q.answerValue);
+      isCorrect = (input ? input.value.trim() : '') === String(q.answerValue).trim();
     } else {
       isCorrect = selectedIndex === q.answer;
     }
