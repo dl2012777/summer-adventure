@@ -224,11 +224,18 @@ const App = {
          </div>
          <div class="parent-link" style="border-color:rgba(124,92,191,0.3);" onclick="window.location.hash='game/en/1/3'">
            🎤 直接跟读
-         </div>
+          </div>
           <div class="parent-link" style="border-color:rgba(239,68,68,0.3);" onclick="Store.resetProgress();window.location.reload();">
            🔄 重置
-          </div>
        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:12px;text-align:center;">
+        <span style="font-size:11px;color:var(--text-tertiary);">⚡ 测试按钮</span>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:6px;">
+          <div class="parent-link" style="border-color:rgba(52,152,219,0.3);padding:8px 20px;font-weight:600;" onclick="window.location.hash='game/math/1/3'">
+            ✏️ 应用题测试
+          </div>
+        </div>
       </div>
     `;
 
