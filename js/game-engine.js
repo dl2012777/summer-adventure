@@ -296,10 +296,21 @@ const GameEngine = {
         </div>
       `;
     } else if (q.answerValue !== undefined) {
-      // 应用题——文本输入答案
-      optionsHtml = '<div style="text-align:center;margin-top:16px;">' +
-        '<input id="text-answer-input" type="text" inputmode="decimal" class="input" placeholder="输入你的答案" style="max-width:200px;text-align:center;font-size:20px;padding:12px;margin:0 auto;">' +
-        '<button class="btn btn-primary" onclick="GameEngine._submitTextAnswer()" style="margin-top:12px;">确认答案</button></div>';
+      // 应用题——文本输入答案（支持分数和数字）
+      var isFrac = String(q.answerValue).indexOf('/') >= 0;
+      if (isFrac) {
+        optionsHtml = '<div style="text-align:center;margin-top:16px;">' +
+          '<div style="display:flex;align-items:center;justify-content:center;gap:4px;">' +
+          '<input id="text-answer-num" type="text" inputmode="numeric" maxlength="3" class="input" placeholder="?" style="width:50px;text-align:center;font-size:20px;padding:8px;">' +
+          '<span style="font-size:24px;font-weight:600;color:var(--text);">/</span>' +
+          '<input id="text-answer-den" type="text" inputmode="numeric" maxlength="3" class="input" placeholder="?" style="width:50px;text-align:center;font-size:20px;padding:8px;">' +
+          '</div>' +
+          '<button class="btn btn-primary" onclick="GameEngine._submitTextAnswer()" style="margin-top:8px;">确认答案</button></div>';
+      } else {
+        optionsHtml = '<div style="text-align:center;margin-top:16px;">' +
+          '<input id="text-answer-input" type="text" inputmode="decimal" class="input" placeholder="答案" style="width:100px;text-align:center;font-size:20px;padding:10px;margin:0 auto;">' +
+          '<button class="btn btn-primary" onclick="GameEngine._submitTextAnswer()" style="margin-top:8px;">确认答案</button></div>';
+      }
     } else {
       // 普通选择题（含阅读理解显示文章）
       var pText = (q.passage || '').replace(/'/g, "\\'");
@@ -429,8 +440,17 @@ const GameEngine = {
     const q = questions[qIndex];
    let isCorrect;
    if (q.answerValue !== undefined) {
-     var input = document.getElementById('text-answer-input');
-     isCorrect = (input ? input.value.trim() : '') === String(q.answerValue).trim();
+     var isFrac = String(q.answerValue).indexOf('/') >= 0;
+     var userAnswer;
+     if (isFrac) {
+       var num = document.getElementById('text-answer-num');
+       var den = document.getElementById('text-answer-den');
+       userAnswer = (num ? num.value.trim() : '0') + '/' + (den ? den.value.trim() : '0');
+     } else {
+       var input = document.getElementById('text-answer-input');
+       userAnswer = input ? input.value.trim() : '';
+     }
+     isCorrect = userAnswer === String(q.answerValue).trim();
    } else {
      isCorrect = selectedIndex === q.answer;
    }
