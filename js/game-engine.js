@@ -631,7 +631,8 @@ _startRecording(stageIndex, qIndex) {
           var reader = new FileReader();
           reader.onloadend = function() {
             var base64 = reader.result.split(',')[1];
-            fetch('http://'+window.location.hostname+':8126/api/evaluate', {
+            var apiUrl = window.SOE_API_URL || ('http://'+window.location.hostname+':8126/api/evaluate');
+            fetch(apiUrl, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ audioBase64: base64, refText: refText })

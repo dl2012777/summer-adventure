@@ -4,6 +4,7 @@
   "description": "沪教版 5A/5B 英语 + 北师大版五年级数学 · 40天暑假闯关",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +21,7 @@
   "homepage": "https://github.com/dl2012777/summer-adventure#readme",
   "dependencies": {
     "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
     "express": "^5.2.1",
     "playwright": "^1.61.0",
     "tencentcloud-sdk-nodejs-soe": "^4.1.71",
