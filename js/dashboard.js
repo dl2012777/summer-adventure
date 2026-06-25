@@ -49,11 +49,19 @@ const Dashboard = {
         var subjCount = (st.englishDays > 0 ? 1 : 0) + (st.mathDays > 0 ? 1 : 0);
     html += '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;">' + subjCount + '/2</div><div style="font-size:11px;color:var(--text-secondary);">已学课程</div></div>';
     html += '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:' + (st.avgAccuracy>=80?'#27AE60':'#F39C12') + '">' + st.avgAccuracy + '%</div><div style="font-size:11px;color:var(--text-secondary);">平均正确率</div></div>';
-        var enScore = st.englishDays > 0 ? Math.round((st.avgAccuracy * 0.7 + Math.min(100, Math.round((st.totalDays / 40) * 100)) * 0.3)) : 0;
-    html += '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;">' + enScore + '</div><div style="font-size:11px;color:var(--text-secondary);">综合分</div></div>';
+    html += '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;">' + (st.compositeScore || 0) + '</div><div style="font-size:11px;color:var(--text-secondary);">综合分</div></div>';
     html += '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;">' + stars + '</div><div style="font-size:11px;color:var(--text-secondary);">⭐ 星星</div></div></div>';
     
     html += '</div>';
+
+    // ---- 数据导出按钮 ----
+    html += '<div class="card" style="margin-bottom:16px;">';
+    html += '<h3 style="font-size:16px;margin-bottom:10px;">💾 数据导出</h3>';
+    html += '<p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;">导出学习数据，可用于备份、分析或打印。</p>';
+    html += '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
+    html += '<button class="btn btn-small btn-outline" onclick="Store.downloadFile(JSON.stringify(Store.exportAllData(\'' + userName + '\'), null, 2), \'summer-adventure-' + userName + '-' + new Date().toISOString().slice(0,10) + '.json\', \'application/json\')">📋 导出 JSON</button>';
+    html += '<button class="btn btn-small btn-outline" onclick="Store.downloadFile(Store.exportProgressCSV(\'' + userName + '\'), \'summer-adventure-' + userName + '-' + new Date().toISOString().slice(0,10) + '.csv\', \'text/csv;charset=utf-8\')">📊 导出 CSV</button>';
+    html += '</div></div>';
 
     // ---- 每日详情弹窗 ----
     html += '<div id="day-detail-modal" class="modal" style="display:none;"></div>';

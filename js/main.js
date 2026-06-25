@@ -217,6 +217,9 @@ const App = {
          <div class="parent-link" onclick="App.goToDashboard()">
            📊 学习看板
          </div>
+         <div class="parent-link" style="border-color:rgba(39,174,96,0.3);" onclick="Store.downloadFile(JSON.stringify(Store.exportAllData(Auth.currentUser),null,2),'summer-adventure-'+Auth.currentUser+'-'+new Date().toISOString().slice(0,10)+'.json','application/json')">
+           💾 导出数据
+         </div>
          <div class="parent-link" style="border-color:rgba(124,92,191,0.3);" onclick="window.location.hash='game/en/1/3'">
            🎤 直接跟读
           </div>

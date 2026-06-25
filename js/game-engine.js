@@ -101,6 +101,8 @@ const GameEngine = {
     if (subject === 'math') MAX_COUNTS = { vocab:15, grammar:15, listening:0, speaking:15 };
     var stageKeys = ['vocab','grammar','listening','speaking'];
     stageKeys.forEach(function(k) {
+      // Math speaking (应用题) is handled separately below — skip here
+      if (subject === 'math' && k === 'speaking') return;
       var avail = grouped[k].length;
       if (avail === 0 || weights[k] <= 0) return;
       var target = Math.round(MAX_COUNTS[k] * weights[k] / 60);
@@ -118,6 +120,16 @@ const GameEngine = {
       grouped[k] = grouped[k].slice(0, bestC);
       grouped[k].forEach(function(q) { q.pointValue = bestS; });
     });
+    // Math 应用题: force exactly 3 questions, distribute weight as evenly as possible
+    // e.g. weight 28 -> [10, 9, 9] = 28 total
+    if (subject === 'math' && weights.speaking > 0 && grouped.speaking && grouped.speaking.length >= 3) {
+      grouped.speaking = grouped.speaking.slice(0, 3);
+      var spBase = Math.floor(weights.speaking / 3);
+      var spRem = weights.speaking - spBase * 3;
+      grouped.speaking.forEach(function(q, i) {
+        q.pointValue = spBase + (i < spRem ? 1 : 0);
+      });
+    }
     // Boss 固定 3 题 × 10 分
     grouped.boss = grouped.boss.slice(0, 3);
     grouped.boss.forEach(function(q) { q.pointValue = 10; });
@@ -332,7 +344,6 @@ const GameEngine = {
 
     // 进度指示
     // 计算当天累计进度（跨所有关卡）
-    const prevTotals = { vocab:0, grammmar:0, grammar:0, speaking:0 };
     const stageOrder = this.STAGES.map(function(s) { return s.key; });
     let stageOffset = 0;
     for (let si = 0; si < stageIndex; si++) {
@@ -364,11 +375,14 @@ const GameEngine = {
             <div id="game-timer-bar" style="height:100%;background:${this.state.subject === 'en' ? '#A78BDB' : '#F0B27A'};border-radius:4px;width:100%;transition:width 1s linear;"></div>
           </div>
           <span id="game-score-display" style="font-size:13px;font-weight:600;white-space:nowrap;">⭐ ${this.state.streak > 0 ? 'x'+this.state.streak+' · ' : ''}${this.state.score}</span>
-        </div>` : ''}
+        </div>` : (stage.key === 'speaking' && this.state.subject === 'math' ? `
+        <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:12px;">
+          <span id="game-score-display" style="font-size:13px;font-weight:600;white-space:nowrap;">⭐ ${this.state.streak > 0 ? 'x'+this.state.streak+' · ' : ''}${this.state.score}</span>
+        </div>` : '')}
 
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
           <span class="progress-text" style="font-size:13px;color:var(--text-secondary);">第 ${progress} 题</span>
-          ${stage.key === 'boss' ? '<span style="font-size:11px;padding:2px 8px;border-radius:8px;background:rgba(231,76,60,0.15);color:#E74C3C;">分数×2</span>' : ''}
+          ${stage.key === 'boss' ? '<span style="font-size:11px;padding:2px 8px;border-radius:8px;background:rgba(231,76,60,0.15);color:#E74C3C;">10分/题</span>' : ''}
         </div>
 
         <div class="question-text" style="font-size:17px;font-weight:500;line-height:1.7;padding:4px 0;">
@@ -505,7 +519,7 @@ const GameEngine = {
     }
   },
 
-_startRecording(stageIndex, qIndex) {
+_startRecording() {
     if (this.state.isWaiting) return;
     this.state.isWaiting = true;
 
@@ -517,7 +531,8 @@ _startRecording(stageIndex, qIndex) {
     if (recordBtn) { recordBtn.textContent = '⏳ 录音中...'; recordBtn.disabled = true; }
     if (playBtn) playBtn.disabled = true;
 
-    const stage = this.STAGES[3];
+    const stageIndex = this.state.stageIndex;
+    const stage = this.STAGES[stageIndex];
     const questions = this.state.stageQuestions['speaking'];
     const qIdx = this.state.questionIndex;
     const q = questions[qIdx];
@@ -631,7 +646,7 @@ _startRecording(stageIndex, qIndex) {
           var reader = new FileReader();
           reader.onloadend = function() {
             var base64 = reader.result.split(',')[1];
-            var apiUrl = window.SOE_API_URL || ('http://'+window.location.hostname+':8126/api/evaluate');
+            var apiUrl = window.SOE_API_URL || ('https://' + window.location.hostname + ':8126/api/evaluate');
             fetch(apiUrl, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -643,7 +658,7 @@ _startRecording(stageIndex, qIndex) {
             })
             .catch(function(err) {
               _this.state.isWaiting = false;
-              if (statusEl) statusEl.textContent = '⚠️ 评测服务连接失败';
+              if (statusEl) statusEl.textContent = '⚠️ 评测服务连接失败，请在项目目录运行 node server.js';
               if (recordBtn) { recordBtn.textContent = '🎤 开始跟读'; recordBtn.disabled = false; }
               if (playBtn) playBtn.disabled = false;
             });
@@ -684,14 +699,14 @@ _startRecording(stageIndex, qIndex) {
   },
 
   _nextSpeaking() {
-    const stage = this.STAGES[3];
+    const stageIndex = this.state.stageIndex;
     const questions = this.state.stageQuestions['speaking'];
     const nextQ = this.state.questionIndex + 1;
 
     if (nextQ >= questions.length) {
-      this._completeStage(3);
+      this._completeStage(stageIndex);
     } else {
-      this._showQuestion(3, nextQ);
+      this._showQuestion(stageIndex, nextQ);
     }
   },
 
@@ -770,12 +785,13 @@ _startRecording(stageIndex, qIndex) {
   // --- 跟读完成后推进 ---
   _advanceSpeaking() {
     var state = this.state;
+    var stageIndex = state.stageIndex;
     var questions = state.stageQuestions['speaking'];
     var nextQ = state.questionIndex + 1;
     if (nextQ >= questions.length) {
-      this._completeStage(3);
+      this._completeStage(stageIndex);
     } else {
-      this._showQuestion(3, nextQ);
+      this._showQuestion(stageIndex, nextQ);
     }
   },
 
@@ -840,39 +856,6 @@ _startRecording(stageIndex, qIndex) {
     this._feedbackInterval = setInterval(() => {
       remaining--;
       if (countdownEl) countdownEl.textContent = `${remaining}秒后自动跳转...`;
-      if (remaining <= 0) {
-        clearInterval(this._feedbackInterval);
-        const overlay = container.querySelector('.feedback-overlay');
-        if (overlay) overlay.remove();
-        this.state.isWaiting = false;
-        onDone();
-      }
-    }, 1000);
-  },
-
-  // --- 听说完成反馈 ---
-  _renderSpeakingComplete(stageIndex, qIndex, onDone) {
-    const container = document.getElementById('game-content');
-    container.innerHTML += `
-      <div class="feedback-overlay" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;animation:fadeIn .2s ease;">
-        <div style="font-size:52px;margin-bottom:8px;">🎤</div>
-        <div style="font-size:22px;font-weight:700;margin-bottom:4px;color:#A78BDB;">
-          跟读完成！+100分
-        </div>
-        <div style="font-size:14px;color:var(--text-secondary);margin-top:8px;">
-          ⭐ 发音评分将在后续阶段接入
-        </div>
-        <div style="margin-top:20px;font-size:14px;color:var(--text-secondary);" id="feedback-countdown">
-          3秒后继续...
-        </div>
-      </div>
-    `;
-
-    let remaining = 3;
-    const countdownEl = document.getElementById('feedback-countdown');
-    this._feedbackInterval = setInterval(() => {
-      remaining--;
-      if (countdownEl) countdownEl.textContent = `${remaining}秒后继续...`;
       if (remaining <= 0) {
         clearInterval(this._feedbackInterval);
         const overlay = container.querySelector('.feedback-overlay');
@@ -1285,9 +1268,11 @@ _finishAndSave() {
         state.score += checkinData.bonus;
       }
     } catch(e) {}
-    const totalQuestions = state.allAnswers.length + (state.reviewCorrectCount || 0);
-    const correctCount = state.allAnswers.filter(a => a.isCorrect).length + (state.reviewCorrectCount || 0);
-    const accuracy = totalQuestions > 0 ? Math.round((correctCount / Math.max(state.allAnswers.length, 1)) * 100) : 0;
+    // allAnswers already includes corrected answers (isCorrect updated during review)
+    // So we must NOT add reviewCorrectCount again — that would double-count and cause >100%
+    const totalQuestions = state.allAnswers.length;
+    const correctCount = state.allAnswers.filter(a => a.isCorrect).length;
+    const accuracy = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
 
     // 计算星星
     const stars = accuracy >= 90 ? Math.round(state.allAnswers.length * 0.15)
@@ -1304,11 +1289,11 @@ _finishAndSave() {
       subject: state.subject,
       dayKey: state.dayKey,
      stages: {
-       vocab: state.stageResults[0] || { correct:0, total:0, score:0 },
-       grammar: state.stageResults[1] || { correct:0, total:0, score:0 },
-       listening: state.stageResults[2] || { correct:0, total:0, score:0 },
-       speaking: state.stageResults[3] || { correct:0, total:0, score:0 },
-       boss: state.stageResults[4] || { correct:0, total:0, score:0 }
+       vocab: state.stageResults.find(function(sr) { return sr.key === 'vocab'; }) || { correct:0, total:0, score:0 },
+       grammar: state.stageResults.find(function(sr) { return sr.key === 'grammar'; }) || { correct:0, total:0, score:0 },
+       listening: state.stageResults.find(function(sr) { return sr.key === 'listening'; }) || { correct:0, total:0, score:0 },
+       speaking: state.stageResults.find(function(sr) { return sr.key === 'speaking'; }) || { correct:0, total:0, score:0 },
+       boss: state.stageResults.find(function(sr) { return sr.key === 'boss'; }) || { correct:0, total:0, score:0 }
      },
       wrongQuestionIds: [...state.wrongIds],
       attempts: 1,

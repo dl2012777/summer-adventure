@@ -80,16 +80,38 @@ const Store = {
   },
 
   // --- 统计 ---
+  // 计分规则：
+  //   平均正确率 = 每日(数学得分+英语得分)/260% → 再取所有已做日均值
+  //   综合分 = (正确率×70% + 出勤率×30%) × 已完成天数（累计值，越高越好）
+  //   出勤率 = 有记录的唯一日历天数 / 40
   getStats(userName) {
     const progress = this.getAllProgress(userName);
     const entries = Object.values(progress).filter(p => p && p.completed);
-    const totalDays = entries.length;
-    if (totalDays === 0) return { totalDays: 0, avgAccuracy: 0, totalScore: 0, englishDays: 0, mathDays: 0 };
+    if (entries.length === 0) return { totalDays:0, avgAccuracy:0, totalScore:0, englishDays:0, mathDays:0, uniqueDates:0, compositeScore:0 };
+
+    // 按日历日汇总得分（一天可能做英语+数学两科）
+    var dailyTotals = {};
+    entries.forEach(function(p) {
+      var dateKey = p.dateCompleted ? p.dateCompleted.slice(0,10) : 'unknown';
+      dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + (p.score || 0);
+    });
+    var uniqueDates = Object.keys(dailyTotals).length;
+    var dailyScores = Object.values(dailyTotals);
+
+    // 平均正确率：每天得分/260的均值（260=数学满分130+英语满分130）
+    var avgAccuracy = uniqueDates > 0
+      ? Math.round(dailyScores.reduce(function(s,t){ return s + t / 260 * 100; }, 0) / uniqueDates)
+      : 0;
+
     const totalScore = entries.reduce((sum, p) => sum + (p.score || 0), 0);
-    const avgAccuracy = Math.round(entries.reduce((sum, p) => sum + (p.accuracy || 0), 0) / totalDays);
     const englishDays = entries.filter(p => p.subject === 'en').length;
     const mathDays = entries.filter(p => p.subject === 'math').length;
-    return { totalDays, avgAccuracy, totalScore, englishDays, mathDays };
+
+    // 综合分 = (正确率×70% + 出勤×30%) × 已完成天数（累计值）
+    var attendanceRate = Math.min(100, Math.round(uniqueDates / 40 * 100));
+    var compositeScore = Math.round((avgAccuracy * 0.7 + attendanceRate * 0.3) * uniqueDates);
+
+    return { totalDays:uniqueDates, avgAccuracy, totalScore, englishDays, mathDays, uniqueDates, attendanceRate, compositeScore };
   },
 
   // --- 星星 ---
@@ -165,5 +187,83 @@ const Store = {
     try { localStorage.removeItem(this.KEY); } catch(e) {}
     try { localStorage.removeItem('summer_last_user'); } catch(e) {}
   },
+
+  // --- 数据导出（JSON 格式） ---
+  exportAllData(userName) {
+    const data = this._getData();
+    const user = userName ? data.users[userName] : null;
+    const exportObj = {
+      exportedAt: new Date().toISOString(),
+      userName: userName || 'all',
+      profile: user ? user.profile : null,
+      progress: user ? user.progress : {},
+      stars: userName ? (data.starBadges[userName] || 0) : data.starBadges,
+      checkin: userName ? this.getCheckin(userName) : data.checkin,
+      stats: userName ? this.getStats(userName) : null
+    };
+    return exportObj;
+  },
+
+  // --- 导出为 CSV 格式（学习进度明细） ---
+  exportProgressCSV(userName) {
+    const progress = this.getAllProgress(userName);
+    const stats = this.getStats(userName);
+    const stars = this.getStars(userName);
+    const checkin = this.getCheckin(userName);
+    
+    var rows = [];
+    rows.push(['Day', 'Subject', 'Completed', 'Score', 'Accuracy', 'MaxStreak', 'VocabCorrect', 'VocabTotal', 'GrammarCorrect', 'GrammarTotal', 'ListeningCorrect', 'ListeningTotal', 'SpeakingCorrect', 'SpeakingTotal', 'BossCorrect', 'BossTotal', 'DateCompleted'].join(','));
+    
+    Object.keys(progress).forEach(function(key) {
+      var p = progress[key];
+      if (!p) return;
+      var subject = p.subject || (key.indexOf('en-') === 0 ? 'en' : 'math');
+      var dayNum = key.replace(/^(en|math)-day/, '');
+      var stages = p.stages || {};
+      rows.push([
+        dayNum,
+        subject === 'en' ? '英语' : '数学',
+        p.completed ? 'Yes' : 'No',
+        p.score || 0,
+        p.accuracy || 0,
+        p.maxStreak || 0,
+        stages.vocab ? stages.vocab.correct || 0 : 0,
+        stages.vocab ? stages.vocab.total || 0 : 0,
+        stages.grammar ? stages.grammar.correct || 0 : 0,
+        stages.grammar ? stages.grammar.total || 0 : 0,
+        stages.listening ? stages.listening.correct || 0 : 0,
+        stages.listening ? stages.listening.total || 0 : 0,
+        stages.speaking ? stages.speaking.correct || 0 : 0,
+        stages.speaking ? stages.speaking.total || 0 : 0,
+        stages.boss ? stages.boss.correct || 0 : 0,
+        stages.boss ? stages.boss.total || 0 : 0,
+        p.dateCompleted || ''
+      ].join(','));
+    });
+
+    // 汇总行
+    rows.push('');
+    rows.push('Summary,,,,,,,,,,,,,,');
+    rows.push(['Total Days', stats.totalDays].join(',,,,,,,,,,,,,,,,'));
+    rows.push(['Avg Accuracy', stats.avgAccuracy + '%'].join(',,,,,,,,,,,,,,,,'));
+    rows.push(['Total Score', stats.totalScore].join(',,,,,,,,,,,,,,,,'));
+    rows.push(['Stars', stars].join(',,,,,,,,,,,,,,,,'));
+    rows.push(['Checkin Streak', checkin.streak].join(',,,,,,,,,,,,,,,,'));
+
+    return rows.join('\n');
+  },
+
+  // --- 触发文件下载 ---
+  downloadFile(content, filename, mimeType) {
+    var blob = new Blob([content], { type: mimeType || 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 };
 window.Store = Store;

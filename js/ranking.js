@@ -1,6 +1,7 @@
 // ============================================================
 //  Ranking — 排名系统
-//  综合分 = 正确率 × 60% + 出勤率 × 40%
+//  平均正确率 = 每日(数学得分+英语得分)/260% 的均值
+//  综合分 = (正确率×70% + 出勤×30%) × 已完成天数（累计值）
 // ============================================================
 const Ranking = {
   // --- 计算综合分 ---
@@ -8,26 +9,35 @@ const Ranking = {
     if (!totalDays) totalDays = 40;
     const progress = Store.getAllProgress(userName);
     const entries = Object.values(progress).filter(p => p && p.completed);
-    const done = entries.length;
 
-    if (done === 0) {
+    if (entries.length === 0) {
       return { composite:0, accuracy:0, attendance:0, totalScore:0, maxStreak:0, daysDone:0, weekDays:0 };
     }
 
-    const avgAccuracy = Math.round(entries.reduce((s, p) => s + (p.accuracy || 0), 0) / done);
-    // 出勤按唯一日历日算（同一天完成多天也只算1天）
-    var uniqueDates = new Set();
-    entries.forEach(function(p) { if (p.dateCompleted) uniqueDates.add(p.dateCompleted.slice(0,10)); });
-    var attendanceDays = uniqueDates.size;
-    const attendance = Math.min(100, Math.round((attendanceDays / totalDays) * 100));
-    const totalScore = entries.reduce((s, p) => s + (p.score || 0), 0);
-    const composite = Math.round(avgAccuracy * 0.7 + attendance * 0.3);
+    // 按日历日汇总
+    var dailyTotals = {};
+    entries.forEach(function(p) { 
+      var dk = p.dateCompleted ? p.dateCompleted.slice(0,10) : 'unknown';
+      dailyTotals[dk] = (dailyTotals[dk] || 0) + (p.score || 0); 
+    });
+    var uniqueDates = Object.keys(dailyTotals).length;
+    var dailyScores = Object.values(dailyTotals);
+
+    // 平均正确率：每天得分/260的均值
+    var avgAccuracy = uniqueDates > 0
+      ? Math.round(dailyScores.reduce(function(s,t){ return s + t / 260 * 100; }, 0) / uniqueDates)
+      : 0;
+
+    var attendanceRate = Math.min(100, Math.round(uniqueDates / totalDays * 100));
+    var totalScore = entries.reduce((s, p) => s + (p.score || 0), 0);
+    // 综合分（累计值）
+    var composite = Math.round((avgAccuracy * 0.7 + attendanceRate * 0.3) * uniqueDates);
 
     // 本周完成天数
     const weekAgo = Date.now() - 7 * 86400000;
     const weekDays = entries.filter(p => new Date(p.dateCompleted).getTime() > weekAgo).length;
 
-    return { composite, accuracy:avgAccuracy, attendance, totalScore, daysDone:done, weekDays };
+    return { composite, accuracy:avgAccuracy, attendance:attendanceRate, totalScore, daysDone:uniqueDates, weekDays };
   },
 
   // --- 渲染排名卡片 ---
@@ -57,7 +67,7 @@ const Ranking = {
         </div>
         <div class="ranking-sub">
           ${s.daysDone}/40天完成 · 总分 ${s.totalScore} · 本周 ${s.weekDays} 天
-          ${s.daysDone > 0 ? '· 综合 = 正确率×70% + 出勤×30%' : ''}
+          ${s.daysDone > 0 ? '· 综合 = (正确率×70% + 出勤×30%) × ' + s.daysDone + '天' : ''}
         </div>
       </div>
     `;

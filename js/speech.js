@@ -18,27 +18,16 @@ const Speak = {
       this._recognition.maxAlternatives = 3;
       this._isSupported = true;
     }
-   // TTS 预加载 voice
+   // TTS 预加载 voice（不播 primer，避免 Chrome 卡死）
    if (window.speechSynthesis) {
-     // 某些浏览器需要触发一次才能加载 voices
-     window.speechSynthesis.getVoices();
      this._ttsReady = true;
-      // 解锁 speechSynthesis（Chrome 需要用户交互后才能播放）
-      var self = this;
-     function _unlockSpeech() {
-       if (window.speechSynthesis) {
-         window.speechSynthesis.cancel();
-          // 用真实单词解锁（空字符串 Chrome 会忽略）
-          window.speechSynthesis.getVoices();
-          var _u2 = new SpeechSynthesisUtterance('hello');
-          _u2.volume = 0.05;
-          window.speechSynthesis.speak(_u2);
-       }
-        document.removeEventListener('click', _unlockSpeech);
-        document.removeEventListener('touchstart', _unlockSpeech);
-      }
-      document.addEventListener('click', _unlockSpeech);
-      document.addEventListener('touchstart', _unlockSpeech);
+     window.speechSynthesis.getVoices();
+     // voices 异步加载，监听事件
+     if (window.speechSynthesis.onvoiceschanged !== undefined) {
+       window.speechSynthesis.onvoiceschanged = function() {
+         window.speechSynthesis.getVoices();
+       };
+     }
    }
  },
 
@@ -50,33 +39,60 @@ const Speak = {
       if (callback) callback();
       return;
     }
-    // 取消正在播放的
-    window.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.75;    // 慢速适合孩子
-    utterance.pitch = 1.0;
+    var ss = window.speechSynthesis;
+    var self = this;
 
-    // 优先找女性英语发音人
-    const voices = window.speechSynthesis.getVoices();
-    const goodVoice = voices.find(v =>
-      v.lang.startsWith('en') && (v.name.includes('Female') || v.name.includes('Samantha') || v.name.includes('Google US English'))
-    ) || voices.find(v => v.lang.startsWith('en'));
-    if (goodVoice) utterance.voice = goodVoice;
+    function _doSpeak() {
+      var utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.75;    // 慢速适合孩子
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
 
-     if (callback) utterance.onend = callback;
-    // Chrome bug: 首次 speechSynthesis.speak() 可能静默失败
+      // 优先找女性英语发音人
+      var voices = ss.getVoices();
+      var goodVoice = null;
+      for (var i = 0; i < voices.length; i++) {
+        var v = voices[i];
+        if (v.lang && v.lang.indexOf('en') === 0) {
+          if (v.name.indexOf('Female') >= 0 || v.name.indexOf('Samantha') >= 0 || v.name.indexOf('Google US English') >= 0) {
+            goodVoice = v;
+            break;
+          }
+        }
+      }
+      if (!goodVoice) {
+        for (var j = 0; j < voices.length; j++) {
+          if (voices[j].lang && voices[j].lang.indexOf('en') === 0) {
+            goodVoice = voices[j];
+            break;
+          }
+        }
+      }
+      if (goodVoice) utterance.voice = goodVoice;
 
-    // 先播一个助跑发音（带点音量，确保引擎启动）
-    if (!window.speechSynthesis._unlocked) {
-      window.speechSynthesis._unlocked = true;
-      var _wu = new SpeechSynthesisUtterance(text.slice(0,3) || 'go');
-      _wu.lang = 'en-US';
-      _wu.volume = 0.1;
-      window.speechSynthesis.speak(_wu);
+      if (callback) utterance.onend = callback;
+      utterance.onerror = function() {
+        if (callback) callback();
+      };
+
+      try {
+        ss.speak(utterance);
+        // Chrome 踹一脚：speak 后立即 resume，强制启动引擎
+        ss.resume();
+      } catch(e) {
+        if (callback) callback();
+      }
     }
-    window.speechSynthesis.speak(utterance);
+
+    // 如果有东西在播放，先 cancel 再等 200ms
+    if (ss.speaking || ss.pending) {
+      ss.cancel();
+      setTimeout(_doSpeak, 200);
+    } else {
+      _doSpeak();
+    }
   },
 
   // --- 录音识别 ---
@@ -182,54 +198,4 @@ const Speak = {
   }
 }
 
- // --- 腾讯口语评测（需要后端 server.js 运行在 8126 端口） ---
- evaluateWithTencent: function ev(refText) {
-   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-     return { success: false, error: '微风不支持录音', accuracy: 0 };
-   }
-    // API 地址：默认当前主机:8126，生产环境可设 window.SOE_API_URL
-    var apiUrl = window.SOE_API_URL || ('http://' + window.location.hostname + ':8126/api/evaluate');
-   try {
-      navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
-        var mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
-        var recorder = new MediaRecorder(stream, { mimeType: mimeType });
-        var chunks = [];
-        recorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
-
-        recorder.onstop = function() {
-          stream.getTracks().forEach(function(t) { t.stop(); });
-          var blob = new Blob(chunks, { type: 'audio/webm' });
-          var reader = new FileReader();
-          reader.onloadend = function() {
-           var base64 = reader.result.split(',')[1];
-            fetch(apiUrl, {
-             method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ audioBase64: base64, refText: refText })
-            }).then(function(r) { return r.json(); }).then(function(data) {
-              try { if (window.__speechResolve) window.__speechResolve(data.success ? data : { success: false, error: data.error || '评测服务异常', accuracy: 0 }); } catch(e) {}
-            }).catch(function() {
-              try { if (window.__speechResolve) window.__speechResolve({ success: false, error: '无法连接评测服务器', accuracy: 0 }); } catch(e) {}
-            });
-          };
-          reader.readAsDataURL(blob);
-        };
-
-        recorder.onerror = function() {
-          stream.getTracks().forEach(function(t) { t.stop(); });
-          try { if (window.__speechResolve) window.__speechResolve({ success: false, error: '录音失败', accuracy: 0 }); } catch(e) {}
-        };
-
-        recorder.start();
-        setTimeout(function() { if (recorder.state === 'recording') recorder.stop(); }, 6000);
-      }).catch(function() {
-        try { if (window.__speechResolve) window.__speechResolve({ success: false, error: '麦克风权限被拒绝', accuracy: 0 }); } catch(e) {}
-      });
-    } catch(e) {
-      return { success: false, error: '录音初始化失败', accuracy: 0 };
-    }
-    return new Promise(function(resolve) {
-      window.__speechResolve = resolve;
-      setTimeout(function() { if (window.__speechResolve) { window.__speechResolve({ success: false, error: '录音超时', accuracy: 0 }); window.__speechResolve = null; } }, 10000);
-    });
-  };
+window.Speak = Speak;
